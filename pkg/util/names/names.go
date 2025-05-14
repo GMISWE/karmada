@@ -57,6 +57,9 @@ const (
 	// KarmadaAgentComponentName is the name of the Karmada Agent component.
 	KarmadaAgentComponentName = "karmada-agent"
 
+	// KarmadaGmiStorageComponentName is the name of the Karmada GMI Storage component.
+	KarmadaGmiStorageComponentName = "karmada-gmi-storage"
+
 	// KarmadaSchedulerComponentName is the name of the Karmada Scheduler component.
 	KarmadaSchedulerComponentName = "karmada-scheduler"
 

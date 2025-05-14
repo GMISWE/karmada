@@ -1,0 +1,77 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: ClusterPropagationPolicy
+metadata:
+  name: storage-juicefs-policy
+spec:
+  resourceSelectors:
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: juicefs.storage.karmada.io
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - kubernetes
+  conflictResolution: Overwrite
+---
+apiVersion: storage.karmada.io/v1alpha1
+kind: Juicefs
+metadata:
+  name: jfs-asia-test
+spec:
+  description: "gmi cloud位于亚太台湾地区的2号公共存储池"
+  location: # 存储位置
+    region: 
+    az:
+  provider: # 存储提供商，如果是客户私有存储，则需要填写客户的 id 和 name
+    id: "u-00000000" # 存储提供商 id
+    name: gmi-cloud # 存储提供商 name
+  public: "true" # 是否为公共访问
+  client: # juicefs client配置
+    image: us-west1-docker.pkg.dev/devv-404803/public/storage:v0.0.1 # client 镜像
+    cache-dir: /jfs-cache # 缓存目录
+    mount-options: 
+      - cache-size=10240000
+    envs:                # 用 pod 的 env 类型
+      - name: xx
+        value: xxx
+    volumes: []          # 可以直接用 pod.spec.Volumes
+    volumeMounts: []     # 同上
+    resources: 
+      requests:
+        cpu: 1000m
+        memory: 1000Mi
+      limits:
+        cpu: 1000m
+        memory: 1000Mi
+    ee: # juicefs 商业版本配置
+      version: 5.1.18
+      auth:
+        token: 6101213cd5f6a2794df8c451e98c9b5740e852fb
+        name: gmi
+        base-url: http://35.201.150.247:8080
+        access-key: access-key
+        secret-key: secret-key
+        access-key2: access-key2
+        secret-key2: secret-key2
+    ce: # juicefs 开源版本配置
+      version: 1.2.0
+      meta-url: redis://10.10.10.10:8080
+      backend:
+        storage: oss
+        access-key: access-key
+        secret-key: secret-key
+---
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: juicefs-policy
+spec:
+  resourceSelectors:
+    - apiVersion: storage.karmada.io/v1alpha1
+      kind: Juicefs
+      name: jfs-asia-test
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - kubernetes
+  conflictResolution: Overwrite

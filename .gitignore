@@ -25,3 +25,15 @@ _output/
 # sub chart tgz
 charts/karmada/charts
 charts/karmada-operator/charts
+
+service-account.json
+bin/
+tmp.sh
+
+# ignore all files in tmp/
+tmp/*
+
+# ignore all files in tmp/
+tmp/*
+
+script.go

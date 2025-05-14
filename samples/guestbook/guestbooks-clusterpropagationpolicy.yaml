@@ -11,4 +11,4 @@ spec:
   placement:
     clusterAffinity:
       clusterNames:
-        - member1
+        - kubernetes
