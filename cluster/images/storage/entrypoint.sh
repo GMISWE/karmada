@@ -42,7 +42,7 @@ cleanup() {
   EXIT_FLAG=1
   
   # umount all mount points
-  nsenter -t 1 -m -u -i -n -p -- "$file" "umount" | tee -a $LOG_PATH || true
+  nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "umount" | tee -a $LOG_PATH || true
   
   # wait for background processes to finish
   wait 2>/dev/null || true
@@ -58,27 +58,26 @@ trap 'cleanup SIGHUP' HUP
 
 # handle file change
 handle_file_change() {
-  local file="$1"
-  # check $file version
-  local version=$(md5sum "$file" | awk '{print $1}')
+  # check $WATCH_PATH version
+  local version=$(md5sum "$WATCH_PATH" | awk '{print $1}')
   if [ "$version" = "$current_version" ]; then
-    log INFO "file version not changed: $file"
+    log INFO "file version not changed: $WATCH_PATH"
     return
   fi
   current_version=$version
 
-  log INFO "check storage script changed: $file"
+  log INFO "check storage script changed: $WATCH_PATH"
   
   # check file has execute permission
-  if [ ! -x "$file" ]; then
-    log INFO "add execute permission: $file"
-    chmod +x "$file"
+  if [ ! -x "$WATCH_PATH" ]; then
+    log INFO "add execute permission: $WATCH_PATH"
+    chmod +x "$WATCH_PATH"
   fi
   # execute file
-  log INFO "execute storage script: $file"
-  nsenter -t 1 -m -u -i -n -p -- chmod +x "$file"
-  nsenter -t 1 -m -u -i -n -p -- "$file" "mount" | tee -a $LOG_PATH || true
-  log INFO "storage script executed: $file"
+  log INFO "execute storage script: $WATCH_PATH"
+  nsenter -t 1 -m -u -i -n -p -- chmod +x "$WATCH_PATH"
+  nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "mount" | tee -a $LOG_PATH || true
+  log INFO "storage script executed: $WATCH_PATH"
 }
 
 # start file watcher
@@ -86,8 +85,8 @@ start_file_watcher() {
   log INFO "start watch: $WATCH_PATH"
   # start continuous monitoring process
   inotifywait -m -r -e modify --format '%w%f' "$WATCH_PATH" | while read file; do
-    if [ -f "$file" ]; then
-      handle_file_change "$file"
+    if [ -f "$WATCH_PATH" ]; then
+      handle_file_change "$WATCH_PATH"
     fi
   done &
 }

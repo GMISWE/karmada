@@ -26,8 +26,8 @@ import (
 )
 
 var (
-	cc         *containerd.ContainerdClient
-	containers = map[string]*containerd.Container{}
+	cc *containerd.ContainerdClient
+	// containers = map[string]*containerd.Container{}
 
 	STORAGE_K8S_NAMESPACE = util.GetEnv("GMI_STORAGE_K8S_NAMESPACE", "gmi-storage")
 	CONTAINERD_SOCKET     = util.GetEnv("CONTAINERD_SOCKET", "/run/containerd/containerd.sock")
@@ -79,14 +79,16 @@ func Watch(ctx context.Context, kubeClientSet kubernetes.Interface, dynamicClien
 			}
 		}
 		for name := range ctrs {
-			if storage, ok := storages[name]; !ok {
-				if err := storage.Unmount(); err != nil {
-					klog.Errorf("failed to unmount storage: %s", err.Error())
-					panic(fmt.Sprintf("failed to unmount storage: %s", err.Error()))
+			if _, ok := storages[name]; !ok {
+				klog.Infof("unmounting storage %s", name)
+				if err := cc.Delete(ctrs[name]); err != nil {
+					panic(fmt.Sprintf("failed to delete containerd container: %s", err.Error()))
 				}
+				ctrs[name].Cancel()
+				delete(ctrs, name)
+				klog.Infof("storage %s unmounted", name)
 			}
 		}
-
 	}
 	// check and update storages
 	checkAndUpdateStorages()

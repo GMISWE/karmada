@@ -369,7 +369,7 @@ func (c *ContainerdClient) Delete(container *Container) error {
 			}
 
 			// wait for container to stop
-			ctx, cancel := context.WithTimeout(nsCtx, 10*time.Second)
+			ctx, cancel := context.WithTimeout(nsCtx, 20*time.Second)
 			defer cancel()
 
 			statusC, err := task.Wait(ctx)
@@ -426,7 +426,10 @@ func (c *ContainerdClient) List(namespace string) (map[string]*Container, error)
 			status = statusResponse.Status
 		}
 		// TODO: add image
+		sctx, cancel := context.WithCancel(c.ctx)
 		ctrs[container.ID()] = &Container{
+			Ctx:       sctx,
+			Cancel:    cancel,
 			Namespace: namespace,
 			Image:     info.Image,
 			Name:      container.ID(),
@@ -437,6 +440,34 @@ func (c *ContainerdClient) List(namespace string) (map[string]*Container, error)
 	return ctrs, nil
 }
 
+func (c *ContainerdClient) Get(namespace, name string) (*Container, error) {
+	nsCtx := namespaces.WithNamespace(c.ctx, namespace)
+	container, err := c.client.LoadContainer(nsCtx, name)
+	if err != nil {
+		return nil, err
+	}
+	info, err := container.Info(nsCtx)
+	if err != nil {
+		return nil, err
+	}
+	task, err := container.Task(nsCtx, nil)
+	if err != nil {
+		return nil, err
+	}
+	status := containerd.Unknown
+	statusResponse, err := task.Status(nsCtx)
+	if err == nil {
+		status = statusResponse.Status
+	}
+	return &Container{
+		Namespace: namespace,
+		Image:     info.Image,
+		Name:      container.ID(),
+		Args:      []string{},
+		Status:    status,
+	}, nil
+}
+
 func (c *ContainerdClient) Restart(container *Container) error {
 	return nil
 }
@@ -445,7 +476,7 @@ func (c *ContainerdClient) Restart(container *Container) error {
 // 	return container.logs(f)
 // }
 
-// cleanupSnapshot 尝试删除快照
+// cleanupSnapshot try to remove snapshot
 func (c *ContainerdClient) cleanupSnapshot(ctx context.Context, name string) error {
 	snapshotter := c.client.SnapshotService("overlayfs")
 	if err := snapshotter.Remove(ctx, name); err != nil {
