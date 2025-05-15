@@ -150,6 +150,7 @@ func (c *Container) Logs(f func(line string)) error {
 	}
 	// if log watcher is already created, return
 	if c.LogWatcher != nil {
+		klog.Infof("log watcher for %s already created", c.LogPath)
 		return nil
 	}
 	klog.Infof("create log watcher for %s", c.LogPath)

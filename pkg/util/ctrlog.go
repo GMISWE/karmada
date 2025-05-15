@@ -53,7 +53,6 @@ func NewLogWatcher(ctx context.Context, filePath string, callback func(line stri
 	if err != nil {
 		return nil, fmt.Errorf("failed to add file watcher: %v", err)
 	}
-	klog.Infof("log watcher of %s started", filePath)
 	return &LogWatcher{
 		ctx:      ctx,
 		filePath: filePath,
@@ -70,7 +69,7 @@ func (f *LogWatcher) Watch() (err error) {
 	defer f.file.Close()
 	defer f.watcher.Close()
 
-	klog.Infof("log watcher of %s started, last size: %d", f.filePath, f.lastSize)
+	klog.Infof("log watcher of %s started", f.filePath)
 
 	// read last lines of file
 	if f.lastSize > 0 {
