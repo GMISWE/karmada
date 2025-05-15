@@ -208,6 +208,7 @@ func (c *ContainerdClient) Run(container *Container) error {
 	nsCtx := namespaces.WithNamespace(c.ctx, container.Namespace)
 	// check containerd is running
 	status, err := c.Status(container)
+	container.Status = status
 	if err != nil && !errdefs.IsNotFound(err) {
 		klog.Warningf("failed to check container status: %v", err)
 		// whether container exists, delete it
@@ -388,10 +389,9 @@ func (c *ContainerdClient) Delete(container *Container) error {
 		exitStatus, err := task.Delete(nsCtx, containerd.WithProcessKill)
 		if err != nil {
 			klog.Errorf("failed to delete task: %v", err)
-		} else {
-			klog.Infof("task %s exited with status %d", container.Name, exitStatus.ExitCode())
+			return err
 		}
-		klog.Infof("task %s deleted", container.Name)
+		klog.Infof("task %s deleted, exit code: %v", container.Name, exitStatus.ExitCode())
 	}
 	if err := ctr.Delete(nsCtx, containerd.WithSnapshotCleanup); err != nil {
 		return err
@@ -463,7 +463,6 @@ func (c *ContainerdClient) Get(namespace, name string) (*Container, error) {
 		Namespace: namespace,
 		Image:     info.Image,
 		Name:      container.ID(),
-		Args:      []string{},
 		Status:    status,
 	}, nil
 }

@@ -17,8 +17,6 @@ import (
 	kcontainerd "github.com/karmada-io/karmada/pkg/containerd"
 	"github.com/karmada-io/karmada/pkg/util"
 
-	"github.com/containerd/containerd"
-	"github.com/containerd/containerd/errdefs"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -26,18 +24,17 @@ import (
 )
 
 type Juicefs struct {
-	ctx context.Context
-	Storage
+	BaseStorage
 	*astorage.Juicefs
 }
 
 // JuiceFSMountConfig 包含挂载 JuiceFS 所需的配置参数
 type JuiceFSMountConfig struct {
 	MOUNT_POINT          string
+	STORAGE_PATH         string
 	JUICEFS_TOKEN        string
 	JUICEFS_NAME         string
 	MOUNT_OPTIONS        string
-	STORAGE_INIT         string
 	JUICEFS_CONSOLE_HOST string
 	JUICEFS_META_URL     string
 	JUICEFS_PATH         string
@@ -58,8 +55,10 @@ func NewJuicefsFromRuntimeObject(ctx context.Context, obj runtime.Object) (*Juic
 		return nil, fmt.Errorf("failed to convert unstructured to juicefs: %s", err.Error())
 	}
 	return &Juicefs{
-		ctx:     subctx,
 		Juicefs: juicefs,
+		BaseStorage: BaseStorage{
+			ctx: subctx,
+		},
 	}, nil
 }
 
@@ -76,42 +75,33 @@ func (j *Juicefs) Mount() error {
 	}
 	config := JuiceFSMountConfig{
 		MOUNT_OPTIONS:     strings.Join(jfsMountOptions, " "),
-		STORAGE_INIT:      "true",
 		MOUNT_POINT:       mountPoint,
 		JUICEFS_NAME:      j.Name,
 		JUICEFS_CACHE_DIR: j.Spec.Client.CacheDir,
 		JUICEFS_PATH:      fmt.Sprintf("%s/juicefs", kcontainerd.STORAGE_PATH),
+		STORAGE_PATH:      kcontainerd.STORAGE_PATH,
 	}
 	if j.Spec.Client.EE != nil {
 		config.JUICEFS_VERSION = j.Spec.Client.EE.Version
 		config.JUICEFS_CONSOLE_HOST = j.Spec.Client.EE.Auth.BaseURL
 		config.JUICEFS_TOKEN = j.Spec.Client.EE.Auth.Token
 	} else {
-		//TODO: implement open source version
 		config.JUICEFS_VERSION = j.Spec.Client.CE.Version
 		config.JUICEFS_META_URL = j.Spec.Client.CE.MetaURL
 		config.JUICEFS_ACCESS_KEY = j.Spec.Client.CE.Backend.AccessKey
 		config.JUICEFS_SECRET_KEY = j.Spec.Client.CE.Backend.SecretKey
 	}
-	container, err := cc.Get(CONTAINER_NAMESPACE, j.Name)
-	if err != nil && !errdefs.IsNotFound(err) {
-		klog.Errorf("failed to get containerd container: %s", err.Error())
-		return err
-	}
-	if container != nil {
-		config.STORAGE_INIT = "false"
-	}
 	if err := writeScript(j.Name, JUICEFS_MOUNT_SCRIPT, config); err != nil {
 		klog.Errorf("failed to write script file: %s", err.Error())
 		return err
 	}
-	if container == nil {
+	if j.container == nil {
 		// create storage path in host
 		if err := util.RunCommand(j.ctx, "nsenter", "-t", "1", "-m", "-u", "-n", "-i", "-p", "mkdir", "-p", kcontainerd.STORAGE_PATH); err != nil {
 			klog.Errorf("failed to create storage path: %s", err.Error())
 			return err
 		}
-		container = kcontainerd.NewContainer(j.ctx).
+		j.container = kcontainerd.NewContainer(j.ctx).
 			WithNamespace(CONTAINER_NAMESPACE).
 			WithName(j.Name).
 			WithPrivilege(true).
@@ -135,40 +125,29 @@ func (j *Juicefs) Mount() error {
 				fmt.Sprintf("WATCH_PATH=%s", fmt.Sprintf("%s/%s.sh", kcontainerd.STORAGE_PATH, j.Name)),
 				fmt.Sprintf("LOG_PATH=%s", fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name)),
 			}).
-			WithLogPath(fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name)).
-			WithStatus(containerd.Unknown)
-	}
-
-	if container.Status == containerd.Running || container.Status == containerd.Created {
-		klog.Infof("container %s already running, skip run", j.Name)
-		return nil
-	}
-
-	if err := cc.Run(container); err != nil {
-		klog.Errorf("failed to run containerd container: %s", err.Error())
-		cc.Delete(container)
-		return err
+			WithLogPath(fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name))
 	}
 	go func() {
-		container.Logs(func(line string) {
-			klog.Infof("storage %s logs: %s", j.Name, line)
+		if err := cc.Run(j.container); err != nil {
+			klog.Errorf("failed to run containerd container: %s", err.Error())
+			cc.Delete(j.container)
+			return
+		}
+		klog.Infof("container %s running, start log watcher", j.container.Name)
+		j.container.Logs(func(line string) {
+			klog.Infof("[%s] %s", j.Name, line)
 		})
 	}()
-	container.Status = containerd.Running
-	// wait for containerd container to be running
-	klog.Infof("container %s running", j.Name)
 	return nil
 }
 
 func (j *Juicefs) Unmount() error {
-	panic("not implemented")
-	// klog.Infof("unmounting storage %s", j.Name)
-	// if err := cc.Delete(containers[j.Name]); err != nil {
-	// 	klog.Errorf("failed to delete containerd container: %s", err.Error())
-	// 	return err
-	// }
-	// containers[j.Name].Cancel()
-	// delete(containers, j.Name)
-	// klog.Infof("storage %s unmounted", j.Name)
-	// return nil
+	klog.Infof("unmounting storage %s", j.Name)
+	if err := cc.Delete(j.container); err != nil {
+		klog.Errorf("failed to delete containerd container: %s", err.Error())
+		return err
+	}
+	j.container.Cancel()
+	klog.Infof("storage %s unmounted", j.Name)
+	return nil
 }

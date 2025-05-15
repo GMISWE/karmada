@@ -94,12 +94,18 @@ func run(ctx context.Context, opts *options.Options) error {
 	kubeClientSet := kubernetes.NewForConfigOrDie(restConfig)
 	// it is necessary to initialize the storage first to prevent the events from failing,
 	// which may lead to the inability to monitor the storage resources and thus miss the mounting.
-	if err := storage.Init(ctx, dynamicClientSet); err != nil {
+	gmiStorage := storage.NewGMIStorage(ctx, kubeClientSet, dynamicClientSet)
+	if err := gmiStorage.Init(ctx, dynamicClientSet); err != nil {
 		return fmt.Errorf("failed to initialize storage: %s", err.Error())
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	// start event watcher for storage
-	go storage.Watch(ctx, kubeClientSet, dynamicClientSet)
+	go func() {
+		if err := gmiStorage.Watch(ctx); err != nil {
+			klog.Errorf("failed to watch storage: %s", err.Error())
+			return
+		}
+	}()
 
 	<-signalChan
 	// kstorage.Exit()

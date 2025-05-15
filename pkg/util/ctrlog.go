@@ -29,7 +29,7 @@ type LogWatcher struct {
 }
 
 func NewLogWatcher(ctx context.Context, filePath string, callback func(line string)) (*LogWatcher, error) {
-	fileInfo, err := os.Stat(filePath)
+	_, err := os.Stat(filePath)
 	if err != nil {
 		klog.Errorf("failed to get file info: %v", err)
 		return nil, err
@@ -53,11 +53,12 @@ func NewLogWatcher(ctx context.Context, filePath string, callback func(line stri
 	if err != nil {
 		return nil, fmt.Errorf("failed to add file watcher: %v", err)
 	}
+	klog.Infof("log watcher of %s started", filePath)
 	return &LogWatcher{
 		ctx:      ctx,
 		filePath: filePath,
 		callback: callback,
-		lastSize: fileInfo.Size(),
+		lastSize: 0,
 		file:     file,
 		scanner:  scanner,
 		watcher:  watcher,
@@ -69,6 +70,8 @@ func (f *LogWatcher) Watch() (err error) {
 	defer f.file.Close()
 	defer f.watcher.Close()
 
+	klog.Infof("log watcher of %s started, last size: %d", f.filePath, f.lastSize)
+
 	// read last lines of file
 	if f.lastSize > 0 {
 		if err := f.readNewLines(); err != nil {
@@ -79,6 +82,7 @@ func (f *LogWatcher) Watch() (err error) {
 	for {
 		select {
 		case <-f.ctx.Done():
+			klog.Infof("log watcher of %s context done, exit", f.filePath)
 			return nil
 		case event := <-f.watcher.Events:
 			if event.Op&fsnotify.Write == fsnotify.Write {

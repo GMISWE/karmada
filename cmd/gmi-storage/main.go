@@ -18,6 +18,8 @@ package main
 
 import (
 	"os"
+	"runtime"
+	"strings"
 
 	"k8s.io/component-base/cli"
 	"k8s.io/klog/v2"
@@ -26,7 +28,30 @@ import (
 	"github.com/karmada-io/karmada/cmd/gmi-storage/app"
 )
 
+func panicHandler() {
+	if err := recover(); err != nil {
+		buf := make([]byte, 1<<16)
+		ss := runtime.Stack(buf, true)
+		msg := string(buf[:ss])
+		var bt []string
+		for _, row := range strings.Split(msg, "\n") {
+			if !strings.HasPrefix(row, "\t") {
+				continue
+			}
+			if strings.Contains(row, "main.") {
+				continue
+			}
+			if strings.Contains(row, "panic") {
+				continue
+			}
+			bt = append(bt, strings.TrimSpace(row))
+		}
+		klog.Errorf("panic: %v\n", strings.Join(bt, "\n"))
+	}
+}
+
 func main() {
+	defer panicHandler()
 	ctx := controllerruntime.SetupSignalHandler()
 	// Starting from version 0.15.0, controller-runtime expects its consumers to set a logger through log.SetLogger.
 	// If SetLogger is not called within the first 30 seconds of a binaries lifetime, it will get

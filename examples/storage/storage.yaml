@@ -30,7 +30,7 @@ spec:
     image: us-west1-docker.pkg.dev/devv-404803/public/storage:v0.0.1 # client 镜像
     cache-dir: /jfs-cache # 缓存目录
     mount-options: 
-      - cache-size=1024000
+      - cache-size=102400
     envs:                # 用 pod 的 env 类型
       - name: xx
         value: xxx

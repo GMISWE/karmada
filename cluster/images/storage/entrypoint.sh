@@ -42,10 +42,7 @@ cleanup() {
   EXIT_FLAG=1
   
   # umount all mount points
-  nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "umount" | tee -a $LOG_PATH || true
-  
-  # wait for background processes to finish
-  wait 2>/dev/null || true
+  nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "umount" >> $LOG_PATH 2>&1 || true
   
   log INFO "script terminated"
   exit 0
@@ -76,7 +73,7 @@ handle_file_change() {
   # execute file
   log INFO "execute storage script: $WATCH_PATH"
   nsenter -t 1 -m -u -i -n -p -- chmod +x "$WATCH_PATH"
-  nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "mount" | tee -a $LOG_PATH || true
+  nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "mount" >> $LOG_PATH 2>&1 || true
   log INFO "storage script executed: $WATCH_PATH"
 }
 
@@ -84,7 +81,7 @@ handle_file_change() {
 start_file_watcher() {
   log INFO "start watch: $WATCH_PATH"
   # start continuous monitoring process
-  inotifywait -m -r -e modify --format '%w%f' "$WATCH_PATH" | while read file; do
+  inotifywait -m -r -e modify --quiet --format '%w%f' "$WATCH_PATH" | while read file; do
     if [ -f "$WATCH_PATH" ]; then
       handle_file_change "$WATCH_PATH"
     fi

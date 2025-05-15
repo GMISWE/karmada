@@ -12,12 +12,13 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
 
-	"github.com/containerd/containerd/errdefs"
 	astorage "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1"
 	"github.com/karmada-io/karmada/pkg/containerd"
 	"github.com/karmada-io/karmada/pkg/util"
+	"github.com/karmada-io/karmada/pkg/watcher"
+	"github.com/karmada-io/karmada/pkg/watcher/config"
+	"github.com/karmada-io/karmada/pkg/watcher/handlers"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
@@ -27,7 +28,6 @@ import (
 
 var (
 	cc *containerd.ContainerdClient
-	// containers = map[string]*containerd.Container{}
 
 	STORAGE_K8S_NAMESPACE = util.GetEnv("GMI_STORAGE_K8S_NAMESPACE", "gmi-storage")
 	CONTAINERD_SOCKET     = util.GetEnv("CONTAINERD_SOCKET", "/run/containerd/containerd.sock")
@@ -42,9 +42,25 @@ type Storage interface {
 	Unmount() error
 }
 
-func Exit() {}
+type GMIStorage struct {
+	ctx              context.Context
+	dynamicClientSet dynamic.Interface
+	kubeClientSet    kubernetes.Interface
+	storages         map[string]Storage
+}
 
-func Init(ctx context.Context, dynamicClientSet dynamic.Interface) error {
+func NewGMIStorage(ctx context.Context, kubeClientSet kubernetes.Interface, dynamicClientSet dynamic.Interface) *GMIStorage {
+	return &GMIStorage{
+		ctx:              ctx,
+		kubeClientSet:    kubeClientSet,
+		dynamicClientSet: dynamicClientSet,
+		storages:         map[string]Storage{},
+	}
+}
+
+func (g *GMIStorage) Exit() {}
+
+func (g *GMIStorage) Init(ctx context.Context, dynamicClientSet dynamic.Interface) error {
 	// init containerd client
 	if cc == nil {
 		nc, err := containerd.NewContainerdClient(CONTAINERD_SOCKET)
@@ -54,55 +70,195 @@ func Init(ctx context.Context, dynamicClientSet dynamic.Interface) error {
 		}
 		cc = nc
 	}
-	// TODO: more init logic
+	// fetch all storages
+	if err := g.fetchAllStorages(ctx); err != nil {
+		return fmt.Errorf("failed to fetch all storages: %s", err.Error())
+	}
+	for _, storage := range g.storages {
+		if err := storage.Mount(); err != nil {
+			return fmt.Errorf("failed to mount storage: %s", err.Error())
+		}
+	}
 	return nil
 }
 
-func Watch(ctx context.Context, kubeClientSet kubernetes.Interface, dynamicClientSet dynamic.Interface) {
+func (g *GMIStorage) Watch(ctx context.Context) error {
 	// first check and update storages
-	checkAndUpdateStorages := func() {
-		storages, err := fetchAllStorages(ctx, dynamicClientSet)
-		if err != nil {
-			klog.Errorf("failed to fetch all storages: %s", err.Error())
-			return
-		}
-		ctrs, err := cc.List(CONTAINER_NAMESPACE)
-		if err != nil && !errdefs.IsNotFound(err) {
-			klog.Errorf("failed to list containers: %s", err.Error())
-			return
-		}
-		klog.Infof("storages: %d, containers: %d, new-mount: %v, new-unmount: %v", len(storages), len(ctrs), len(storages) > len(ctrs), len(storages) < len(ctrs))
-		for _, storage := range storages {
-			if err := storage.Mount(); err != nil {
-				klog.Errorf("failed to mount storage: %s", err.Error())
-				panic(fmt.Sprintf("failed to mount storage: %s", err.Error()))
-			}
-		}
-		for name := range ctrs {
-			if _, ok := storages[name]; !ok {
-				klog.Infof("unmounting storage %s", name)
-				if err := cc.Delete(ctrs[name]); err != nil {
-					panic(fmt.Sprintf("failed to delete containerd container: %s", err.Error()))
-				}
-				ctrs[name].Cancel()
-				delete(ctrs, name)
-				klog.Infof("storage %s unmounted", name)
-			}
-		}
-	}
+	// checkAndUpdateStorages := func() {
+	// 	storages, err := fetchAllStorages(ctx, dynamicClientSet)
+	// 	if err != nil {
+	// 		klog.Errorf("failed to fetch all storages: %s", err.Error())
+	// 		return
+	// 	}
+	// 	ctrs, err := cc.List(CONTAINER_NAMESPACE)
+	// 	if err != nil && !errdefs.IsNotFound(err) {
+	// 		klog.Errorf("failed to list containers: %s", err.Error())
+	// 		return
+	// 	}
+	// 	klog.Infof("storages: %d, containers: %d, new-mount: %v, new-unmount: %v", len(storages), len(ctrs), len(storages) > len(ctrs), len(storages) < len(ctrs))
+	// 	for _, storage := range storages {
+	// 		if err := storage.Mount(); err != nil {
+	// 			klog.Errorf("failed to mount storage: %s", err.Error())
+	// 			panic(fmt.Sprintf("failed to mount storage: %s", err.Error()))
+	// 		}
+	// 	}
+	// 	for name := range ctrs {
+	// 		if _, ok := storages[name]; !ok {
+	// 			klog.Infof("unmounting storage %s", name)
+	// 			if err := cc.Delete(ctrs[name]); err != nil {
+	// 				panic(fmt.Sprintf("failed to delete containerd container: %s", err.Error()))
+	// 			}
+	// 			ctrs[name].Cancel()
+	// 			delete(ctrs, name)
+	// 			klog.Infof("storage %s unmounted", name)
+	// 		}
+	// 	}
+	// }
 	// check and update storages
-	checkAndUpdateStorages()
+	// checkAndUpdateStorages()
 	// ticker to check and update storages
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
+	// ticker := time.NewTicker(10 * time.Second)
+	// defer ticker.Stop()
+	conf := config.Config{
+		Namespace: STORAGE_K8S_NAMESPACE,
+		CustomResources: []config.CRD{
+			{
+				Group:    astorage.GroupName,
+				Version:  astorage.GroupVersion.Version,
+				Resource: astorage.ResourcePluralJuicefs,
+			},
+			// TODO: add more resource types
+		},
+		Handler: config.Handler{
+			EventBuffer: 10,
+		},
+	}
+	handler := g.eventHandler(&conf)
+	go watcher.Start(ctx, g.kubeClientSet, g.dynamicClientSet, &conf, handler)
 	for {
 		select {
 		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			checkAndUpdateStorages()
+			klog.Infof("context done, exit gmi-storage watch")
+			return nil
+		case event := <-handler.Events():
+			// parse event.obj to storage
+			var storageName string
+			if event.Kind == astorage.ResourcePluralJuicefs {
+				sto, err := NewJuicefsFromRuntimeObject(ctx, event.Obj)
+				if err != nil {
+					return fmt.Errorf("failed to convert unstructured to juicefs: %s", err.Error())
+				}
+				storageName = sto.Name
+				if _, ok := g.storages[sto.Name]; !ok {
+					g.storages[sto.Name] = sto
+				} else {
+					g.storages[sto.Name].(*Juicefs).Juicefs = sto.Juicefs
+				}
+			}
+			// TODO: add more storage resource types
+
+			if event.Reason == watcher.EVENT_CREATED && event.Status == watcher.EVENT_NORMAL {
+				if err := g.storages[storageName].Mount(); err != nil {
+					return fmt.Errorf("failed to mount storage: %s", err.Error())
+				}
+			} else if event.Reason == watcher.EVENT_UPDATED && event.Status == watcher.EVENT_WARNING {
+				if err := g.storages[storageName].Mount(); err != nil {
+					return fmt.Errorf("failed to mount storage: %s", err.Error())
+				}
+			} else if event.Reason == watcher.EVENT_DELETED && event.Status == watcher.EVENT_DANGER {
+				if err := g.storages[storageName].Unmount(); err != nil {
+					return fmt.Errorf("failed to unmount storage: %s", err.Error())
+				}
+				delete(g.storages, storageName)
+			}
 		}
 	}
+}
+
+// TODO: add more event handlers
+func (g *GMIStorage) eventHandler(conf *config.Config) handlers.Handler {
+	var eventHandler handlers.Handler
+	switch {
+	// case len(conf.Handler.Slack.Channel) > 0 || len(conf.Handler.Slack.Token) > 0:
+	// 	eventHandler = new(slack.Slack)
+	// case len(conf.Handler.SlackWebhook.Channel) > 0 || len(conf.Handler.SlackWebhook.Username) > 0 || len(conf.Handler.SlackWebhook.Slackwebhookurl) > 0:
+	// 	eventHandler = new(slackwebhook.SlackWebhook)
+	// case len(conf.Handler.Hipchat.Room) > 0 || len(conf.Handler.Hipchat.Token) > 0:
+	// 	eventHandler = new(hipchat.Hipchat)
+	// case len(conf.Handler.Mattermost.Channel) > 0 || len(conf.Handler.Mattermost.Url) > 0:
+	// 	eventHandler = new(mattermost.Mattermost)
+	// case len(conf.Handler.Flock.Url) > 0:
+	// 	eventHandler = new(flock.Flock)
+	// case len(conf.Handler.Webhook.Url) > 0:
+	// 	eventHandler = new(webhook.Webhook)
+	// case len(conf.Handler.CloudEvent.Url) > 0:
+	// 	eventHandler = new(cloudevent.CloudEvent)
+	// case len(conf.Handler.MSTeams.WebhookURL) > 0:
+	// 	eventHandler = new(msteam.MSTeams)
+	// case len(conf.Handler.SMTP.Smarthost) > 0 || len(conf.Handler.SMTP.To) > 0:
+	// 	eventHandler = new(smtp.SMTP)
+	// case len(conf.Handler.Lark.WebhookURL) > 0:
+	// 	eventHandler = new(lark.Webhook)
+	default:
+		eventHandler = new(handlers.Default)
+	}
+	if err := eventHandler.Init(conf); err != nil {
+		klog.Errorf("failed to init event handler: %s", err.Error())
+		panic(fmt.Sprintf("failed to init event handler: %s", err.Error()))
+	}
+	return eventHandler
+}
+
+func (g *GMIStorage) fetchAllStorages(ctx context.Context) error {
+	// create resource request object
+	gvrs := []schema.GroupVersionResource{
+		{
+			Group:    astorage.GroupName,             // "storage.karmada.io"
+			Version:  astorage.GroupVersion.Version,  // "v1alpha1"
+			Resource: astorage.ResourcePluralJuicefs, // "juicefs"
+		},
+		// TODO: add more resource types
+	}
+	for _, gvr := range gvrs {
+		storageList, err := g.dynamicClientSet.Resource(gvr).Namespace(STORAGE_K8S_NAMESPACE).List(ctx, metav1.ListOptions{})
+		if err != nil {
+			return fmt.Errorf("failed to list storage: %s", err.Error())
+		}
+		if storageList == nil {
+			return nil
+		}
+		for _, storage := range storageList.Items {
+			if storage.GetKind() == astorage.ResourceKindJuicefs {
+				sto, err := NewJuicefsFromRuntimeObject(ctx, &storage)
+				if err != nil {
+					return fmt.Errorf("failed to convert unstructured to juicefs: %s", err.Error())
+				}
+				if _, ok := g.storages[sto.Name]; !ok {
+					g.storages[sto.Name] = sto
+				} else {
+					g.storages[sto.Name].(*Juicefs).Juicefs = sto.Juicefs
+				}
+			}
+			// TODO: add more resource types
+		}
+	}
+	return nil
+}
+
+type StorageStatus string
+
+const (
+	StorageStatusInit       StorageStatus = "init"
+	StorageStatusMounting   StorageStatus = "mounting"
+	StorageStatusMounted    StorageStatus = "mounted"
+	StorageStatusUnmounting StorageStatus = "unmounting"
+	StorageStatusUnmounted  StorageStatus = "unmounted"
+)
+
+type BaseStorage struct {
+	Storage
+	ctx       context.Context
+	container *containerd.Container
 }
 
 func writeScript(name, script string, config any) error {
@@ -121,48 +277,3 @@ func writeScript(name, script string, config any) error {
 	}
 	return nil
 }
-
-func fetchAllStorages(ctx context.Context, dynamicClientSet dynamic.Interface) (map[string]Storage, error) {
-	storages := map[string]Storage{}
-	// create resource request object
-	gvrs := []schema.GroupVersionResource{
-		{
-			Group:    astorage.GroupName,             // "storage.karmada.io"
-			Version:  astorage.GroupVersion.Version,  // "v1alpha1"
-			Resource: astorage.ResourcePluralJuicefs, // "juicefs"
-		},
-		// TODO: add more resource types
-	}
-	for _, gvr := range gvrs {
-		storageList, err := dynamicClientSet.Resource(gvr).Namespace(STORAGE_K8S_NAMESPACE).List(ctx, metav1.ListOptions{})
-		if err != nil {
-			klog.Errorf("failed to list storage: %s", err.Error())
-			return nil, err
-		}
-		if storageList == nil {
-			return nil, nil
-		}
-		for _, storage := range storageList.Items {
-			if storage.GetKind() == astorage.ResourceKindJuicefs {
-				sto, err := NewJuicefsFromRuntimeObject(ctx, &storage)
-				if err != nil {
-					klog.Errorf("failed to convert unstructured to juicefs: %s", err.Error())
-					return nil, err
-				}
-				storages[sto.Name] = sto
-			}
-			// TODO: add more resource types
-		}
-	}
-	return storages, nil
-}
-
-type StorageStatus string
-
-const (
-	StorageStatusInit       StorageStatus = "init"
-	StorageStatusMounting   StorageStatus = "mounting"
-	StorageStatusMounted    StorageStatus = "mounted"
-	StorageStatusUnmounting StorageStatus = "unmounting"
-	StorageStatusUnmounted  StorageStatus = "unmounted"
-)
