@@ -49,17 +49,19 @@ REGISTRY=${REGISTRY:-"docker.io/karmada"}
 VERSION=${VERSION:="unknown"}
 DOCKER_BUILD_ARGS=${DOCKER_BUILD_ARGS:-}
 SIGN_IMAGE=${SIGN_IMAGE:-"0"}
+OS=${OS:-"alpine"}
 
 function build_images() {
   local -r target=$1
   local -r output_type=${OUTPUT_TYPE:-docker}
   local platforms="${BUILD_PLATFORMS:-"$(util:host_platform)"}"
+  local os=$2
 
   # Preferentially use `docker build`. If we are building multi platform,
   # or cross building, change to `docker buildx build`
   cross=$(isCross "${platforms}")
   if [[ "${cross}" == "true" ]]; then
-    build_cross_image "${output_type}" "${target}" "${platforms}"
+    build_cross_image "${output_type}" "${target}" "${platforms}" 
   else
     build_local_image "${output_type}" "${target}" "${platforms}"
   fi
@@ -77,7 +79,7 @@ function build_local_image() {
   docker build --build-arg BINARY="${target}" \
           ${DOCKER_BUILD_ARGS} \
           --tag "${image_name}" \
-          --file "${REPO_ROOT}/cluster/images/Dockerfile" \
+          --file "${REPO_ROOT}/cluster/images/${OS}.Dockerfile" \
           "${REPO_ROOT}/_output/bin/${platform}"
   set +x
 

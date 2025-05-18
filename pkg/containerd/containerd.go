@@ -34,29 +34,29 @@ var (
 )
 
 type Auth struct {
+	GCPCredentials   string
 	Username         string
 	Password         string
 	InsecureRegistry bool
 }
 
 type Container struct {
-	Ctx            context.Context
-	Cancel         context.CancelFunc
-	Namespace      string
-	Image          string
-	Name           string
-	Args           []string
-	Envs           []string
-	User           string
-	Resources      *specs.LinuxResources
-	Privilege      bool
-	Status         containerd.ProcessStatus
-	LogPath        string
-	Mounts         []specs.Mount
-	WorkDir        string
-	Auth           *Auth
-	GCPCredentials string
-	LogWatcher     *util.LogWatcher
+	Ctx        context.Context
+	Cancel     context.CancelFunc
+	Namespace  string
+	Image      string
+	Name       string
+	Args       []string
+	Envs       []string
+	User       string
+	Resources  *specs.LinuxResources
+	Privilege  bool
+	Status     containerd.ProcessStatus
+	LogPath    string
+	Mounts     []specs.Mount
+	WorkDir    string
+	Auth       *Auth
+	LogWatcher *util.LogWatcher
 }
 
 func NewContainer(ctx context.Context) *Container {
@@ -110,11 +110,6 @@ func (c *Container) WithPrivilege(privilege bool) *Container {
 
 func (c *Container) WithLogPath(logPath string) *Container {
 	c.LogPath = logPath
-	return c
-}
-
-func (c *Container) WithGCPCredentials(gcpCredentials string) *Container {
-	c.GCPCredentials = gcpCredentials
 	return c
 }
 
@@ -234,9 +229,9 @@ func (c *ContainerdClient) Run(container *Container) error {
 		func() containerd.RemoteOpt {
 			return containerd.WithResolver(docker.NewResolver(docker.ResolverOptions{
 				Credentials: func(host string) (string, string, error) {
-					if container.GCPCredentials != "" &&
+					if container.Auth != nil && container.Auth.GCPCredentials != "" &&
 						(host == "gcr.io" || host == "us.gcr.io" || host == "eu.gcr.io" || host == "asia.gcr.io" || strings.Contains(host, ".pkg.dev")) {
-						return "_json_key", container.GCPCredentials, nil
+						return "_json_key", container.Auth.GCPCredentials, nil
 					} else if container.Auth != nil {
 						return container.Auth.Username, container.Auth.Password, nil
 					}
@@ -300,9 +295,7 @@ func (c *ContainerdClient) Run(container *Container) error {
 	}
 
 	// create task before creating container
-	ioCreator := cio.NewCreator(
-		cio.WithStdio,
-	)
+	ioCreator := cio.NewCreator()
 	// set container creation options
 	opts := []containerd.NewContainerOpts{
 		containerd.WithImage(image),

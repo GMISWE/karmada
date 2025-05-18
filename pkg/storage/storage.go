@@ -12,10 +12,12 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	astorage "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1"
 	"github.com/karmada-io/karmada/pkg/containerd"
 	"github.com/karmada-io/karmada/pkg/util"
+	"github.com/karmada-io/karmada/pkg/util/exec"
 	"github.com/karmada-io/karmada/pkg/watcher"
 	"github.com/karmada-io/karmada/pkg/watcher/config"
 	"github.com/karmada-io/karmada/pkg/watcher/handlers"
@@ -35,9 +37,11 @@ var (
 	RETRY_COUNT           = util.GetEnv("GMI_STORAGE_RETRY_COUNT", "3")
 	CONTAINER_NAMESPACE   = util.GetEnv("GMI_STORAGE_CONTAINER_NAMESPACE", "gmicloud.ai")
 	STORAGE_IMAGE         = util.GetEnv("GMI_STORAGE_IMAGE", "us-west1-docker.pkg.dev/devv-404803/public/storage:v0.0.1")
+	ENCRYPT_KEY           = util.GetEnv("GMI_STORAGE_ENCRYPT_KEY", "uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl")
 )
 
 type Storage interface {
+	Validate() error
 	Mount() error
 	Unmount() error
 }
@@ -83,42 +87,6 @@ func (g *GMIStorage) Init(ctx context.Context, dynamicClientSet dynamic.Interfac
 }
 
 func (g *GMIStorage) Watch(ctx context.Context) error {
-	// first check and update storages
-	// checkAndUpdateStorages := func() {
-	// 	storages, err := fetchAllStorages(ctx, dynamicClientSet)
-	// 	if err != nil {
-	// 		klog.Errorf("failed to fetch all storages: %s", err.Error())
-	// 		return
-	// 	}
-	// 	ctrs, err := cc.List(CONTAINER_NAMESPACE)
-	// 	if err != nil && !errdefs.IsNotFound(err) {
-	// 		klog.Errorf("failed to list containers: %s", err.Error())
-	// 		return
-	// 	}
-	// 	klog.Infof("storages: %d, containers: %d, new-mount: %v, new-unmount: %v", len(storages), len(ctrs), len(storages) > len(ctrs), len(storages) < len(ctrs))
-	// 	for _, storage := range storages {
-	// 		if err := storage.Mount(); err != nil {
-	// 			klog.Errorf("failed to mount storage: %s", err.Error())
-	// 			panic(fmt.Sprintf("failed to mount storage: %s", err.Error()))
-	// 		}
-	// 	}
-	// 	for name := range ctrs {
-	// 		if _, ok := storages[name]; !ok {
-	// 			klog.Infof("unmounting storage %s", name)
-	// 			if err := cc.Delete(ctrs[name]); err != nil {
-	// 				panic(fmt.Sprintf("failed to delete containerd container: %s", err.Error()))
-	// 			}
-	// 			ctrs[name].Cancel()
-	// 			delete(ctrs, name)
-	// 			klog.Infof("storage %s unmounted", name)
-	// 		}
-	// 	}
-	// }
-	// check and update storages
-	// checkAndUpdateStorages()
-	// ticker to check and update storages
-	// ticker := time.NewTicker(10 * time.Second)
-	// defer ticker.Stop()
 	conf := config.Config{
 		Namespace: STORAGE_K8S_NAMESPACE,
 		CustomResources: []config.CRD{
@@ -145,7 +113,7 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 			var storageName string
 			if event.Kind == astorage.ResourcePluralJuicefs {
 				sto, err := NewJuicefsFromRuntimeObject(ctx, event.Obj)
-				if err != nil {
+				if err != nil && !IsCrdDefineError(err) {
 					return fmt.Errorf("failed to convert unstructured to juicefs: %s", err.Error())
 				}
 				storageName = sto.Name
@@ -156,7 +124,6 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 				}
 			}
 			// TODO: add more storage resource types
-
 			if event.Reason == watcher.EVENT_CREATED && event.Status == watcher.EVENT_NORMAL {
 				if err := g.storages[storageName].Mount(); err != nil {
 					return fmt.Errorf("failed to mount storage: %s", err.Error())
@@ -230,7 +197,7 @@ func (g *GMIStorage) fetchAllStorages(ctx context.Context) error {
 		for _, storage := range storageList.Items {
 			if storage.GetKind() == astorage.ResourceKindJuicefs {
 				sto, err := NewJuicefsFromRuntimeObject(ctx, &storage)
-				if err != nil {
+				if err != nil && !IsCrdDefineError(err) {
 					return fmt.Errorf("failed to convert unstructured to juicefs: %s", err.Error())
 				}
 				if _, ok := g.storages[sto.Name]; !ok {
@@ -276,4 +243,27 @@ func writeScript(name, script string, config any) error {
 		return err
 	}
 	return nil
+}
+
+func dryRun(ctx context.Context, name, script string, config any) error {
+	script, err := util.GenerateTemplate(script, name, config)
+	if err != nil {
+		return err
+	}
+	klog.Infof("dry run script: \n%s", script)
+	scriptFile := fmt.Sprintf("/tmp/%s.sh", name)
+	if err := os.WriteFile(scriptFile, []byte(script), 0755); err != nil {
+		return fmt.Errorf("failed to write script: %s", err.Error())
+	}
+	if err := exec.ExecLinuxCmd(ctx, scriptFile, []string{"dry-run"}, "[dry-run] "); err != nil {
+		return fmt.Errorf("failed to dry run script: %s", err.Error())
+	}
+	if err := os.Remove(scriptFile); err != nil {
+		return fmt.Errorf("failed to remove script: %s", err.Error())
+	}
+	return nil
+}
+
+func IsCrdDefineError(err error) bool {
+	return strings.Contains(err.Error(), "crd define error: ")
 }

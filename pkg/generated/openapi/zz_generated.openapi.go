@@ -152,15 +152,19 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/search/v1alpha1.ResourceRegistryStatus":                      schema_pkg_apis_search_v1alpha1_ResourceRegistryStatus(ref),
 		"github.com/karmada-io/karmada/pkg/apis/search/v1alpha1.ResourceSelector":                            schema_pkg_apis_search_v1alpha1_ResourceSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/search/v1alpha1.Search":                                      schema_pkg_apis_search_v1alpha1_Search(ref),
-		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.BackendConfig":                              schema_pkg_apis_storage_v1alpha1_BackendConfig(ref),
+		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.AkSk":                                       schema_pkg_apis_storage_v1alpha1_AkSk(ref),
+		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Auth":                                       schema_pkg_apis_storage_v1alpha1_Auth(ref),
+		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Azure":                                      schema_pkg_apis_storage_v1alpha1_Azure(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.CommunityEdition":                           schema_pkg_apis_storage_v1alpha1_CommunityEdition(ref),
-		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseAuth":                             schema_pkg_apis_storage_v1alpha1_EnterpriseAuth(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseEdition":                          schema_pkg_apis_storage_v1alpha1_EnterpriseEdition(ref),
+		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.GCP":                                        schema_pkg_apis_storage_v1alpha1_GCP(ref),
+		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Harbor":                                     schema_pkg_apis_storage_v1alpha1_Harbor(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Juicefs":                                    schema_pkg_apis_storage_v1alpha1_Juicefs(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsClient":                              schema_pkg_apis_storage_v1alpha1_JuicefsClient(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsList":                                schema_pkg_apis_storage_v1alpha1_JuicefsList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsSpec":                                schema_pkg_apis_storage_v1alpha1_JuicefsSpec(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsStatus":                              schema_pkg_apis_storage_v1alpha1_JuicefsStatus(ref),
+		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Labor":                                      schema_pkg_apis_storage_v1alpha1_Labor(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Location":                                   schema_pkg_apis_storage_v1alpha1_Location(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.MountInfo":                                  schema_pkg_apis_storage_v1alpha1_MountInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Provider":                                   schema_pkg_apis_storage_v1alpha1_Provider(ref),
@@ -5997,19 +6001,13 @@ func schema_pkg_apis_search_v1alpha1_Search(ref common.ReferenceCallback) common
 	}
 }
 
-func schema_pkg_apis_storage_v1alpha1_BackendConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_storage_v1alpha1_AkSk(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "BackendConfig defines backend storage configuration for JuiceFS community edition",
+				Description: "AkSk defines configuration for JuiceFS oss",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"storage": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
 					"access-key": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -6023,6 +6021,83 @@ func schema_pkg_apis_storage_v1alpha1_BackendConfig(ref common.ReferenceCallback
 						},
 					},
 				},
+				Required: []string{"access-key", "secret-key"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storage_v1alpha1_Auth(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Auth represents the authentication configuration for a JuiceFS storage resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gcp": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.GCP"),
+						},
+					},
+					"oss": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.AkSk"),
+						},
+					},
+					"azure": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Azure"),
+						},
+					},
+					"aliyun": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.AkSk"),
+						},
+					},
+					"aws": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.AkSk"),
+						},
+					},
+					"docker": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Harbor"),
+						},
+					},
+					"harbor": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Harbor"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.AkSk", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Azure", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.GCP", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Harbor"},
+	}
+}
+
+func schema_pkg_apis_storage_v1alpha1_Azure(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Azure represents the Azure configuration for a JuiceFS storage resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"service-principal-id": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"service-principal-secret": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"service-principal-id", "service-principal-secret"},
 			},
 		},
 	}
@@ -6049,68 +6124,12 @@ func schema_pkg_apis_storage_v1alpha1_CommunityEdition(ref common.ReferenceCallb
 					},
 					"backend": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.BackendConfig"),
-						},
-					},
-				},
-			},
-		},
-		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.BackendConfig"},
-	}
-}
-
-func schema_pkg_apis_storage_v1alpha1_EnterpriseAuth(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Description: "EnterpriseAuth defines authentication details for JuiceFS enterprise edition",
-				Type:        []string{"object"},
-				Properties: map[string]spec.Schema{
-					"token": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"name": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"base-url": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"access-key": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"secret-key": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"access-key2": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"secret-key2": {
-						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",
 						},
 					},
 				},
+				Required: []string{"version", "meta-url", "backend"},
 			},
 		},
 	}
@@ -6129,17 +6148,91 @@ func schema_pkg_apis_storage_v1alpha1_EnterpriseEdition(ref common.ReferenceCall
 							Format: "",
 						},
 					},
-					"auth": {
+					"console-web": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseAuth"),
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"token": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"backend": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"version", "console-web", "token"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storage_v1alpha1_GCP(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GCP represents the GCP configuration for a JuiceFS storage resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"service-account-credentials": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"application-default-credentials": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
 						},
 					},
 				},
 			},
 		},
-		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseAuth"},
+	}
+}
+
+func schema_pkg_apis_storage_v1alpha1_Harbor(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Harbor represents the Harbor configuration for a JuiceFS storage resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"username": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"password": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"url": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"insecure": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"username", "password", "url"},
+			},
+		},
 	}
 }
 
@@ -6197,12 +6290,6 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsClient(ref common.ReferenceCallback
 				Description: "JuicefsClient defines the configuration for JuiceFS client",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"image": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
 					"cache-dir": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -6223,51 +6310,6 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsClient(ref common.ReferenceCallback
 							},
 						},
 					},
-					"envs": {
-						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("k8s.io/api/core/v1.EnvVar"),
-									},
-								},
-							},
-						},
-					},
-					"volumes": {
-						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("k8s.io/api/core/v1.Volume"),
-									},
-								},
-							},
-						},
-					},
-					"volumeMounts": {
-						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("k8s.io/api/core/v1.VolumeMount"),
-									},
-								},
-							},
-						},
-					},
-					"resources": {
-						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("k8s.io/api/core/v1.ResourceRequirements"),
-						},
-					},
 					"ee": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseEdition"),
@@ -6279,10 +6321,11 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsClient(ref common.ReferenceCallback
 						},
 					},
 				},
+				Required: []string{"cache-dir"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.CommunityEdition", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseEdition", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.Volume", "k8s.io/api/core/v1.VolumeMount"},
+			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.CommunityEdition", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.EnterpriseEdition"},
 	}
 }
 
@@ -6350,14 +6393,12 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsSpec(ref common.ReferenceCallback) 
 					},
 					"location": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Location"),
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Location"),
 						},
 					},
 					"provider": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Provider"),
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Provider"),
 						},
 					},
 					"public": {
@@ -6368,15 +6409,40 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsSpec(ref common.ReferenceCallback) 
 					},
 					"client": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsClient"),
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsClient"),
+						},
+					},
+					"settings": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"labor": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Labor"),
+						},
+					},
+					"auth": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Auth"),
 						},
 					},
 				},
+				Required: []string{"provider", "client", "labor", "auth"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsClient", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Location", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Provider"},
+			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Auth", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.JuicefsClient", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Labor", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Location", "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Provider"},
 	}
 }
 
@@ -6417,6 +6483,53 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsStatus(ref common.ReferenceCallback
 		},
 		Dependencies: []string{
 			"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.MountInfo", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
+func schema_pkg_apis_storage_v1alpha1_Labor(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Labor represents the labor configuration for a JuiceFS storage resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"image": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"run-script": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources corev1.ResourceRequirements `json:\"resources,omitempty\"`",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"repo": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"envs": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"image", "run-script", "repo"},
+			},
+		},
 	}
 }
 
@@ -6499,6 +6612,7 @@ func schema_pkg_apis_storage_v1alpha1_Provider(ref common.ReferenceCallback) com
 						},
 					},
 				},
+				Required: []string{"id", "name"},
 			},
 		},
 	}

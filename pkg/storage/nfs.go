@@ -8,11 +8,9 @@
 
 package storage
 
-import "context"
-
 type NFS struct {
+	BaseStorage
 	Storage
-	ctx context.Context
 }
 
 func (n *NFS) Mount() error {
@@ -20,5 +18,9 @@ func (n *NFS) Mount() error {
 }
 
 func (n *NFS) Unmount() error {
+	panic("not implemented")
+}
+
+func (n *NFS) Validate() error {
 	panic("not implemented")
 }

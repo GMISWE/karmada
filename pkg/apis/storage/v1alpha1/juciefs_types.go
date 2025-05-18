@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -27,11 +26,85 @@ type Juicefs struct {
 
 // JuicefsSpec defines the specification for a JuiceFS storage resource
 type JuicefsSpec struct {
-	Description string        `json:"description,omitempty"`
-	Location    Location      `json:"location,omitempty"`
-	Provider    Provider      `json:"provider,omitempty"`
-	Public      string        `json:"public,omitempty"`
-	Client      JuicefsClient `json:"client,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Location    *Location `json:"location,omitempty"`
+	// +required
+	Provider *Provider `json:"provider,omitempty"`
+	Public   string    `json:"public,omitempty"`
+	// +required
+	Client   *JuicefsClient    `json:"client,omitempty"`
+	Settings map[string]string `json:"settings,omitempty"`
+	// +required
+	Labor *Labor `json:"labor,omitempty"`
+	// +required
+	Auth *Auth `json:"auth,omitempty"`
+}
+
+// Auth represents the authentication configuration for a JuiceFS storage resource
+type Auth struct {
+	// +optional
+	GCP *GCP `json:"gcp,omitempty"`
+	// +optional
+	OSS *AkSk `json:"oss,omitempty"`
+	// +optional
+	Azure *Azure `json:"azure,omitempty"`
+	// +optional
+	Aliyun *AkSk `json:"aliyun,omitempty"`
+	// +optional
+	Aws *AkSk `json:"aws,omitempty"`
+	// +optional
+	Docker *Harbor `json:"docker,omitempty"`
+	// +optional
+	Harbor *Harbor `json:"harbor,omitempty"`
+}
+
+// Labor represents the labor configuration for a JuiceFS storage resource
+type Labor struct {
+	// +required
+	Image string `json:"image,omitempty"`
+	// Resources corev1.ResourceRequirements `json:"resources,omitempty"`
+	// +required
+	RunScript string `json:"run-script,omitempty"`
+	// +required
+	Repo string `json:"repo,omitempty"`
+	// +optional
+	Envs []string `json:"envs,omitempty"`
+}
+
+// GCP represents the GCP configuration for a JuiceFS storage resource
+type GCP struct {
+	// +optional
+	ServiceAccountCredentials string `json:"service-account-credentials,omitempty"`
+	// +optional
+	ApplicationDefaultCredentials string `json:"application-default-credentials,omitempty"`
+}
+
+// AkSk defines configuration for JuiceFS oss
+type AkSk struct {
+	// +required
+	AccessKey string `json:"access-key,omitempty"`
+	// +required
+	SecretKey string `json:"secret-key,omitempty"`
+}
+
+// Azure represents the Azure configuration for a JuiceFS storage resource
+type Azure struct {
+	// +required
+	ServicePrincipalID string `json:"service-principal-id,omitempty"`
+	// +required
+	ServicePrincipalSecret string `json:"service-principal-secret,omitempty"`
+}
+
+// Harbor represents the Harbor configuration for a JuiceFS storage resource
+type Harbor struct {
+	// +required
+	Username string `json:"username,omitempty"`
+	// +required
+	Password string `json:"password,omitempty"`
+	// +required
+	URL string `json:"url,omitempty"`
+	// +optional
+	Insecure bool `json:"insecure,omitempty"`
 }
 
 // Location represents the storage location
@@ -42,52 +115,43 @@ type Location struct {
 
 // Provider represents the storage provider information
 type Provider struct {
-	ID   string `json:"id,omitempty"`
+	// +required
+	ID string `json:"id,omitempty"`
+	// +required
 	Name string `json:"name,omitempty"`
 }
 
 // JuicefsClient defines the configuration for JuiceFS client
 type JuicefsClient struct {
-	Image        string                      `json:"image,omitempty"`
-	CacheDir     string                      `json:"cache-dir,omitempty"`
-	MountOptions []string                    `json:"mount-options,omitempty"`
-	Envs         []corev1.EnvVar             `json:"envs,omitempty"`
-	Volumes      []corev1.Volume             `json:"volumes,omitempty"`
-	VolumeMounts []corev1.VolumeMount        `json:"volumeMounts,omitempty"`
-	Resources    corev1.ResourceRequirements `json:"resources,omitempty"`
-	EE           *EnterpriseEdition          `json:"ee,omitempty"`
-	CE           *CommunityEdition           `json:"ce,omitempty"`
+	// +required
+	CacheDir     string   `json:"cache-dir,omitempty"`
+	MountOptions []string `json:"mount-options,omitempty"`
+	// +optional
+	EE *EnterpriseEdition `json:"ee,omitempty"`
+	// +optional
+	CE *CommunityEdition `json:"ce,omitempty"`
 }
 
 // EnterpriseEdition defines configuration for JuiceFS enterprise edition
 type EnterpriseEdition struct {
-	Version string         `json:"version,omitempty"`
-	Auth    EnterpriseAuth `json:"auth,omitempty"`
-}
-
-// EnterpriseAuth defines authentication details for JuiceFS enterprise edition
-type EnterpriseAuth struct {
-	Token      string `json:"token,omitempty"`
-	Name       string `json:"name,omitempty"`
-	BaseURL    string `json:"base-url,omitempty"`
-	AccessKey  string `json:"access-key,omitempty"`
-	SecretKey  string `json:"secret-key,omitempty"`
-	AccessKey2 string `json:"access-key2,omitempty"`
-	SecretKey2 string `json:"secret-key2,omitempty"`
+	// +required
+	Version string `json:"version,omitempty"`
+	// +required
+	ConsoleWeb string `json:"console-web,omitempty"`
+	// +required
+	Token string `json:"token,omitempty"`
+	// +optional
+	Backend string `json:"backend,omitempty"`
 }
 
 // CommunityEdition defines configuration for JuiceFS community edition
 type CommunityEdition struct {
-	Version string        `json:"version,omitempty"`
-	MetaURL string        `json:"meta-url,omitempty"`
-	Backend BackendConfig `json:"backend,omitempty"`
-}
-
-// BackendConfig defines backend storage configuration for JuiceFS community edition
-type BackendConfig struct {
-	Storage   string `json:"storage,omitempty"`
-	AccessKey string `json:"access-key,omitempty"`
-	SecretKey string `json:"secret-key,omitempty"`
+	// +required
+	Version string `json:"version,omitempty"`
+	// +required
+	MetaURL string `json:"meta-url,omitempty"`
+	// +required
+	Backend string `json:"backend,omitempty"`
 }
 
 // JuicefsStatus defines the observed state of JuiceFS resource

@@ -1,0 +1,41 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: ClusterPropagationPolicy
+metadata:
+  name: gmi-storage-clusterpropagationpolicy
+spec:
+  resourceSelectors:
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      name: gmi-storage
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      name: gmi-storage
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - kubernetes
+  conflictResolution: Overwrite
+
+---
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: gmi-storage-propagationpolicy
+spec:
+  resourceSelectors:
+    - apiVersion: v1
+      kind: Secret
+      name: gcp-secret
+    - apiVersion: v1
+      kind: ServiceAccount
+      name: gmi-storage
+    - apiVersion: apps/v1
+      kind: DaemonSet
+      name: gmi-storage
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - kubernetes
+  conflictResolution: Overwrite
+
+

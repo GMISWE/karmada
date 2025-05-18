@@ -25,10 +25,10 @@ log() {
   local reset="\033[0m"
   
   case "$level" in
-    INFO)  color="\033[0;32m" ;; # 绿色
-    WARN)  color="\033[0;33m" ;; # 黄色
-    ERROR) color="\033[0;31m" ;; # 红色
-    *)     color="\033[0m"    ;; # 默认
+    INFO)  color="\033[0;32m" ;; # green
+    WARN)  color="\033[0;33m" ;; # yellow
+    ERROR) color="\033[0;31m" ;; # red
+    *)     color="\033[0m"    ;; # default
   esac
   
   # output to console (with color) and log file (without color)
@@ -109,7 +109,7 @@ main() {
 
   while [ $EXIT_FLAG -eq 0 ]; do
     log INFO "waiting for exit signal..."
-    sleep 10
+    sleep 60
   done
 }
 

@@ -18,7 +18,8 @@ TARGETS := karmada-aggregated-apiserver \
 			karmada-interpreter-webhook-example \
 			karmada-search \
 			karmada-operator \
-			karmada-metrics-adapter
+			karmada-metrics-adapter \
+			gmi-storage
 
 CTL_TARGETS := karmadactl kubectl-karmada
 
@@ -58,7 +59,7 @@ $(IMAGE_TARGET):
 	set -e;\
 	target=$$(echo $(subst image-,,$@));\
 	make $$target GOOS=linux;\
-	VERSION=$(VERSION) REGISTRY=$(REGISTRY) BUILD_PLATFORMS=linux/$(GOARCH) hack/docker.sh $$target
+	VERSION=$(VERSION) REGISTRY=$(REGISTRY) BUILD_PLATFORMS=linux/$(GOARCH) hack/docker.sh $$target alpine
 
 images: $(IMAGE_TARGET)
 
