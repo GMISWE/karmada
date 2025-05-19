@@ -14,6 +14,8 @@ spec:
     clusterAffinity:
       clusterNames:
         - kubernetes
+        - gmi-tot
+        - storage-test1
   conflictResolution: Overwrite
 
 ---
@@ -36,6 +38,8 @@ spec:
     clusterAffinity:
       clusterNames:
         - kubernetes
+        - gmi-tot
+        - storage-test1
   conflictResolution: Overwrite
 
 

@@ -24,7 +24,7 @@ spec:
         runAsGroup: 0
       containers:
         - name: gmi-storage
-          image: us-west1-docker.pkg.dev/devv-404803/public/gmi-storage:v1.13.1-4-gb5165a99b-dirty
+          image: us-west1-docker.pkg.dev/devv-404803/public/gmi-storage:v1.13.1-5-gb1ff6f663-dirty
           imagePullPolicy: Always
           securityContext:
             privileged: true
@@ -40,9 +40,6 @@ spec:
             - name: containerd-socket
               mountPath: /var/run/containerd/containerd.sock
               readOnly: true
-            - name: containerd-config
-              mountPath: /etc/containerd/config.toml
-              readOnly: true
             - name: var-lib-containerd
               mountPath: /var/lib/containerd
               readOnly: false
@@ -54,15 +51,11 @@ spec:
           hostPath:
             path: /var/run/containerd/containerd.sock
             type: Socket
-        - name: containerd-config
-          hostPath:
-            path: /etc/containerd/config.toml
-            type: File
         - name: var-lib-containerd
           hostPath:
             path: /var/lib/containerd
-            type: Directory
+            type: DirectoryOrCreate
         - name: var-lib-gmi-storage
           hostPath:
             path: /var/lib/gmi.storage
-            type: Directory
+            type: DirectoryOrCreate

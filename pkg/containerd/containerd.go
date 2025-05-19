@@ -200,6 +200,11 @@ func (c *ContainerdClient) Status(container *Container) (containerd.ProcessStatu
 	return status.Status, nil
 }
 
+// WithNullIO return a creator that redirect standard I/O to /dev/null
+func WithNullIO() cio.Creator {
+	return cio.NullIO
+}
+
 func (c *ContainerdClient) Run(container *Container) error {
 	nsCtx := namespaces.WithNamespace(c.ctx, container.Namespace)
 	// check containerd is running
@@ -230,7 +235,8 @@ func (c *ContainerdClient) Run(container *Container) error {
 			return containerd.WithResolver(docker.NewResolver(docker.ResolverOptions{
 				Credentials: func(host string) (string, string, error) {
 					if container.Auth != nil && container.Auth.GCPCredentials != "" &&
-						(host == "gcr.io" || host == "us.gcr.io" || host == "eu.gcr.io" || host == "asia.gcr.io" || strings.Contains(host, ".pkg.dev")) {
+						(host == "gcr.io" || host == "us.gcr.io" || host == "eu.gcr.io" ||
+							host == "asia.gcr.io" || strings.Contains(host, ".pkg.dev")) {
 						return "_json_key", container.Auth.GCPCredentials, nil
 					} else if container.Auth != nil {
 						return container.Auth.Username, container.Auth.Password, nil
@@ -295,7 +301,7 @@ func (c *ContainerdClient) Run(container *Container) error {
 	}
 
 	// create task before creating container
-	ioCreator := cio.NewCreator()
+	ioCreator := WithNullIO()
 	// set container creation options
 	opts := []containerd.NewContainerOpts{
 		containerd.WithImage(image),
