@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/karmada-io/karmada/cmd/gminit/app/options"
+	"github.com/karmada-io/karmada/cmd/gmi-operator/app/options"
 	"github.com/karmada-io/karmada/pkg/sharedcli/klogflag"
 	"github.com/karmada-io/karmada/pkg/sharedcli/profileflag"
 	"github.com/karmada-io/karmada/pkg/util/names"

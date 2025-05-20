@@ -23,7 +23,7 @@ import (
 	"k8s.io/klog/v2"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 
-	"github.com/karmada-io/karmada/cmd/gminit/app"
+	"github.com/karmada-io/karmada/cmd/gmi-operator/app"
 )
 
 func main() {

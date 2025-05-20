@@ -13,7 +13,6 @@ spec:
         - kubernetes
         - gmi-tot
         - storage-test1
-  conflictResolution: Overwrite
 
 ---
 apiVersion: storage.karmada.io/v1alpha1
@@ -45,7 +44,7 @@ spec:
   client: 
     cache-dir: /jfs-cache # cache directory
     mount-options: 
-      - cache-size=102400
+      - cache-size=1024000
     ee: # juicefs commercial version configuration
       version: 5.1.18
       console-web: http://35.201.150.247:8080
@@ -67,4 +66,3 @@ spec:
         - kubernetes
         - gmi-tot
         - storage-test1
-  conflictResolution: Overwrite
