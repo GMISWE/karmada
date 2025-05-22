@@ -56,15 +56,13 @@ type Container struct {
 	Mounts    []specs.Mount
 	WorkDir   string
 	Auth      *Auth
-	Restart   chan struct{}
 }
 
 func NewContainer(ctx context.Context) *Container {
 	sctx, cancel := context.WithCancel(ctx)
 	c := &Container{
-		Ctx:     sctx,
-		Cancel:  cancel,
-		Restart: make(chan struct{}, 1),
+		Ctx:    sctx,
+		Cancel: cancel,
 	}
 	return c
 }
@@ -450,11 +448,7 @@ func (c *ContainerdClient) Restart(container *Container) error {
 	if err := c.Delete(container); err != nil {
 		return err
 	}
-	if err := c.Run(container); err != nil {
-		return err
-	}
-	container.Restart <- struct{}{}
-	return nil
+	return c.Run(container)
 }
 
 func (c *ContainerdClient) Stop(container *Container) error {
