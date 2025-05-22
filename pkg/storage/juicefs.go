@@ -18,8 +18,8 @@ import (
 	kcontainerd "github.com/karmada-io/karmada/pkg/containerd"
 	"github.com/karmada-io/karmada/pkg/util/cipher"
 	"github.com/karmada-io/karmada/pkg/util/exec"
-
 	"github.com/opencontainers/runtime-spec/specs-go"
+
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog/v2"
@@ -28,7 +28,7 @@ import (
 type Juicefs struct {
 	BaseStorage
 	*astorage.Juicefs
-	jfsMountConfig JuiceFSMountConfig
+	jfsMountConfig *JuiceFSMountConfig
 }
 
 // JuiceFSMountConfig 包含挂载 JuiceFS 所需的配置参数
@@ -86,7 +86,6 @@ func NewJuicefsFromRuntimeObject(ctx context.Context, obj runtime.Object) (*Juic
 
 func (j *Juicefs) Validate() error {
 	spec := j.Juicefs.Spec
-	mountOptions := []string{}
 	// check if the image is from gcp
 	switch strings.ToLower(spec.Labor.Repo) {
 	case "gcp":
@@ -133,6 +132,7 @@ func (j *Juicefs) Validate() error {
 	}
 
 	// check mount-options
+	mountOptions := []string{}
 	for _, opt := range spec.Client.MountOptions {
 		opts := strings.Split(opt, "=")
 		// check if the option is valid
@@ -146,7 +146,7 @@ func (j *Juicefs) Validate() error {
 		}
 	}
 
-	j.jfsMountConfig = JuiceFSMountConfig{
+	j.jfsMountConfig = &JuiceFSMountConfig{
 		MOUNT_OPTIONS:     strings.Join(mountOptions, " "),
 		MOUNT_POINT:       fmt.Sprintf("%s/%s", MOUNT_POINT, spec.Provider.ID),
 		JUICEFS_NAME:      j.Name,
@@ -246,40 +246,30 @@ func (j *Juicefs) Mount() error {
 			WithNamespace(CONTAINER_NAMESPACE).
 			WithName(j.Name).
 			WithPrivilege(true).
-			WithUser("root").
-			WithMounts(specs.Mount{
-				Type:        "bind",
-				Source:      kcontainerd.STORAGE_PATH,
-				Destination: kcontainerd.STORAGE_PATH,
-				Options:     []string{"bind", "rw"},
-			}).
-			WithImage(STORAGE_IMAGE).
-			WithArgs([]string{}).
-			WithAuth(&kcontainerd.Auth{
-				Username:         "",
-				Password:         "",
-				InsecureRegistry: false,
-				GCPCredentials:   spec.Auth.GCP.ServiceAccountCredentials,
-			}).
-			WithEnvs(spec.Labor.Envs).
-			WithEnvs([]string{
-				"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-				fmt.Sprintf("WATCH_PATH=%s", fmt.Sprintf("%s/%s.sh", kcontainerd.STORAGE_PATH, j.Name)),
-				fmt.Sprintf("LOG_PATH=%s", fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name)),
-			}).
-			WithLogPath(fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name))
+			WithUser("root")
 	}
-	go func() {
-		if err := cc.Run(j.container); err != nil {
-			klog.Errorf("failed to run containerd container: %s", err.Error())
-			cc.Delete(j.container)
-			return
-		}
-		klog.Infof("container %s running, start log watcher", j.container.Name)
-		j.container.Logs(func(line string) {
-			klog.Infof("[%s] %s", j.Name, line)
-		})
-	}()
+	j.container = j.container.WithMounts(specs.Mount{
+		Type:        "bind",
+		Source:      kcontainerd.STORAGE_PATH,
+		Destination: kcontainerd.STORAGE_PATH,
+		Options:     []string{"bind", "rw"},
+	}).
+		WithImage(STORAGE_IMAGE).
+		WithArgs([]string{}).
+		WithAuth(&kcontainerd.Auth{
+			Username:         "",
+			Password:         "",
+			InsecureRegistry: false,
+			GCPCredentials:   spec.Auth.GCP.ServiceAccountCredentials,
+		}).
+		WithEnvs(spec.Labor.Envs).
+		WithEnvs([]string{
+			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+			fmt.Sprintf("WATCH_PATH=%s", fmt.Sprintf("%s/%s.sh", kcontainerd.STORAGE_PATH, j.Name)),
+			fmt.Sprintf("LOG_PATH=%s", fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name)),
+		}).
+		WithLogPath(fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name))
+	watchContainers <- j.container
 	return nil
 }
 

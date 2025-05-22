@@ -90,6 +90,7 @@ start_file_watcher() {
 
 # main function
 main() {
+  log INFO "welcome to gmi storage"
   while [ $EXIT_FLAG -eq 0 ]; do
     if [ ! -f "$WATCH_PATH" ]; then
       log WARN "file not found: $WATCH_PATH"
@@ -104,7 +105,7 @@ main() {
     exit 0
   fi
 
-  handle_file_change $WATCH_PATH
+  handle_file_change
   start_file_watcher
 
   while [ $EXIT_FLAG -eq 0 ]; do

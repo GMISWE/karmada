@@ -13,9 +13,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/containerd/containerd"
+	"github.com/containerd/containerd/errdefs"
 	astorage "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1"
-	"github.com/karmada-io/karmada/pkg/containerd"
+	kcontainerd "github.com/karmada-io/karmada/pkg/containerd"
 	"github.com/karmada-io/karmada/pkg/util"
 	"github.com/karmada-io/karmada/pkg/util/exec"
 	"github.com/karmada-io/karmada/pkg/watcher"
@@ -29,7 +32,9 @@ import (
 )
 
 var (
-	cc *containerd.ContainerdClient
+	cc *kcontainerd.ContainerdClient
+
+	watchContainers = make(chan *kcontainerd.Container, 1)
 
 	STORAGE_K8S_NAMESPACE = util.GetEnv("GMI_STORAGE_K8S_NAMESPACE", "gmi-storage")
 	CONTAINERD_SOCKET     = util.GetEnv("CONTAINERD_SOCKET", "/run/containerd/containerd.sock")
@@ -50,7 +55,8 @@ type GMIStorage struct {
 	ctx              context.Context
 	dynamicClientSet dynamic.Interface
 	kubeClientSet    kubernetes.Interface
-	storages         map[string]Storage
+	//TODO: should be a sync.Map
+	storages map[string]Storage
 }
 
 func NewGMIStorage(ctx context.Context, kubeClientSet kubernetes.Interface, dynamicClientSet dynamic.Interface) *GMIStorage {
@@ -67,7 +73,7 @@ func (g *GMIStorage) Exit() {}
 func (g *GMIStorage) Init(ctx context.Context, dynamicClientSet dynamic.Interface) error {
 	// init containerd client
 	if cc == nil {
-		nc, err := containerd.NewContainerdClient(CONTAINERD_SOCKET)
+		nc, err := kcontainerd.NewContainerdClient(CONTAINERD_SOCKET)
 		if err != nil {
 			klog.Errorf("failed to create containerd client: %s", err.Error())
 			return err
@@ -103,11 +109,41 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 	}
 	handler := g.eventHandler(&conf)
 	go watcher.Start(ctx, g.kubeClientSet, g.dynamicClientSet, &conf, handler)
+
 	for {
 		select {
 		case <-ctx.Done():
 			klog.Infof("context done, exit gmi-storage watch")
 			return nil
+		case container := <-watchContainers:
+			klog.Infof("container %s to be watched", container.Name)
+			if err := cc.Run(container); err != nil {
+				klog.Errorf("failed to run containerd container: %s", err.Error())
+				cc.Delete(container)
+				return fmt.Errorf("failed to run containerd container: %s", err.Error())
+			}
+			klog.Infof("container %s running, start log watcher", container.Name)
+			go container.Logs(func(line string) {
+				klog.Infof("[%s] %s", container.Name, line)
+			})
+			go func() {
+				ticker := time.NewTicker(1 * time.Second)
+				defer ticker.Stop()
+				for {
+					select {
+					case <-ticker.C:
+						status, err := cc.Status(container)
+						if (err != nil && !errdefs.IsNotFound(err)) ||
+							(status == containerd.Stopped || status == containerd.Paused || status == containerd.Unknown) {
+							klog.Warningf("container %s is not running, restarting it", container.Name)
+							cc.Restart(container)
+						}
+					case <-container.Ctx.Done():
+						klog.Infof("container %s context done, exit", container.Name)
+						return
+					}
+				}
+			}()
 		case event := <-handler.Events():
 			// parse event.obj to storage
 			var storageName string
@@ -121,6 +157,7 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 					g.storages[sto.Name] = sto
 				} else {
 					g.storages[sto.Name].(*Juicefs).Juicefs = sto.Juicefs
+					g.storages[sto.Name].(*Juicefs).jfsMountConfig = sto.jfsMountConfig
 				}
 			}
 			// TODO: add more storage resource types
@@ -225,12 +262,12 @@ const (
 type BaseStorage struct {
 	Storage
 	ctx       context.Context
-	container *containerd.Container
+	container *kcontainerd.Container
 }
 
 func writeScript(name, script string, config any) error {
-	if _, err := os.Stat(containerd.STORAGE_PATH); os.IsNotExist(err) {
-		if err := os.MkdirAll(containerd.STORAGE_PATH, 0755); err != nil {
+	if _, err := os.Stat(kcontainerd.STORAGE_PATH); os.IsNotExist(err) {
+		if err := os.MkdirAll(kcontainerd.STORAGE_PATH, 0755); err != nil {
 			return err
 		}
 	}
@@ -238,7 +275,7 @@ func writeScript(name, script string, config any) error {
 	if err != nil {
 		return err
 	}
-	scriptFile := fmt.Sprintf("%s/%s.sh", containerd.STORAGE_PATH, name)
+	scriptFile := fmt.Sprintf("%s/%s.sh", kcontainerd.STORAGE_PATH, name)
 	if err := os.WriteFile(scriptFile, []byte(script), 0755); err != nil {
 		return err
 	}

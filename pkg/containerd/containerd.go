@@ -57,13 +57,15 @@ type Container struct {
 	WorkDir    string
 	Auth       *Auth
 	LogWatcher *util.LogWatcher
+	Restart    chan struct{}
 }
 
 func NewContainer(ctx context.Context) *Container {
 	sctx, cancel := context.WithCancel(ctx)
 	c := &Container{
-		Ctx:    sctx,
-		Cancel: cancel,
+		Ctx:     sctx,
+		Cancel:  cancel,
+		Restart: make(chan struct{}, 1),
 	}
 	return c
 }
@@ -148,13 +150,29 @@ func (c *Container) Logs(f func(line string)) error {
 		klog.Infof("log watcher for %s already created", c.LogPath)
 		return nil
 	}
-	klog.Infof("create log watcher for %s", c.LogPath)
-	var err error
-	c.LogWatcher, err = util.NewLogWatcher(c.Ctx, c.LogPath, f)
-	if err != nil {
-		return fmt.Errorf("failed to create file watcher: %w", err)
+	startLogWatcher := func() {
+		var err error
+		c.LogWatcher, err = util.NewLogWatcher(c.Ctx, c.LogPath, f)
+		if err != nil {
+			klog.Errorf("failed to create file watcher: %v", err)
+			return
+		}
+		if err := c.LogWatcher.Watch(); err != nil {
+			klog.Errorf("failed to watch log: %v", err)
+			return
+		}
 	}
-	return c.LogWatcher.Watch()
+	go startLogWatcher()
+	for range c.Restart {
+		c.LogWatcher.Cancel()
+		c.LogWatcher = nil
+		go startLogWatcher()
+	}
+	return nil
+}
+
+func (c *Container) Close() error {
+	return nil
 }
 
 type ContainerdClient struct {
@@ -468,6 +486,14 @@ func (c *ContainerdClient) Get(namespace, name string) (*Container, error) {
 }
 
 func (c *ContainerdClient) Restart(container *Container) error {
+	if err := c.Delete(container); err != nil {
+		return err
+	}
+	if err := c.Run(container); err != nil {
+		return err
+	}
+	container.Restart <- struct{}{}
+	klog.Infof("container %s restarted", container.Name)
 	return nil
 }
 
@@ -480,11 +506,11 @@ func (c *ContainerdClient) cleanupSnapshot(ctx context.Context, name string) err
 	snapshotter := c.client.SnapshotService("overlayfs")
 	if err := snapshotter.Remove(ctx, name); err != nil {
 		if !errdefs.IsNotFound(err) {
-			return fmt.Errorf("移除快照 %s 失败: %w", name, err)
+			return fmt.Errorf("failed to remove snapshot %s: %w", name, err)
 		}
 		// 快照不存在，不是错误
 		return nil
 	}
-	klog.Infof("成功删除快照 %s", name)
+	klog.Infof("snapshot %s removed", name)
 	return nil
 }
