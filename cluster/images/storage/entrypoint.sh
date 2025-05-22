@@ -45,6 +45,7 @@ cleanup() {
   nsenter -t 1 -m -u -i -n -p -- "$WATCH_PATH" "umount" >> $LOG_PATH 2>&1 || true
   
   log INFO "script terminated"
+  sleep 1
   exit 0
 }
 
@@ -52,6 +53,7 @@ cleanup() {
 trap 'cleanup SIGTERM' TERM
 trap 'cleanup SIGINT' INT
 trap 'cleanup SIGHUP' HUP
+trap 'cleanup SIGQUIT' QUIT
 
 # handle file change
 handle_file_change() {

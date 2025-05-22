@@ -171,10 +171,6 @@ func (c *Container) Logs(f func(line string)) error {
 	return nil
 }
 
-func (c *Container) Close() error {
-	return nil
-}
-
 type ContainerdClient struct {
 	client *containerd.Client
 	socket string
@@ -228,7 +224,8 @@ func (c *ContainerdClient) Run(container *Container) error {
 	// check containerd is running
 	status, err := c.Status(container)
 	container.Status = status
-	if err != nil && !errdefs.IsNotFound(err) {
+	if err != nil && !errdefs.IsNotFound(err) ||
+		(status == containerd.Stopped || status == containerd.Paused || status == containerd.Pausing) {
 		klog.Warningf("failed to check container status: %v", err)
 		// whether container exists, delete it
 		if deleteErr := c.Delete(container); deleteErr != nil {
@@ -364,6 +361,7 @@ func (c *ContainerdClient) Run(container *Container) error {
 	}
 
 	klog.Infof("container %s started", container.Name)
+
 	return nil
 }
 
@@ -493,8 +491,44 @@ func (c *ContainerdClient) Restart(container *Container) error {
 		return err
 	}
 	container.Restart <- struct{}{}
-	klog.Infof("container %s restarted", container.Name)
 	return nil
+}
+
+func (c *ContainerdClient) Stop(container *Container) error {
+	nsCtx := namespaces.WithNamespace(c.ctx, container.Namespace)
+	ctr, err := c.client.LoadContainer(nsCtx, container.Name)
+	if err != nil {
+		return err
+	}
+	task, err := ctr.Task(nsCtx, nil)
+	if err != nil {
+		return err
+	}
+	if err := task.Kill(nsCtx, syscall.SIGTERM); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *ContainerdClient) Watch(container *Container) {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			status, err := c.Status(container)
+			if (err != nil && !errdefs.IsNotFound(err)) ||
+				(status == containerd.Stopped || status == containerd.Paused || status == containerd.Unknown) {
+				klog.Warningf("container %s is not running, restarting it", container.Name)
+				if err := c.Restart(container); err != nil {
+					klog.Errorf("failed to restart container %s: %v", container.Name, err)
+				}
+			}
+		case <-container.Ctx.Done():
+			klog.Infof("container %s context done, exit", container.Name)
+			return
+		}
+	}
 }
 
 // func (c *ContainerdClient) Logs(container *Container, f func(line string)) error {
@@ -508,7 +542,7 @@ func (c *ContainerdClient) cleanupSnapshot(ctx context.Context, name string) err
 		if !errdefs.IsNotFound(err) {
 			return fmt.Errorf("failed to remove snapshot %s: %w", name, err)
 		}
-		// 快照不存在，不是错误
+		// snapshot does not exist, not an error
 		return nil
 	}
 	klog.Infof("snapshot %s removed", name)

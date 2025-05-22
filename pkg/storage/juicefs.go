@@ -46,6 +46,7 @@ type JuiceFSMountConfig struct {
 	JUICEFS_ACCESS_KEY                  string
 	JUICEFS_SECRET_KEY                  string
 	GCP_APPLICATION_DEFAULT_CREDENTIALS string
+	LOG_PATH                            string
 }
 
 var (
@@ -153,6 +154,7 @@ func (j *Juicefs) Validate() error {
 		JUICEFS_CACHE_DIR: j.Spec.Client.CacheDir,
 		JUICEFS_PATH:      fmt.Sprintf("%s/juicefs", kcontainerd.STORAGE_PATH),
 		STORAGE_PATH:      kcontainerd.STORAGE_PATH,
+		LOG_PATH:          fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name),
 	}
 
 	if spec.Client.EE != nil {
@@ -236,6 +238,8 @@ func (j *Juicefs) Mount() error {
 		klog.Errorf("failed to write script file: %s", err.Error())
 		return err
 	}
+	// create storage path in host
+	init := false
 	if j.container == nil {
 		// create storage path in host
 		if err := exec.Command("nsenter", "-t", "1", "-m", "-u", "-n", "-i", "-p", "mkdir", "-p", kcontainerd.STORAGE_PATH).Run(); err != nil {
@@ -247,6 +251,7 @@ func (j *Juicefs) Mount() error {
 			WithName(j.Name).
 			WithPrivilege(true).
 			WithUser("root")
+		init = true
 	}
 	j.container = j.container.WithMounts(specs.Mount{
 		Type:        "bind",
@@ -254,7 +259,7 @@ func (j *Juicefs) Mount() error {
 		Destination: kcontainerd.STORAGE_PATH,
 		Options:     []string{"bind", "rw"},
 	}).
-		WithImage(STORAGE_IMAGE).
+		WithImage(spec.Labor.Image).
 		WithArgs([]string{}).
 		WithAuth(&kcontainerd.Auth{
 			Username:         "",
@@ -269,7 +274,10 @@ func (j *Juicefs) Mount() error {
 			fmt.Sprintf("LOG_PATH=%s", fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name)),
 		}).
 		WithLogPath(fmt.Sprintf("%s/%s.log", kcontainerd.STORAGE_PATH, j.Name))
-	watchContainers <- j.container
+	watchContainers <- &WatchContainer{
+		Container: j.container,
+		Init:      init,
+	}
 	return nil
 }
 

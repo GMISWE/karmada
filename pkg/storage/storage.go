@@ -13,10 +13,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
-	"github.com/containerd/containerd"
-	"github.com/containerd/containerd/errdefs"
 	astorage "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1"
 	kcontainerd "github.com/karmada-io/karmada/pkg/containerd"
 	"github.com/karmada-io/karmada/pkg/util"
@@ -34,14 +31,14 @@ import (
 var (
 	cc *kcontainerd.ContainerdClient
 
-	watchContainers = make(chan *kcontainerd.Container, 1)
+	watchContainers = make(chan *WatchContainer, 1)
 
 	STORAGE_K8S_NAMESPACE = util.GetEnv("GMI_STORAGE_K8S_NAMESPACE", "gmi-storage")
 	CONTAINERD_SOCKET     = util.GetEnv("CONTAINERD_SOCKET", "/run/containerd/containerd.sock")
 	MOUNT_POINT           = util.GetEnv("GMI_STORAGE_MOUNT_POINT", "/mnt/juicefs")
 	RETRY_COUNT           = util.GetEnv("GMI_STORAGE_RETRY_COUNT", "3")
 	CONTAINER_NAMESPACE   = util.GetEnv("GMI_STORAGE_CONTAINER_NAMESPACE", "gmicloud.ai")
-	STORAGE_IMAGE         = util.GetEnv("GMI_STORAGE_IMAGE", "us-west1-docker.pkg.dev/devv-404803/public/storage:v0.0.1")
+	STORAGE_IMAGE         = util.GetEnv("GMI_STORAGE_IMAGE", "us-west1-docker.pkg.dev/devv-404803/public/storage:v0.0.2")
 	ENCRYPT_KEY           = util.GetEnv("GMI_STORAGE_ENCRYPT_KEY", "uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl")
 )
 
@@ -49,6 +46,11 @@ type Storage interface {
 	Validate() error
 	Mount() error
 	Unmount() error
+}
+
+type WatchContainer struct {
+	Container *kcontainerd.Container
+	Init      bool
 }
 
 type GMIStorage struct {
@@ -116,34 +118,25 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 			klog.Infof("context done, exit gmi-storage watch")
 			return nil
 		case container := <-watchContainers:
-			klog.Infof("container %s to be watched", container.Name)
-			if err := cc.Run(container); err != nil {
+			klog.Infof("container %s to be watched", container.Container.Name)
+			go container.Container.Logs(func(line string) {
+				klog.Infof("[%s] %s", container.Container.Name, line)
+			})
+			// check if the container image is changed
+			old, _ := cc.Get(container.Container.Namespace, container.Container.Name)
+			if old != nil && old.Image != container.Container.Image {
+				klog.Infof("image of container %s changed from %s to %s, stop old container and create new one", container.Container.Name, old.Image, container.Container.Image)
+				if err := cc.Stop(container.Container); err != nil {
+					klog.Errorf("failed to stop old container %s: %v, continue to create new container", container.Container.Name, err)
+				}
+			} else if err := cc.Run(container.Container); err != nil {
 				klog.Errorf("failed to run containerd container: %s", err.Error())
-				cc.Delete(container)
+				cc.Delete(container.Container)
 				return fmt.Errorf("failed to run containerd container: %s", err.Error())
 			}
-			klog.Infof("container %s running, start log watcher", container.Name)
-			go container.Logs(func(line string) {
-				klog.Infof("[%s] %s", container.Name, line)
-			})
-			go func() {
-				ticker := time.NewTicker(1 * time.Second)
-				defer ticker.Stop()
-				for {
-					select {
-					case <-ticker.C:
-						status, err := cc.Status(container)
-						if (err != nil && !errdefs.IsNotFound(err)) ||
-							(status == containerd.Stopped || status == containerd.Paused || status == containerd.Unknown) {
-							klog.Warningf("container %s is not running, restarting it", container.Name)
-							cc.Restart(container)
-						}
-					case <-container.Ctx.Done():
-						klog.Infof("container %s context done, exit", container.Name)
-						return
-					}
-				}
-			}()
+			if container.Init {
+				go cc.Watch(container.Container)
+			}
 		case event := <-handler.Events():
 			// parse event.obj to storage
 			var storageName string
