@@ -119,9 +119,6 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 			return nil
 		case container := <-watchContainers:
 			klog.Infof("container %s to be watched", container.Container.Name)
-			go container.Container.Logs(func(line string) {
-				klog.Infof("[%s] %s", container.Container.Name, line)
-			})
 			// check if the container image is changed
 			old, _ := cc.Get(container.Container.Namespace, container.Container.Name)
 			if old != nil && old.Image != container.Container.Image {
@@ -136,6 +133,9 @@ func (g *GMIStorage) Watch(ctx context.Context) error {
 			}
 			if container.Init {
 				go cc.Watch(container.Container)
+				go cc.Logs(container.Container, func(line string) {
+					klog.Infof("[%s] %s", container.Container.Name, line)
+				})
 			}
 		case event := <-handler.Events():
 			// parse event.obj to storage

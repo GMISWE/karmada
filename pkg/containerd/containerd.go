@@ -41,23 +41,22 @@ type Auth struct {
 }
 
 type Container struct {
-	Ctx        context.Context
-	Cancel     context.CancelFunc
-	Namespace  string
-	Image      string
-	Name       string
-	Args       []string
-	Envs       []string
-	User       string
-	Resources  *specs.LinuxResources
-	Privilege  bool
-	Status     containerd.ProcessStatus
-	LogPath    string
-	Mounts     []specs.Mount
-	WorkDir    string
-	Auth       *Auth
-	LogWatcher *util.LogWatcher
-	Restart    chan struct{}
+	Ctx       context.Context
+	Cancel    context.CancelFunc
+	Namespace string
+	Image     string
+	Name      string
+	Args      []string
+	Envs      []string
+	User      string
+	Resources *specs.LinuxResources
+	Privilege bool
+	Status    containerd.ProcessStatus
+	LogPath   string
+	Mounts    []specs.Mount
+	WorkDir   string
+	Auth      *Auth
+	Restart   chan struct{}
 }
 
 func NewContainer(ctx context.Context) *Container {
@@ -133,42 +132,6 @@ func (c *Container) WithWorkDir(workDir string) *Container {
 func (c *Container) WithStatus(status containerd.ProcessStatus) *Container {
 	c.Status = status
 	return c
-}
-
-func (c *Container) WithLogWatcher(logWatcher *util.LogWatcher) *Container {
-	c.LogWatcher = logWatcher
-	return c
-}
-
-func (c *Container) Logs(f func(line string)) error {
-	if c.LogPath == "" {
-		klog.Warningf("log path is empty, skip logs")
-		c.LogPath = fmt.Sprintf("%s/%s.log", STORAGE_PATH, c.Name)
-	}
-	// if log watcher is already created, return
-	if c.LogWatcher != nil {
-		klog.Infof("log watcher for %s already created", c.LogPath)
-		return nil
-	}
-	startLogWatcher := func() {
-		var err error
-		c.LogWatcher, err = util.NewLogWatcher(c.Ctx, c.LogPath, f)
-		if err != nil {
-			klog.Errorf("failed to create file watcher: %v", err)
-			return
-		}
-		if err := c.LogWatcher.Watch(); err != nil {
-			klog.Errorf("failed to watch log: %v", err)
-			return
-		}
-	}
-	go startLogWatcher()
-	for range c.Restart {
-		c.LogWatcher.Cancel()
-		c.LogWatcher = nil
-		go startLogWatcher()
-	}
-	return nil
 }
 
 type ContainerdClient struct {
@@ -531,9 +494,22 @@ func (c *ContainerdClient) Watch(container *Container) {
 	}
 }
 
-// func (c *ContainerdClient) Logs(container *Container, f func(line string)) error {
-// 	return container.logs(f)
-// }
+func (c *ContainerdClient) Logs(container *Container, f func(line string)) {
+	var (
+		logWatcher *util.LogWatcher
+		err        error
+		logPath    = fmt.Sprintf("%s/%s.log", STORAGE_PATH, container.Name)
+	)
+	logWatcher, err = util.NewLogWatcher(container.Ctx, logPath, f)
+	if err != nil {
+		klog.Errorf("failed to create file watcher: %v", err)
+		return
+	}
+	if err := logWatcher.Watch(); err != nil {
+		klog.Errorf("failed to watch log: %v", err)
+		return
+	}
+}
 
 // cleanupSnapshot try to remove snapshot
 func (c *ContainerdClient) cleanupSnapshot(ctx context.Context, name string) error {
