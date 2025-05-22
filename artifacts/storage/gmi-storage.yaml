@@ -24,7 +24,7 @@ spec:
         runAsGroup: 0
       containers:
         - name: gmi-storage
-          image: us-west1-docker.pkg.dev/devv-404803/public/gmi-storage:v1.13.1-5-gb1ff6f663-dirty
+          image: us-west1-docker.pkg.dev/devv-404803/public/gmi-storage:v1.13.1-9-g890f3560d
           imagePullPolicy: Always
           securityContext:
             privileged: true
