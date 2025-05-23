@@ -16,6 +16,7 @@ spec:
         - kubernetes
         - gmi-tot
         - storage-test1
+        - jfs-us-1
   conflictResolution: Overwrite
 
 ---
@@ -43,3 +44,24 @@ spec:
   conflictResolution: Overwrite
 
 
+---
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: gmi-storage-propagationpolicy-us
+spec:
+  resourceSelectors:
+    - apiVersion: v1
+      kind: Secret
+      name: gcp-secret
+    - apiVersion: v1
+      kind: ServiceAccount
+      name: gmi-storage
+    - apiVersion: apps/v1
+      kind: DaemonSet
+      name: gmi-storage-us
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - jfs-us-1
+  conflictResolution: Overwrite

@@ -13,6 +13,7 @@ spec:
         - kubernetes
         - gmi-tot
         - storage-test1
+        - jfs-us-1
 
 ---
 apiVersion: storage.karmada.io/v1alpha1
@@ -64,3 +65,4 @@ spec:
     clusterAffinity:
       clusterNames:
         - kubernetes
+        - jfs-us-1
