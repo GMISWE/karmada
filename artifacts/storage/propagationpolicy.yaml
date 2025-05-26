@@ -13,11 +13,9 @@ spec:
   placement:
     clusterAffinity:
       clusterNames:
-        - kubernetes
         - gmi-tot
         - storage-test1
         - jfs-us-1
-  conflictResolution: Overwrite
 
 ---
 apiVersion: policy.karmada.io/v1alpha1
@@ -39,37 +37,6 @@ spec:
   placement:
     clusterAffinity:
       clusterNames:
-        - kubernetes
         - gmi-tot
         - storage-test1
-  conflictResolution: Overwrite
-
-
----
-apiVersion: policy.karmada.io/v1alpha1
-kind: PropagationPolicy
-metadata:
-  name: gmi-storage-propagationpolicy-us
-  namespace: gmi-storage
-spec:
-  resourceSelectors:
-    - apiVersion: v1
-      kind: Secret
-      name: gcp-secret
-    - apiVersion: v1
-      kind: ServiceAccount
-      name: gmi-storage
-    - apiVersion: apps/v1
-      kind: DaemonSet
-      name: gmi-storage-us
-    - apiVersion: apps/v1
-      kind: Deployment
-      name: juicefs-test-deployment
-    - apiVersion: v1
-      kind: Pod
-      name: juicefs-test-pod
-  placement:
-    clusterAffinity:
-      clusterNames:
         - jfs-us-1
-  conflictResolution: Overwrite

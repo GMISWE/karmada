@@ -7,9 +7,6 @@ spec:
     - apiVersion: apps/v1
       kind: DaemonSet
       name: gmi-storage
-    - apiVersion: apps/v1
-      kind: DaemonSet
-      name: gmi-storage-us
   overrideRules:
     - targetCluster:
         clusterNames:
@@ -35,27 +32,3 @@ spec:
                 value: /run/k3s/containerd/containerd.sock
               - name: CONTAINERD_PATH
                 value: /var/lib/rancher/rke2/agent/containerd
-    - targetCluster:
-        clusterNames:
-          - us-central1-a
-      overriders:
-        plaintext:
-          - path: "/spec/template/spec/volumes/0/hostPath/path"
-            operator: replace
-            value: "/run/containerd/containerd.sock"
-          - path: "/spec/template/spec/volumes/1/hostPath/path"
-            operator: replace
-            value: "/var/lib/containerd"
-          - path: "/spec/template/spec/containers/0/volumeMounts/0/mountPath"
-            operator: replace
-            value: "/run/containerd/containerd.sock"
-          - path: "/spec/template/spec/containers/0/volumeMounts/1/mountPath"
-            operator: replace
-            value: "/var/lib/containerd"
-          - path: "/spec/template/spec/containers/0/env"
-            operator: add
-            value:
-              - name: CONTAINERD_SOCKET
-                value: /run/containerd/containerd.sock
-              - name: CONTAINERD_PATH
-                value: /var/lib/containerd
