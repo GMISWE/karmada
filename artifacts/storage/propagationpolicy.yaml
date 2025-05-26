@@ -24,6 +24,7 @@ apiVersion: policy.karmada.io/v1alpha1
 kind: PropagationPolicy
 metadata:
   name: gmi-storage-propagationpolicy
+  namespace: gmi-storage
 spec:
   resourceSelectors:
     - apiVersion: v1
@@ -49,6 +50,7 @@ apiVersion: policy.karmada.io/v1alpha1
 kind: PropagationPolicy
 metadata:
   name: gmi-storage-propagationpolicy-us
+  namespace: gmi-storage
 spec:
   resourceSelectors:
     - apiVersion: v1
@@ -60,6 +62,12 @@ spec:
     - apiVersion: apps/v1
       kind: DaemonSet
       name: gmi-storage-us
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: juicefs-test-deployment
+    - apiVersion: v1
+      kind: Pod
+      name: juicefs-test-pod
   placement:
     clusterAffinity:
       clusterNames:
