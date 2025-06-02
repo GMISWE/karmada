@@ -25,7 +25,7 @@ import (
 	"k8s.io/klog/v2"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 
-	"github.com/karmada-io/karmada/cmd/gmi-storage/app"
+	"github.com/karmada-io/karmada/cmd/gmi/storage/app"
 )
 
 func panicHandler() {
