@@ -22,7 +22,7 @@ import (
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog/v2"
 
-	"github.com/karmada-io/karmada/cmd/gmi-storage/app/options"
+	"github.com/karmada-io/karmada/cmd/gmi/storage/app/options"
 	"github.com/karmada-io/karmada/pkg/sharedcli/klogflag"
 	"github.com/karmada-io/karmada/pkg/sharedcli/profileflag"
 	"github.com/karmada-io/karmada/pkg/storage"
