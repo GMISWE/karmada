@@ -1,0 +1,39 @@
+mode: release
+log-mode: debug
+http:
+  api-addr: ":8081"
+  routes: 
+    demo:
+      middlewares:
+        - default
+      routers:
+        - /demo,   GET,  Demo
+    agent:
+      middlewares:
+        - default
+      websockets:
+        - /report-nf,  ReportNF
+  swagger: true
+  middlewares:
+    default: {}
+    auth:
+      secret: "uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl"
+      expire: 86400
+      white-apis:
+    role:
+      path: "redis://"
+mysql: ""
+redis: ""
+schedulers:
+  - enabled: true
+    name: "sync-resources"
+    detail: "sync resources to karmada"
+    cron: "*/3 * * * * ?"
+    method: "SyncResources"
+    args:
+      karmada-control-plane-addr: "http://36.103.167.242:30080"
+ants:
+  size: 100
+business:
+  agent:
+    karmada-control-plane-addr: "http://36.103.167.242:30080"

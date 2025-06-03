@@ -1,0 +1,39 @@
+mode: release
+log-mode: debug
+http:
+  api-addr: ":8082"
+  routes: 
+    demo:
+      middlewares:
+        - default
+      routers:
+        - /demo,     GET,   Demo
+    cluster:
+      middlewares:
+        - default
+      routers:
+        - /report,   POST,  Report
+    agent:
+      middlewares:
+        - default
+  swagger: true
+  middlewares:
+    default: {}
+    auth:
+      secret: "uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl"
+      expire: 86400
+      white-apis:
+    role:
+      path: "redis://"
+mysql: ""
+redis: ""
+schedulers:
+  - enabled: false
+    name: "demo"
+    detail: "demo"
+    cron: "*/3 * * * * ?"
+    method: "Demo"
+    args: {}
+ants:
+  size: 100
+business:

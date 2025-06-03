@@ -71,6 +71,15 @@ const (
 
 	// KarmadaGmiStorageComponentName is the name of the Karmada GMI Storage component.
 	KarmadaGmiStorageComponentName = "karmada-gmi-storage"
+
+	// KarmadaGMIClockComponentName is the name of the Karmada GMI Clock component.
+	KarmadaGMIClockComponentName = "karmada-gmi-clock"
+
+	// KarmadaGMIAgentComponentName is the name of the Karmada GMI Agent component.
+	KarmadaGMIAgentComponentName = "karmada-gmi-agent"
+
+	// KarmadaGmiConsoleComponentName is the name of the Karmada GMI Console component.
+	KarmadaGmiConsoleComponentName = "karmada-gmi-console"
 )
 
 // ExecutionSpacePrefix is the prefix of execution space
