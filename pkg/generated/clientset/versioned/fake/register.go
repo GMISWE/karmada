@@ -27,6 +27,8 @@ import (
 	policyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1"
 	remedyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/remedy/v1alpha1"
 	searchv1alpha1 "github.com/karmada-io/karmada/pkg/apis/search/v1alpha1"
+	storagev1alpha1 "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1"
+	topov1alpha1 "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1"
 	workv1alpha1 "github.com/karmada-io/karmada/pkg/apis/work/v1alpha1"
 	workv1alpha2 "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -48,6 +50,8 @@ var localSchemeBuilder = runtime.SchemeBuilder{
 	policyv1alpha1.AddToScheme,
 	remedyv1alpha1.AddToScheme,
 	searchv1alpha1.AddToScheme,
+	storagev1alpha1.AddToScheme,
+	topov1alpha1.AddToScheme,
 	workv1alpha1.AddToScheme,
 	workv1alpha2.AddToScheme,
 }
