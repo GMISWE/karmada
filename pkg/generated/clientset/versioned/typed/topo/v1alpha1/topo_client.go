@@ -28,6 +28,7 @@ import (
 
 type TopoV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	CloudsGetter
 	HardwaresGetter
 	TrafficsGetter
 }
@@ -35,6 +36,10 @@ type TopoV1alpha1Interface interface {
 // TopoV1alpha1Client is used to interact with features provided by the topo.karmada.io group.
 type TopoV1alpha1Client struct {
 	restClient rest.Interface
+}
+
+func (c *TopoV1alpha1Client) Clouds() CloudInterface {
+	return newClouds(c)
 }
 
 func (c *TopoV1alpha1Client) Hardwares() HardwareInterface {

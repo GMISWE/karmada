@@ -116,6 +116,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Storage().V1alpha1().Juicefses().Informer()}, nil
 
 		// Group=topo.karmada.io, Version=v1alpha1
+	case topov1alpha1.SchemeGroupVersion.WithResource("clouds"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Clouds().Informer()}, nil
 	case topov1alpha1.SchemeGroupVersion.WithResource("hardwares"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Hardwares().Informer()}, nil
 	case topov1alpha1.SchemeGroupVersion.WithResource("traffics"):

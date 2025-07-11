@@ -28,6 +28,10 @@ type FakeTopoV1alpha1 struct {
 	*testing.Fake
 }
 
+func (c *FakeTopoV1alpha1) Clouds() v1alpha1.CloudInterface {
+	return newFakeClouds(c)
+}
+
 func (c *FakeTopoV1alpha1) Hardwares() v1alpha1.HardwareInterface {
 	return newFakeHardwares(c)
 }

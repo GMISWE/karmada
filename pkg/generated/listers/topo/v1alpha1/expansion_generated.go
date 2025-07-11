@@ -18,6 +18,10 @@ limitations under the License.
 
 package v1alpha1
 
+// CloudListerExpansion allows custom methods to be added to
+// CloudLister.
+type CloudListerExpansion interface{}
+
 // HardwareListerExpansion allows custom methods to be added to
 // HardwareLister.
 type HardwareListerExpansion interface{}

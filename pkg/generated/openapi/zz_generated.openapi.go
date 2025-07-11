@@ -173,6 +173,18 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Location":                                   schema_pkg_apis_storage_v1alpha1_Location(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.MountInfo":                                  schema_pkg_apis_storage_v1alpha1_MountInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1.Provider":                                   schema_pkg_apis_storage_v1alpha1_Provider(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Cloud":                                         schema_pkg_apis_topo_v1alpha1_Cloud(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAliyun":                                   schema_pkg_apis_topo_v1alpha1_CloudAliyun(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAws":                                      schema_pkg_apis_topo_v1alpha1_CloudAws(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAzure":                                    schema_pkg_apis_topo_v1alpha1_CloudAzure(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudGcp":                                      schema_pkg_apis_topo_v1alpha1_CloudGcp(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudHuawei":                                   schema_pkg_apis_topo_v1alpha1_CloudHuawei(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudList":                                     schema_pkg_apis_topo_v1alpha1_CloudList(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudLocation":                                 schema_pkg_apis_topo_v1alpha1_CloudLocation(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudSpec":                                     schema_pkg_apis_topo_v1alpha1_CloudSpec(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudStatus":                                   schema_pkg_apis_topo_v1alpha1_CloudStatus(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudTencent":                                  schema_pkg_apis_topo_v1alpha1_CloudTencent(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice":                                      schema_pkg_apis_topo_v1alpha1_GpuPrice(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardware":                                      schema_pkg_apis_topo_v1alpha1_Hardware(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareList":                                  schema_pkg_apis_topo_v1alpha1_HardwareList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareSpec":                                  schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref),
@@ -6880,6 +6892,434 @@ func schema_pkg_apis_storage_v1alpha1_Provider(ref common.ReferenceCallback) com
 					},
 				},
 				Required: []string{"id", "name"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_Cloud(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Cloud represents the desired state and status of a member cluster.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudSpec", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudAliyun(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gpuPrices": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"gpuPrices"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudAws(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gpuPrices": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"gpuPrices"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudAzure(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gpuPrices": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"gpuPrices"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudGcp(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gpuPrices": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"gpuPrices"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudHuawei(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gpuPrices": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"gpuPrices"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "CloudList contains a list of Cloud",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Items holds a list of Cloud.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Cloud"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"metadata", "items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Cloud", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudLocation(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"region": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"zones": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"region", "zones"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"cloudProvider": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"location": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudLocation"),
+						},
+					},
+					"cloudAws": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAws"),
+						},
+					},
+					"cloudGcp": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudGcp"),
+						},
+					},
+					"cloudAzure": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAzure"),
+						},
+					},
+					"cloudHuawei": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudHuawei"),
+						},
+					},
+					"cloudAliyun": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAliyun"),
+						},
+					},
+					"cloudTencent": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudTencent"),
+						},
+					},
+				},
+				Required: []string{"cloudProvider", "location"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAliyun", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAws", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudAzure", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudGcp", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudHuawei", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudLocation", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudTencent"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_CloudTencent(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"gpuPrices": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"gpuPrices"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_GpuPrice(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"instanceType": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"price": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"priceUnit": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"stock": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"instanceType", "price", "priceUnit", "stock"},
 			},
 		},
 	}
