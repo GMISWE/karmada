@@ -26,6 +26,10 @@ type CloudListerExpansion interface{}
 // HardwareLister.
 type HardwareListerExpansion interface{}
 
+// HardwareNamespaceListerExpansion allows custom methods to be added to
+// HardwareNamespaceLister.
+type HardwareNamespaceListerExpansion interface{}
+
 // TrafficListerExpansion allows custom methods to be added to
 // TrafficLister.
 type TrafficListerExpansion interface{}

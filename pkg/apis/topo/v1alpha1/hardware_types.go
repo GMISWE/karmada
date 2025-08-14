@@ -25,11 +25,10 @@ const (
 	HardwareKindHardware            = "Hardware"
 	HardwarePluralHardware          = "hardwares"
 	HardwareSingularHardware        = "Hardware"
-	HardwareNamespaceScopedHardware = false
+	HardwareNamespaceScopedHardware = true
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:storageversion
 

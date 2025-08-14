@@ -50,7 +50,7 @@ func (v *version) Clouds() CloudInformer {
 
 // Hardwares returns a HardwareInformer.
 func (v *version) Hardwares() HardwareInformer {
-	return &hardwareInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &hardwareInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Traffics returns a TrafficInformer.

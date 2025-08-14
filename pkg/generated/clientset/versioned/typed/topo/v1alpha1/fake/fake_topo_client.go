@@ -32,8 +32,8 @@ func (c *FakeTopoV1alpha1) Clouds() v1alpha1.CloudInterface {
 	return newFakeClouds(c)
 }
 
-func (c *FakeTopoV1alpha1) Hardwares() v1alpha1.HardwareInterface {
-	return newFakeHardwares(c)
+func (c *FakeTopoV1alpha1) Hardwares(namespace string) v1alpha1.HardwareInterface {
+	return newFakeHardwares(c, namespace)
 }
 
 func (c *FakeTopoV1alpha1) Traffics() v1alpha1.TrafficInterface {

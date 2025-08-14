@@ -31,9 +31,8 @@ type HardwareLister interface {
 	// List lists all Hardwares in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*topov1alpha1.Hardware, err error)
-	// Get retrieves the Hardware from the index for a given name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*topov1alpha1.Hardware, error)
+	// Hardwares returns an object that can list and get Hardwares.
+	Hardwares(namespace string) HardwareNamespaceLister
 	HardwareListerExpansion
 }
 
@@ -45,4 +44,27 @@ type hardwareLister struct {
 // NewHardwareLister returns a new HardwareLister.
 func NewHardwareLister(indexer cache.Indexer) HardwareLister {
 	return &hardwareLister{listers.New[*topov1alpha1.Hardware](indexer, topov1alpha1.Resource("hardware"))}
+}
+
+// Hardwares returns an object that can list and get Hardwares.
+func (s *hardwareLister) Hardwares(namespace string) HardwareNamespaceLister {
+	return hardwareNamespaceLister{listers.NewNamespaced[*topov1alpha1.Hardware](s.ResourceIndexer, namespace)}
+}
+
+// HardwareNamespaceLister helps list and get Hardwares.
+// All objects returned here must be treated as read-only.
+type HardwareNamespaceLister interface {
+	// List lists all Hardwares in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
+	List(selector labels.Selector) (ret []*topov1alpha1.Hardware, err error)
+	// Get retrieves the Hardware from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*topov1alpha1.Hardware, error)
+	HardwareNamespaceListerExpansion
+}
+
+// hardwareNamespaceLister implements the HardwareNamespaceLister
+// interface.
+type hardwareNamespaceLister struct {
+	listers.ResourceIndexer[*topov1alpha1.Hardware]
 }

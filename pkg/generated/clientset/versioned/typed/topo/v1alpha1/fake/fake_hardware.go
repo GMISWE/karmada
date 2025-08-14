@@ -30,11 +30,11 @@ type fakeHardwares struct {
 	Fake *FakeTopoV1alpha1
 }
 
-func newFakeHardwares(fake *FakeTopoV1alpha1) topov1alpha1.HardwareInterface {
+func newFakeHardwares(fake *FakeTopoV1alpha1, namespace string) topov1alpha1.HardwareInterface {
 	return &fakeHardwares{
 		gentype.NewFakeClientWithList[*v1alpha1.Hardware, *v1alpha1.HardwareList](
 			fake.Fake,
-			"",
+			namespace,
 			v1alpha1.SchemeGroupVersion.WithResource("hardwares"),
 			v1alpha1.SchemeGroupVersion.WithKind("Hardware"),
 			func() *v1alpha1.Hardware { return &v1alpha1.Hardware{} },
