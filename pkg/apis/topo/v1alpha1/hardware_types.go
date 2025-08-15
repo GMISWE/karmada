@@ -70,16 +70,16 @@ type Hardwares struct {
 
 type TopoEntropy struct {
 	// +required
-	Sparsity int `json:"sparsity"` // 资源稀疏度
+	Sparsity int64 `json:"sparsity"` // 资源稀疏度
 	// +required
-	MisMatch int `json:"mismatch"` // 资源错配度
+	MisMatch int64 `json:"mismatch"` // 资源错配度
 	// +required
-	ZoneMisMatch int `json:"zone_mismatch"` // 区域错配度
+	ZoneMisMatch int64 `json:"zone_mismatch"` // 区域错配度
 }
 
 type TopoNodes struct {
 	// +required
-	Num int `json:"num"`
+	Num int64 `json:"num"`
 	// +required
 	Gpus map[GpuType]NodeGpu `json:"gpus"`
 	// +required
@@ -90,25 +90,25 @@ type TopoNodes struct {
 
 type NodeGpu struct {
 	// +required
-	Mem int `json:"mem"`
+	Mem int64 `json:"mem"`
 	// +required
-	Total int `json:"total"`
+	Total int64 `json:"total"`
 	// +required
-	Idle int `json:"idle"`
+	Idle int64 `json:"idle"`
 }
 
 type NodeCpu struct {
 	// +required
-	Total int `json:"total"`
+	Total int64 `json:"total"`
 	// +required
-	Usage int `json:"usage"`
+	Usage int64 `json:"usage"`
 }
 
 type NodeMem struct {
 	// +required
-	Total int `json:"total"`
+	Total int64 `json:"total"`
 	// +required
-	Usage int `json:"usage"`
+	Usage int64 `json:"usage"`
 }
 
 // HardwareStatus represents the status of Hardware.

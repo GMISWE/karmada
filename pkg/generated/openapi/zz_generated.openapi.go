@@ -7571,14 +7571,14 @@ func schema_pkg_apis_topo_v1alpha1_NodeCpu(ref common.ReferenceCallback) common.
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"usage": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 				},
@@ -7598,21 +7598,21 @@ func schema_pkg_apis_topo_v1alpha1_NodeGpu(ref common.ReferenceCallback) common.
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"total": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"idle": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 				},
@@ -7632,14 +7632,14 @@ func schema_pkg_apis_topo_v1alpha1_NodeMem(ref common.ReferenceCallback) common.
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"usage": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 				},
@@ -7659,21 +7659,21 @@ func schema_pkg_apis_topo_v1alpha1_TopoEntropy(ref common.ReferenceCallback) com
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"mismatch": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"zone_mismatch": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 				},
@@ -7693,7 +7693,7 @@ func schema_pkg_apis_topo_v1alpha1_TopoNodes(ref common.ReferenceCallback) commo
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
-							Format:  "int32",
+							Format:  "int64",
 						},
 					},
 					"gpus": {
