@@ -65,6 +65,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&CloudList{},
 		&Hardware{},
 		&HardwareList{},
+		&HardwareNode{},
+		&HardwareNodeList{},
 		&Traffic{},
 		&TrafficList{},
 	)

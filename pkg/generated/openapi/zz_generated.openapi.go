@@ -184,17 +184,22 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudSpec":                                     schema_pkg_apis_topo_v1alpha1_CloudSpec(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudStatus":                                   schema_pkg_apis_topo_v1alpha1_CloudStatus(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudTencent":                                  schema_pkg_apis_topo_v1alpha1_CloudTencent(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo":                                       schema_pkg_apis_topo_v1alpha1_CpuInfo(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.EntropyInfo":                                   schema_pkg_apis_topo_v1alpha1_EntropyInfo(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo":                                       schema_pkg_apis_topo_v1alpha1_GpuInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice":                                      schema_pkg_apis_topo_v1alpha1_GpuPrice(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuTypeInfo":                                   schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardware":                                      schema_pkg_apis_topo_v1alpha1_Hardware(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareList":                                  schema_pkg_apis_topo_v1alpha1_HardwareList(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNode":                                  schema_pkg_apis_topo_v1alpha1_HardwareNode(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeList":                              schema_pkg_apis_topo_v1alpha1_HardwareNodeList(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeSpec":                              schema_pkg_apis_topo_v1alpha1_HardwareNodeSpec(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeStatus":                            schema_pkg_apis_topo_v1alpha1_HardwareNodeStatus(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareSpec":                                  schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareStatus":                                schema_pkg_apis_topo_v1alpha1_HardwareStatus(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardwares":                                     schema_pkg_apis_topo_v1alpha1_Hardwares(ref),
-		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeCpu":                                       schema_pkg_apis_topo_v1alpha1_NodeCpu(ref),
-		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeGpu":                                       schema_pkg_apis_topo_v1alpha1_NodeGpu(ref),
-		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeMem":                                       schema_pkg_apis_topo_v1alpha1_NodeMem(ref),
-		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TopoEntropy":                                   schema_pkg_apis_topo_v1alpha1_TopoEntropy(ref),
-		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TopoNodes":                                     schema_pkg_apis_topo_v1alpha1_TopoNodes(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HostInfo":                                      schema_pkg_apis_topo_v1alpha1_HostInfo(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo":                                       schema_pkg_apis_topo_v1alpha1_MemInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Traffic":                                       schema_pkg_apis_topo_v1alpha1_Traffic(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TrafficList":                                   schema_pkg_apis_topo_v1alpha1_TrafficList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TrafficSpec":                                   schema_pkg_apis_topo_v1alpha1_TrafficSpec(ref),
@@ -7284,6 +7289,111 @@ func schema_pkg_apis_topo_v1alpha1_CloudTencent(ref common.ReferenceCallback) co
 	}
 }
 
+func schema_pkg_apis_topo_v1alpha1_CpuInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "CpuInfo represents the CPU information of a host.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"total": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"idle": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+				},
+				Required: []string{"total", "idle"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_EntropyInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "EntropyInfo represents the entropy information of a cluster.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"mismatch": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"sparsity": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"zone_mismatch": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+				},
+				Required: []string{"mismatch", "sparsity", "zone_mismatch"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_GpuInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GpuInfo represents the information of a GPU device.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"index": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"idle": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
+					"process": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"index", "idle"},
+			},
+		},
+	}
+}
+
 func schema_pkg_apis_topo_v1alpha1_GpuPrice(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -7325,11 +7435,88 @@ func schema_pkg_apis_topo_v1alpha1_GpuPrice(ref common.ReferenceCallback) common
 	}
 }
 
+func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GpuTypeInfo represents the GPU type information.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"gpuTotal": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"gpuIdle": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"gpuMem": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"gpuMemIdle": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"cpu": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"cpuIdle": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"memTotal": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"memIdle": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+				},
+				Required: []string{"name", "gpuTotal", "gpuIdle", "gpuMem", "gpuMemIdle", "cpu", "cpuIdle", "memTotal", "memIdle"},
+			},
+		},
+	}
+}
+
 func schema_pkg_apis_topo_v1alpha1_Hardware(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "Hardware represents the desired state and status of a member cluster.",
+				Description: "Hardware represents the hardware information of a cluster.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -7422,97 +7609,134 @@ func schema_pkg_apis_topo_v1alpha1_HardwareList(ref common.ReferenceCallback) co
 	}
 }
 
-func schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_topo_v1alpha1_HardwareNode(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "HardwareSpec represents the specification of the desired behavior of Hardware.",
+				Description: "HardwareNode represents the hardware information of a specific node in a cluster.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"clusterName": {
+					"kind": {
 						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
-					"timestamp": {
+					"apiVersion": {
 						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
-					"provider": {
+					"metadata": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
 						},
 					},
-					"region": {
+					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeSpec"),
 						},
 					},
-					"zone": {
+					"status": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeStatus"),
 						},
 					},
-					"zones": {
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeSpec", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNodeStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_HardwareNodeList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HardwareNodeList contains a list of HardwareNode",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: "",
-										Type:    []string{"string"},
-										Format:  "",
-									},
-								},
-							},
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
-					"taints": {
+					"apiVersion": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Items holds a list of HardwareNode.",
+							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("k8s.io/api/core/v1.Taint"),
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNode"),
 									},
 								},
 							},
 						},
 					},
-					"hardwares": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardwares"),
-						},
-					},
 				},
-				Required: []string{"clusterName", "timestamp"},
+				Required: []string{"metadata", "items"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardwares", "k8s.io/api/core/v1.Taint"},
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HardwareNode", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_topo_v1alpha1_HardwareStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_topo_v1alpha1_HardwareNodeSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "HardwareStatus represents the status of Hardware.",
+				Description: "HardwareNodeSpec represents the specification of the HardwareNode.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"phase": {
+					"host": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HostInfo"),
+						},
+					},
+				},
+				Required: []string{"host"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HostInfo"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_HardwareNodeStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HardwareNodeStatus represents the status of HardwareNode.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"lastHeartbeatTime": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
 						},
 					},
 					"conditions": {
@@ -7532,7 +7756,68 @@ func schema_pkg_apis_topo_v1alpha1_HardwareStatus(ref common.ReferenceCallback) 
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Condition", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HardwareSpec represents the specification of the Hardware.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"clusterName": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"hardwares": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardwares"),
+						},
+					},
+				},
+				Required: []string{"clusterName", "hardwares"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardwares"},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_HardwareStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HardwareStatus represents the status of Hardware.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"lastHeartbeatTime": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Condition", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -7540,67 +7825,101 @@ func schema_pkg_apis_topo_v1alpha1_Hardwares(ref common.ReferenceCallback) commo
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "Hardwares represents the hardware information of a cluster.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"nodes": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TopoNodes"),
-						},
-					},
 					"entropy": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TopoEntropy"),
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.EntropyInfo"),
+						},
+					},
+					"gpuType": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuTypeInfo"),
+									},
+								},
+							},
 						},
 					},
 				},
-				Required: []string{"nodes", "entropy"},
+				Required: []string{"entropy", "gpuType"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TopoEntropy", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.TopoNodes"},
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.EntropyInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuTypeInfo"},
 	}
 }
 
-func schema_pkg_apis_topo_v1alpha1_NodeCpu(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "HostInfo represents the detailed hardware information of a host.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"total": {
+					"name": {
 						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
 						},
 					},
-					"usage": {
+					"gpuType": {
 						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"cudaVersion": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"gpu": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo"),
+									},
+								},
+							},
+						},
+					},
+					"cpu": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo"),
+						},
+					},
+					"mem": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"),
 						},
 					},
 				},
-				Required: []string{"total", "usage"},
+				Required: []string{"name", "cpu", "mem"},
 			},
 		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"},
 	}
 }
 
-func schema_pkg_apis_topo_v1alpha1_NodeGpu(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_topo_v1alpha1_MemInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "MemInfo represents the memory information of a host.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"mem": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
 					"total": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
@@ -7616,116 +7935,9 @@ func schema_pkg_apis_topo_v1alpha1_NodeGpu(ref common.ReferenceCallback) common.
 						},
 					},
 				},
-				Required: []string{"mem", "total", "idle"},
+				Required: []string{"total", "idle"},
 			},
 		},
-	}
-}
-
-func schema_pkg_apis_topo_v1alpha1_NodeMem(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
-				Properties: map[string]spec.Schema{
-					"total": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"usage": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-				},
-				Required: []string{"total", "usage"},
-			},
-		},
-	}
-}
-
-func schema_pkg_apis_topo_v1alpha1_TopoEntropy(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
-				Properties: map[string]spec.Schema{
-					"sparsity": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"mismatch": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"zone_mismatch": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-				},
-				Required: []string{"sparsity", "mismatch", "zone_mismatch"},
-			},
-		},
-	}
-}
-
-func schema_pkg_apis_topo_v1alpha1_TopoNodes(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
-				Properties: map[string]spec.Schema{
-					"num": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"gpus": {
-						SchemaProps: spec.SchemaProps{
-							Type: []string{"object"},
-							AdditionalProperties: &spec.SchemaOrBool{
-								Allows: true,
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeGpu"),
-									},
-								},
-							},
-						},
-					},
-					"cpu": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeCpu"),
-						},
-					},
-					"mem": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeMem"),
-						},
-					},
-				},
-				Required: []string{"num", "gpus", "cpu", "mem"},
-			},
-		},
-		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeCpu", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeGpu", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.NodeMem"},
 	}
 }
 

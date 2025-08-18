@@ -30,6 +30,7 @@ type TopoV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	CloudsGetter
 	HardwaresGetter
+	HardwareNodesGetter
 	TrafficsGetter
 }
 
@@ -42,8 +43,12 @@ func (c *TopoV1alpha1Client) Clouds() CloudInterface {
 	return newClouds(c)
 }
 
-func (c *TopoV1alpha1Client) Hardwares(namespace string) HardwareInterface {
-	return newHardwares(c, namespace)
+func (c *TopoV1alpha1Client) Hardwares() HardwareInterface {
+	return newHardwares(c)
+}
+
+func (c *TopoV1alpha1Client) HardwareNodes() HardwareNodeInterface {
+	return newHardwareNodes(c)
 }
 
 func (c *TopoV1alpha1Client) Traffics() TrafficInterface {

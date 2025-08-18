@@ -22,4 +22,6 @@ type CloudExpansion interface{}
 
 type HardwareExpansion interface{}
 
+type HardwareNodeExpansion interface{}
+
 type TrafficExpansion interface{}

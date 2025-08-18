@@ -4,22 +4,23 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.18.0
-  name: hardwares.topo.karmada.io
+  name: hardwarenodes.topo.karmada.io
 spec:
   group: topo.karmada.io
   names:
-    kind: Hardware
-    listKind: HardwareList
-    plural: hardwares
+    kind: HardwareNode
+    listKind: HardwareNodeList
+    plural: hardwarenodes
     shortNames:
-    - hw
-    singular: hardware
+    - hd
+    singular: hardwarenode
   scope: Cluster
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Hardware represents the hardware information of a cluster.
+        description: HardwareNode represents the hardware information of a specific
+          node in a cluster.
         properties:
           apiVersion:
             description: |-
@@ -39,83 +40,72 @@ spec:
           metadata:
             type: object
           spec:
-            description: HardwareSpec represents the specification of the Hardware.
+            description: HardwareNodeSpec represents the specification of the HardwareNode.
             properties:
-              clusterName:
-                type: string
-              hardwares:
-                description: Hardwares represents the hardware information of a cluster.
+              host:
+                description: HostInfo represents the detailed hardware information
+                  of a host.
                 properties:
-                  entropy:
-                    description: EntropyInfo represents the entropy information of
-                      a cluster.
+                  cpu:
+                    description: CpuInfo represents the CPU information of a host.
                     properties:
-                      mismatch:
+                      idle:
                         format: int64
                         type: integer
-                      sparsity:
-                        format: int64
-                        type: integer
-                      zone_mismatch:
+                      total:
                         format: int64
                         type: integer
                     required:
-                    - mismatch
-                    - sparsity
-                    - zone_mismatch
+                    - idle
+                    - total
                     type: object
-                  gpuType:
+                  cudaVersion:
+                    type: string
+                  gpu:
                     items:
-                      description: GpuTypeInfo represents the GPU type information.
+                      description: GpuInfo represents the information of a GPU device.
                       properties:
-                        cpu:
+                        idle:
+                          type: boolean
+                        index:
                           format: int64
                           type: integer
-                        cpuIdle:
-                          format: int64
-                          type: integer
-                        gpuIdle:
-                          format: int64
-                          type: integer
-                        gpuMem:
-                          format: int64
-                          type: integer
-                        gpuMemIdle:
-                          format: int64
-                          type: integer
-                        gpuTotal:
-                          format: int64
-                          type: integer
-                        memIdle:
-                          format: int64
-                          type: integer
-                        memTotal:
-                          format: int64
-                          type: integer
-                        name:
-                          type: string
+                        process:
+                          items:
+                            type: string
+                          type: array
                       required:
-                      - cpu
-                      - cpuIdle
-                      - gpuIdle
-                      - gpuMem
-                      - gpuMemIdle
-                      - gpuTotal
-                      - memIdle
-                      - memTotal
-                      - name
+                      - idle
+                      - index
                       type: object
                     type: array
+                  gpuType:
+                    type: string
+                  mem:
+                    description: MemInfo represents the memory information of a host.
+                    properties:
+                      idle:
+                        format: int64
+                        type: integer
+                      total:
+                        format: int64
+                        type: integer
+                    required:
+                    - idle
+                    - total
+                    type: object
+                  name:
+                    type: string
                 required:
-                - entropy
-                - gpuType
+                - cpu
+                - mem
+                - name
                 type: object
             required:
-            - clusterName
-            - hardwares
+            - host
             type: object
           status:
-            description: HardwareStatus represents the status of Hardware.
+            description: HardwareNodeStatus represents the status of HardwareNode.
             properties:
               conditions:
                 items:
@@ -180,5 +170,3 @@ spec:
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}

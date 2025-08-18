@@ -24,24 +24,26 @@ import (
 	gentype "k8s.io/client-go/gentype"
 )
 
-// fakeHardwares implements HardwareInterface
-type fakeHardwares struct {
-	*gentype.FakeClientWithList[*v1alpha1.Hardware, *v1alpha1.HardwareList]
+// fakeHardwareNodes implements HardwareNodeInterface
+type fakeHardwareNodes struct {
+	*gentype.FakeClientWithList[*v1alpha1.HardwareNode, *v1alpha1.HardwareNodeList]
 	Fake *FakeTopoV1alpha1
 }
 
-func newFakeHardwares(fake *FakeTopoV1alpha1) topov1alpha1.HardwareInterface {
-	return &fakeHardwares{
-		gentype.NewFakeClientWithList[*v1alpha1.Hardware, *v1alpha1.HardwareList](
+func newFakeHardwareNodes(fake *FakeTopoV1alpha1) topov1alpha1.HardwareNodeInterface {
+	return &fakeHardwareNodes{
+		gentype.NewFakeClientWithList[*v1alpha1.HardwareNode, *v1alpha1.HardwareNodeList](
 			fake.Fake,
 			"",
-			v1alpha1.SchemeGroupVersion.WithResource("hardwares"),
-			v1alpha1.SchemeGroupVersion.WithKind("Hardware"),
-			func() *v1alpha1.Hardware { return &v1alpha1.Hardware{} },
-			func() *v1alpha1.HardwareList { return &v1alpha1.HardwareList{} },
-			func(dst, src *v1alpha1.HardwareList) { dst.ListMeta = src.ListMeta },
-			func(list *v1alpha1.HardwareList) []*v1alpha1.Hardware { return gentype.ToPointerSlice(list.Items) },
-			func(list *v1alpha1.HardwareList, items []*v1alpha1.Hardware) {
+			v1alpha1.SchemeGroupVersion.WithResource("hardwarenodes"),
+			v1alpha1.SchemeGroupVersion.WithKind("HardwareNode"),
+			func() *v1alpha1.HardwareNode { return &v1alpha1.HardwareNode{} },
+			func() *v1alpha1.HardwareNodeList { return &v1alpha1.HardwareNodeList{} },
+			func(dst, src *v1alpha1.HardwareNodeList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.HardwareNodeList) []*v1alpha1.HardwareNode {
+				return gentype.ToPointerSlice(list.Items)
+			},
+			func(list *v1alpha1.HardwareNodeList, items []*v1alpha1.HardwareNode) {
 				list.Items = gentype.FromPointerSlice(items)
 			},
 		),

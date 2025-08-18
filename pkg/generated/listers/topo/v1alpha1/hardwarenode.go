@@ -25,24 +25,24 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// HardwareLister helps list Hardwares.
+// HardwareNodeLister helps list HardwareNodes.
 // All objects returned here must be treated as read-only.
-type HardwareLister interface {
-	// List lists all Hardwares in the indexer.
+type HardwareNodeLister interface {
+	// List lists all HardwareNodes in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*topov1alpha1.Hardware, err error)
-	// Get retrieves the Hardware from the index for a given name.
+	List(selector labels.Selector) (ret []*topov1alpha1.HardwareNode, err error)
+	// Get retrieves the HardwareNode from the index for a given name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*topov1alpha1.Hardware, error)
-	HardwareListerExpansion
+	Get(name string) (*topov1alpha1.HardwareNode, error)
+	HardwareNodeListerExpansion
 }
 
-// hardwareLister implements the HardwareLister interface.
-type hardwareLister struct {
-	listers.ResourceIndexer[*topov1alpha1.Hardware]
+// hardwareNodeLister implements the HardwareNodeLister interface.
+type hardwareNodeLister struct {
+	listers.ResourceIndexer[*topov1alpha1.HardwareNode]
 }
 
-// NewHardwareLister returns a new HardwareLister.
-func NewHardwareLister(indexer cache.Indexer) HardwareLister {
-	return &hardwareLister{listers.New[*topov1alpha1.Hardware](indexer, topov1alpha1.Resource("hardware"))}
+// NewHardwareNodeLister returns a new HardwareNodeLister.
+func NewHardwareNodeLister(indexer cache.Indexer) HardwareNodeLister {
+	return &hardwareNodeLister{listers.New[*topov1alpha1.HardwareNode](indexer, topov1alpha1.Resource("hardwarenode"))}
 }

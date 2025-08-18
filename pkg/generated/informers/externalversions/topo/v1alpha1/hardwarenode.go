@@ -32,70 +32,70 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// HardwareInformer provides access to a shared informer and lister for
-// Hardwares.
-type HardwareInformer interface {
+// HardwareNodeInformer provides access to a shared informer and lister for
+// HardwareNodes.
+type HardwareNodeInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() topov1alpha1.HardwareLister
+	Lister() topov1alpha1.HardwareNodeLister
 }
 
-type hardwareInformer struct {
+type hardwareNodeInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 }
 
-// NewHardwareInformer constructs a new informer for Hardware type.
+// NewHardwareNodeInformer constructs a new informer for HardwareNode type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewHardwareInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredHardwareInformer(client, resyncPeriod, indexers, nil)
+func NewHardwareNodeInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredHardwareNodeInformer(client, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredHardwareInformer constructs a new informer for Hardware type.
+// NewFilteredHardwareNodeInformer constructs a new informer for HardwareNode type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredHardwareInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredHardwareNodeInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.TopoV1alpha1().Hardwares().List(context.Background(), options)
+				return client.TopoV1alpha1().HardwareNodes().List(context.Background(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.TopoV1alpha1().Hardwares().Watch(context.Background(), options)
+				return client.TopoV1alpha1().HardwareNodes().Watch(context.Background(), options)
 			},
 			ListWithContextFunc: func(ctx context.Context, options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.TopoV1alpha1().Hardwares().List(ctx, options)
+				return client.TopoV1alpha1().HardwareNodes().List(ctx, options)
 			},
 			WatchFuncWithContext: func(ctx context.Context, options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.TopoV1alpha1().Hardwares().Watch(ctx, options)
+				return client.TopoV1alpha1().HardwareNodes().Watch(ctx, options)
 			},
 		},
-		&apistopov1alpha1.Hardware{},
+		&apistopov1alpha1.HardwareNode{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *hardwareInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredHardwareInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *hardwareNodeInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredHardwareNodeInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *hardwareInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&apistopov1alpha1.Hardware{}, f.defaultInformer)
+func (f *hardwareNodeInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&apistopov1alpha1.HardwareNode{}, f.defaultInformer)
 }
 
-func (f *hardwareInformer) Lister() topov1alpha1.HardwareLister {
-	return topov1alpha1.NewHardwareLister(f.Informer().GetIndexer())
+func (f *hardwareNodeInformer) Lister() topov1alpha1.HardwareNodeLister {
+	return topov1alpha1.NewHardwareNodeLister(f.Informer().GetIndexer())
 }

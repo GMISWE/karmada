@@ -120,6 +120,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Clouds().Informer()}, nil
 	case topov1alpha1.SchemeGroupVersion.WithResource("hardwares"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Hardwares().Informer()}, nil
+	case topov1alpha1.SchemeGroupVersion.WithResource("hardwarenodes"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().HardwareNodes().Informer()}, nil
 	case topov1alpha1.SchemeGroupVersion.WithResource("traffics"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Traffics().Informer()}, nil
 

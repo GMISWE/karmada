@@ -28,6 +28,8 @@ type Interface interface {
 	Clouds() CloudInformer
 	// Hardwares returns a HardwareInformer.
 	Hardwares() HardwareInformer
+	// HardwareNodes returns a HardwareNodeInformer.
+	HardwareNodes() HardwareNodeInformer
 	// Traffics returns a TrafficInformer.
 	Traffics() TrafficInformer
 }
@@ -50,7 +52,12 @@ func (v *version) Clouds() CloudInformer {
 
 // Hardwares returns a HardwareInformer.
 func (v *version) Hardwares() HardwareInformer {
-	return &hardwareInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+	return &hardwareInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// HardwareNodes returns a HardwareNodeInformer.
+func (v *version) HardwareNodes() HardwareNodeInformer {
+	return &hardwareNodeInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
 // Traffics returns a TrafficInformer.

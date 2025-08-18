@@ -32,7 +32,7 @@ import (
 // HardwaresGetter has a method to return a HardwareInterface.
 // A group's client should implement this interface.
 type HardwaresGetter interface {
-	Hardwares(namespace string) HardwareInterface
+	Hardwares() HardwareInterface
 }
 
 // HardwareInterface has methods to work with Hardware resources.
@@ -56,13 +56,13 @@ type hardwares struct {
 }
 
 // newHardwares returns a Hardwares
-func newHardwares(c *TopoV1alpha1Client, namespace string) *hardwares {
+func newHardwares(c *TopoV1alpha1Client) *hardwares {
 	return &hardwares{
 		gentype.NewClientWithList[*topov1alpha1.Hardware, *topov1alpha1.HardwareList](
 			"hardwares",
 			c.RESTClient(),
 			scheme.ParameterCodec,
-			namespace,
+			"",
 			func() *topov1alpha1.Hardware { return &topov1alpha1.Hardware{} },
 			func() *topov1alpha1.HardwareList { return &topov1alpha1.HardwareList{} },
 		),
