@@ -41,6 +41,10 @@ spec:
           spec:
             description: HardwareSpec represents the specification of the Hardware.
             properties:
+              Region:
+                type: string
+              Zone:
+                type: string
               clusterName:
                 type: string
               hardwares:

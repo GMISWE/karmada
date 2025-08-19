@@ -48,6 +48,10 @@ type Hardware struct {
 type HardwareSpec struct {
 	// +required
 	ClusterName string `json:"clusterName"`
+	// +optional
+	Region string `json:"Region,omitempty"`
+	// +optional
+	Zone string `json:"Zone,omitempty"`
 	// +required
 	Hardwares *Hardwares `json:"hardwares"`
 }

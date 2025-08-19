@@ -33,6 +33,7 @@ const (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:storageversion
 // +kubebuilder:resource:scope=Cluster,shortName=hd
+// +kubebuilder:subresource:status
 
 // HardwareNode represents the hardware information of a specific node in a cluster.
 type HardwareNode struct {

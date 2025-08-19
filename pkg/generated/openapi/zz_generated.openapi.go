@@ -7774,6 +7774,18 @@ func schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref common.ReferenceCallback) co
 							Format:  "",
 						},
 					},
+					"Region": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"Zone": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
 					"hardwares": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.Hardwares"),
