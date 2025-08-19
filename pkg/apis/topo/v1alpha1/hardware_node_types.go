@@ -58,6 +58,8 @@ type HostInfo struct {
 	// +optional
 	CudaVersion string `json:"cudaVersion,omitempty"`
 	// +optional
+	GpuFailure []string `json:"gpuFailure,omitempty"`
+	// +optional
 	Gpu []GpuInfo `json:"gpu,omitempty"`
 	// +required
 	Cpu *CpuInfo `json:"cpu"`

@@ -79,6 +79,10 @@ spec:
                       - index
                       type: object
                     type: array
+                  gpuFailure:
+                    items:
+                      type: string
+                    type: array
                   gpuType:
                     type: string
                   mem:
