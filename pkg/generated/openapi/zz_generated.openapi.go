@@ -7452,57 +7452,57 @@ func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) com
 					"gpuTotal": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"gpuIdle": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"gpuMem": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"gpuMemIdle": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"cpu": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"cpuIdle": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"memTotal": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 					"memIdle": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
+							Type:    []string{"number"},
+							Format:  "double",
 						},
 					},
 				},
