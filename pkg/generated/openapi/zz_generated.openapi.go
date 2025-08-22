@@ -7477,7 +7477,7 @@ func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) com
 							Format:  "int64",
 						},
 					},
-					"cpu": {
+					"cpuTotal": {
 						SchemaProps: spec.SchemaProps{
 							Default: 0,
 							Type:    []string{"integer"},
@@ -7506,7 +7506,7 @@ func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) com
 						},
 					},
 				},
-				Required: []string{"name", "gpuTotal", "gpuIdle", "gpuMem", "gpuMemIdle", "cpu", "cpuIdle", "memTotal", "memIdle"},
+				Required: []string{"name", "gpuTotal", "gpuIdle", "gpuMem", "gpuMemIdle", "cpuTotal", "cpuIdle", "memTotal", "memIdle"},
 			},
 		},
 	}

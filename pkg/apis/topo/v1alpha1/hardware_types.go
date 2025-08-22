@@ -87,7 +87,7 @@ type GpuTypeInfo struct {
 	// +required
 	GpuMemIdle int64 `json:"gpuMemIdle"`
 	// +required
-	CpuTotal int64 `json:"cpu"`
+	CpuTotal int64 `json:"cpuTotal"`
 	// +required
 	CpuIdle int64 `json:"cpuIdle"`
 	// +required

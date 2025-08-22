@@ -72,10 +72,10 @@ spec:
                     items:
                       description: GpuTypeInfo represents the GPU type information.
                       properties:
-                        cpu:
+                        cpuIdle:
                           format: int64
                           type: integer
-                        cpuIdle:
+                        cpuTotal:
                           format: int64
                           type: integer
                         gpuIdle:
@@ -99,8 +99,8 @@ spec:
                         name:
                           type: string
                       required:
-                      - cpu
                       - cpuIdle
+                      - cpuTotal
                       - gpuIdle
                       - gpuMem
                       - gpuMemIdle
