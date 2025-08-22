@@ -79,21 +79,21 @@ type GpuTypeInfo struct {
 	// +required
 	Name string `json:"name"`
 	// +required
-	GpuTotal float64 `json:"gpuTotal"`
+	GpuTotal int64 `json:"gpuTotal"`
 	// +required
-	GpuIdle float64 `json:"gpuIdle"`
+	GpuIdle int64 `json:"gpuIdle"`
 	// +required
-	GpuMem float64 `json:"gpuMem"`
+	GpuMem int64 `json:"gpuMem"`
 	// +required
-	GpuMemIdle float64 `json:"gpuMemIdle"`
+	GpuMemIdle int64 `json:"gpuMemIdle"`
 	// +required
-	CpuTotal float64 `json:"cpu"`
+	CpuTotal int64 `json:"cpu"`
 	// +required
-	CpuIdle float64 `json:"cpuIdle"`
+	CpuIdle int64 `json:"cpuIdle"`
 	// +required
-	MemTotal float64 `json:"memTotal"`
+	MemTotal int64 `json:"memTotal"`
 	// +required
-	MemIdle float64 `json:"memIdle"`
+	MemIdle int64 `json:"memIdle"`
 }
 
 // HardwareStatus represents the status of Hardware.

@@ -21,7 +21,18 @@ package externalversions
 import (
 	fmt "fmt"
 
-	v1alpha1 "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1"
+	v1alpha1 "github.com/karmada-io/karmada/pkg/apis/apps/v1alpha1"
+	autoscalingv1alpha1 "github.com/karmada-io/karmada/pkg/apis/autoscaling/v1alpha1"
+	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
+	configv1alpha1 "github.com/karmada-io/karmada/pkg/apis/config/v1alpha1"
+	networkingv1alpha1 "github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1"
+	policyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1"
+	remedyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/remedy/v1alpha1"
+	searchv1alpha1 "github.com/karmada-io/karmada/pkg/apis/search/v1alpha1"
+	storagev1alpha1 "github.com/karmada-io/karmada/pkg/apis/storage/v1alpha1"
+	topov1alpha1 "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1"
+	workv1alpha1 "github.com/karmada-io/karmada/pkg/apis/work/v1alpha1"
+	v1alpha2 "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 )
@@ -52,15 +63,81 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=topo.karmada.io, Version=v1alpha1
-	case v1alpha1.SchemeGroupVersion.WithResource("clouds"):
+	// Group=apps.karmada.io, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithResource("workloadrebalancers"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Apps().V1alpha1().WorkloadRebalancers().Informer()}, nil
+
+		// Group=autoscaling.karmada.io, Version=v1alpha1
+	case autoscalingv1alpha1.SchemeGroupVersion.WithResource("cronfederatedhpas"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Autoscaling().V1alpha1().CronFederatedHPAs().Informer()}, nil
+	case autoscalingv1alpha1.SchemeGroupVersion.WithResource("federatedhpas"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Autoscaling().V1alpha1().FederatedHPAs().Informer()}, nil
+
+		// Group=cluster.karmada.io, Version=v1alpha1
+	case clusterv1alpha1.SchemeGroupVersion.WithResource("clusters"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Cluster().V1alpha1().Clusters().Informer()}, nil
+
+		// Group=config.karmada.io, Version=v1alpha1
+	case configv1alpha1.SchemeGroupVersion.WithResource("resourceinterpretercustomizations"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Config().V1alpha1().ResourceInterpreterCustomizations().Informer()}, nil
+	case configv1alpha1.SchemeGroupVersion.WithResource("resourceinterpreterwebhookconfigurations"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Config().V1alpha1().ResourceInterpreterWebhookConfigurations().Informer()}, nil
+
+		// Group=networking.karmada.io, Version=v1alpha1
+	case networkingv1alpha1.SchemeGroupVersion.WithResource("multiclusteringresses"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Networking().V1alpha1().MultiClusterIngresses().Informer()}, nil
+	case networkingv1alpha1.SchemeGroupVersion.WithResource("multiclusterservices"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Networking().V1alpha1().MultiClusterServices().Informer()}, nil
+
+		// Group=policy.karmada.io, Version=v1alpha1
+	case policyv1alpha1.SchemeGroupVersion.WithResource("clusteroverridepolicies"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Policy().V1alpha1().ClusterOverridePolicies().Informer()}, nil
+	case policyv1alpha1.SchemeGroupVersion.WithResource("clusterpropagationpolicies"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Policy().V1alpha1().ClusterPropagationPolicies().Informer()}, nil
+	case policyv1alpha1.SchemeGroupVersion.WithResource("clustertaintpolicies"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Policy().V1alpha1().ClusterTaintPolicies().Informer()}, nil
+	case policyv1alpha1.SchemeGroupVersion.WithResource("federatedresourcequotas"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Policy().V1alpha1().FederatedResourceQuotas().Informer()}, nil
+	case policyv1alpha1.SchemeGroupVersion.WithResource("overridepolicies"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Policy().V1alpha1().OverridePolicies().Informer()}, nil
+	case policyv1alpha1.SchemeGroupVersion.WithResource("propagationpolicies"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Policy().V1alpha1().PropagationPolicies().Informer()}, nil
+
+		// Group=remedy.karmada.io, Version=v1alpha1
+	case remedyv1alpha1.SchemeGroupVersion.WithResource("remedies"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Remedy().V1alpha1().Remedies().Informer()}, nil
+
+		// Group=search.karmada.io, Version=v1alpha1
+	case searchv1alpha1.SchemeGroupVersion.WithResource("resourceregistries"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Search().V1alpha1().ResourceRegistries().Informer()}, nil
+
+		// Group=storage.karmada.io, Version=v1alpha1
+	case storagev1alpha1.SchemeGroupVersion.WithResource("juicefses"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Storage().V1alpha1().Juicefses().Informer()}, nil
+
+		// Group=topo.karmada.io, Version=v1alpha1
+	case topov1alpha1.SchemeGroupVersion.WithResource("clouds"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Clouds().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("hardwares"):
+	case topov1alpha1.SchemeGroupVersion.WithResource("hardwares"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Hardwares().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("hardwarenodes"):
+	case topov1alpha1.SchemeGroupVersion.WithResource("hardwarenodes"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().HardwareNodes().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("traffics"):
+	case topov1alpha1.SchemeGroupVersion.WithResource("traffics"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Topo().V1alpha1().Traffics().Informer()}, nil
+
+		// Group=work.karmada.io, Version=v1alpha1
+	case workv1alpha1.SchemeGroupVersion.WithResource("clusterresourcebindings"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Work().V1alpha1().ClusterResourceBindings().Informer()}, nil
+	case workv1alpha1.SchemeGroupVersion.WithResource("resourcebindings"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Work().V1alpha1().ResourceBindings().Informer()}, nil
+	case workv1alpha1.SchemeGroupVersion.WithResource("works"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Work().V1alpha1().Works().Informer()}, nil
+
+		// Group=work.karmada.io, Version=v1alpha2
+	case v1alpha2.SchemeGroupVersion.WithResource("clusterresourcebindings"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Work().V1alpha2().ClusterResourceBindings().Informer()}, nil
+	case v1alpha2.SchemeGroupVersion.WithResource("resourcebindings"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Work().V1alpha2().ResourceBindings().Informer()}, nil
 
 	}
 

@@ -1493,7 +1493,6 @@ func (r *Request) transformUnstructuredResponseError(resp *http.Response, req *h
 			body = data
 		}
 	}
-
 	retryAfter, _ := retryAfterSeconds(resp)
 	return r.newUnstructuredResponseError(body, isTextResponse(resp), resp.StatusCode, req.Method, retryAfter)
 }

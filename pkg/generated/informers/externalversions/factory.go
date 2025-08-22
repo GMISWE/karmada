@@ -24,8 +24,18 @@ import (
 	time "time"
 
 	versioned "github.com/karmada-io/karmada/pkg/generated/clientset/versioned"
+	apps "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/apps"
+	autoscaling "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/autoscaling"
+	cluster "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/cluster"
+	config "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/config"
 	internalinterfaces "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/internalinterfaces"
+	networking "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/networking"
+	policy "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/policy"
+	remedy "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/remedy"
+	search "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/search"
+	storage "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/storage"
 	topo "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/topo"
+	work "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/work"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -254,9 +264,59 @@ type SharedInformerFactory interface {
 	// client.
 	InformerFor(obj runtime.Object, newFunc internalinterfaces.NewInformerFunc) cache.SharedIndexInformer
 
+	Apps() apps.Interface
+	Autoscaling() autoscaling.Interface
+	Cluster() cluster.Interface
+	Config() config.Interface
+	Networking() networking.Interface
+	Policy() policy.Interface
+	Remedy() remedy.Interface
+	Search() search.Interface
+	Storage() storage.Interface
 	Topo() topo.Interface
+	Work() work.Interface
+}
+
+func (f *sharedInformerFactory) Apps() apps.Interface {
+	return apps.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Autoscaling() autoscaling.Interface {
+	return autoscaling.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Cluster() cluster.Interface {
+	return cluster.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Config() config.Interface {
+	return config.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Networking() networking.Interface {
+	return networking.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Policy() policy.Interface {
+	return policy.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Remedy() remedy.Interface {
+	return remedy.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Search() search.Interface {
+	return search.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Storage() storage.Interface {
+	return storage.New(f, f.namespace, f.tweakListOptions)
 }
 
 func (f *sharedInformerFactory) Topo() topo.Interface {
 	return topo.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Work() work.Interface {
+	return work.New(f, f.namespace, f.tweakListOptions)
 }

@@ -73,21 +73,29 @@ spec:
                       description: GpuTypeInfo represents the GPU type information.
                       properties:
                         cpu:
-                          type: number
+                          format: int64
+                          type: integer
                         cpuIdle:
-                          type: number
+                          format: int64
+                          type: integer
                         gpuIdle:
-                          type: number
+                          format: int64
+                          type: integer
                         gpuMem:
-                          type: number
+                          format: int64
+                          type: integer
                         gpuMemIdle:
-                          type: number
+                          format: int64
+                          type: integer
                         gpuTotal:
-                          type: number
+                          format: int64
+                          type: integer
                         memIdle:
-                          type: number
+                          format: int64
+                          type: integer
                         memTotal:
-                          type: number
+                          format: int64
+                          type: integer
                         name:
                           type: string
                       required:
