@@ -49,9 +49,9 @@ type HardwareSpec struct {
 	// +required
 	ClusterName string `json:"clusterName"`
 	// +optional
-	Region string `json:"Region,omitempty"`
+	Region string `json:"region,omitempty"`
 	// +optional
-	Provider string `json:"Provider,omitempty"`
+	Provider string `json:"provider,omitempty"`
 	// +required
 	Hardwares *Hardwares `json:"hardwares"`
 }

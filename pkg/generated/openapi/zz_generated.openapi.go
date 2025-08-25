@@ -7802,13 +7802,13 @@ func schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref common.ReferenceCallback) co
 							Format:  "",
 						},
 					},
-					"Region": {
+					"region": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",
 						},
 					},
-					"Provider": {
+					"provider": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",

@@ -41,10 +41,6 @@ spec:
           spec:
             description: HardwareSpec represents the specification of the Hardware.
             properties:
-              Provider:
-                type: string
-              Region:
-                type: string
               clusterName:
                 type: string
               hardwares:
@@ -114,6 +110,10 @@ spec:
                 - entropy
                 - gpuType
                 type: object
+              provider:
+                type: string
+              region:
+                type: string
             required:
             - clusterName
             - hardwares
