@@ -51,7 +51,7 @@ type HardwareSpec struct {
 	// +optional
 	Region string `json:"Region,omitempty"`
 	// +optional
-	Zone string `json:"Zone,omitempty"`
+	Provider string `json:"Provider,omitempty"`
 	// +required
 	Hardwares *Hardwares `json:"hardwares"`
 }

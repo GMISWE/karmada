@@ -61,21 +61,28 @@ type HostInfo struct {
 	// +optional
 	GpuFailure []string `json:"gpuFailure,omitempty"`
 	// +optional
-	Gpu []GpuInfo `json:"gpu,omitempty"`
+	Gpu *GpuInfo `json:"gpu,omitempty"`
 	// +required
 	Cpu *CpuInfo `json:"cpu"`
 	// +required
 	Mem *MemInfo `json:"mem"`
+	// +optional
+	Gpus []GpuDetail `json:"gpus"`
 }
 
-// GpuInfo represents the information of a GPU device.
-type GpuInfo struct {
+// GpuDetail represents the information of a GPU device.
+type GpuDetail struct {
 	// +required
 	Index int64 `json:"index"`
 	// +required
 	Idle bool `json:"idle"`
 	// +optional
 	Process []string `json:"process,omitempty"`
+}
+
+type GpuInfo struct {
+	Total int64 `json:"total"`
+	Idle  int64 `json:"idle"`
 }
 
 // CpuInfo represents the CPU information of a host.

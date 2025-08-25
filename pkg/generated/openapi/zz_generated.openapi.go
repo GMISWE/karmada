@@ -186,6 +186,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CloudTencent":                                  schema_pkg_apis_topo_v1alpha1_CloudTencent(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo":                                       schema_pkg_apis_topo_v1alpha1_CpuInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.EntropyInfo":                                   schema_pkg_apis_topo_v1alpha1_EntropyInfo(ref),
+		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail":                                     schema_pkg_apis_topo_v1alpha1_GpuDetail(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo":                                       schema_pkg_apis_topo_v1alpha1_GpuInfo(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuPrice":                                      schema_pkg_apis_topo_v1alpha1_GpuPrice(ref),
 		"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuTypeInfo":                                   schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref),
@@ -7352,11 +7353,11 @@ func schema_pkg_apis_topo_v1alpha1_EntropyInfo(ref common.ReferenceCallback) com
 	}
 }
 
-func schema_pkg_apis_topo_v1alpha1_GpuInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_topo_v1alpha1_GpuDetail(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "GpuInfo represents the information of a GPU device.",
+				Description: "GpuDetail represents the information of a GPU device.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"index": {
@@ -7389,6 +7390,33 @@ func schema_pkg_apis_topo_v1alpha1_GpuInfo(ref common.ReferenceCallback) common.
 					},
 				},
 				Required: []string{"index", "idle"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_topo_v1alpha1_GpuInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"total": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"idle": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+				},
+				Required: []string{"total", "idle"},
 			},
 		},
 	}
@@ -7780,7 +7808,7 @@ func schema_pkg_apis_topo_v1alpha1_HardwareSpec(ref common.ReferenceCallback) co
 							Format: "",
 						},
 					},
-					"Zone": {
+					"Provider": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",
@@ -7909,15 +7937,7 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 					},
 					"gpu": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo"),
-									},
-								},
-							},
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo"),
 						},
 					},
 					"cpu": {
@@ -7930,12 +7950,25 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"),
 						},
 					},
+					"gpus": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail"),
+									},
+								},
+							},
+						},
+					},
 				},
 				Required: []string{"name", "cpu", "mem"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"},
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"},
 	}
 }
 

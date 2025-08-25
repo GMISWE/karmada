@@ -62,8 +62,26 @@ spec:
                   cudaVersion:
                     type: string
                   gpu:
+                    properties:
+                      idle:
+                        format: int64
+                        type: integer
+                      total:
+                        format: int64
+                        type: integer
+                    required:
+                    - idle
+                    - total
+                    type: object
+                  gpuFailure:
                     items:
-                      description: GpuInfo represents the information of a GPU device.
+                      type: string
+                    type: array
+                  gpuType:
+                    type: string
+                  gpus:
+                    items:
+                      description: GpuDetail represents the information of a GPU device.
                       properties:
                         idle:
                           type: boolean
@@ -79,12 +97,6 @@ spec:
                       - index
                       type: object
                     type: array
-                  gpuFailure:
-                    items:
-                      type: string
-                    type: array
-                  gpuType:
-                    type: string
                   mem:
                     description: MemInfo represents the memory information of a host.
                     properties:
