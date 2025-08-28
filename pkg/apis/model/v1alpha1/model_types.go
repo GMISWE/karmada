@@ -20,6 +20,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	ResourceKindModel            = "Model"
+	ResourcePluralModel          = "models"
+	ResourceSingularModel        = "model"
+	ResourceNamespaceScopedModel = false
+)
+
 type ModelType string
 
 const (
