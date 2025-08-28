@@ -85,6 +85,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/config/v1alpha1.RuleWithOperations":                          schema_pkg_apis_config_v1alpha1_RuleWithOperations(ref),
 		"github.com/karmada-io/karmada/pkg/apis/config/v1alpha1.StatusAggregation":                           schema_pkg_apis_config_v1alpha1_StatusAggregation(ref),
 		"github.com/karmada-io/karmada/pkg/apis/config/v1alpha1.StatusReflection":                            schema_pkg_apis_config_v1alpha1_StatusReflection(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig":                                  schema_pkg_apis_model_v1alpha1_AudioConfig(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig":                                    schema_pkg_apis_model_v1alpha1_LLMConfig(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Model":                                        schema_pkg_apis_model_v1alpha1_Model(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelList":                                    schema_pkg_apis_model_v1alpha1_ModelList(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec":                                    schema_pkg_apis_model_v1alpha1_ModelSpec(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig":                                  schema_pkg_apis_model_v1alpha1_VideoConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ClusterSelector":                         schema_pkg_apis_networking_v1alpha1_ClusterSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ExposurePort":                            schema_pkg_apis_networking_v1alpha1_ExposurePort(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ExposureRange":                           schema_pkg_apis_networking_v1alpha1_ExposureRange(ref),
@@ -3101,6 +3107,278 @@ func schema_pkg_apis_config_v1alpha1_StatusReflection(ref common.ReferenceCallba
 					},
 				},
 				Required: []string{"luaScript"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_AudioConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"parameterSize": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"runArgs": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"parameterSize", "runArgs"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_LLMConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"parameterSize": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"runArgs": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"parameterSize", "runArgs"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_Model(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec represents the desired behavior of Model.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec"),
+						},
+					},
+				},
+				Required: []string{"metadata", "spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_ModelList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Model"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"metadata", "items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Model", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"modelType": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"modelName": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"modelVersion": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"modelPath": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"modelImage": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"minReplicas": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"maxReplicas": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"llmConfig": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig"),
+						},
+					},
+					"videoConfig": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig"),
+						},
+					},
+					"audioConfig": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig"),
+						},
+					},
+				},
+				Required: []string{"modelType", "modelName", "modelVersion", "modelPath", "modelImage"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_VideoConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"parameterSize": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"runArgs": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"parameterSize", "runArgs"},
 			},
 		},
 	}

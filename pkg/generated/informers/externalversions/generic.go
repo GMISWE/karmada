@@ -25,6 +25,7 @@ import (
 	autoscalingv1alpha1 "github.com/karmada-io/karmada/pkg/apis/autoscaling/v1alpha1"
 	clusterv1alpha1 "github.com/karmada-io/karmada/pkg/apis/cluster/v1alpha1"
 	configv1alpha1 "github.com/karmada-io/karmada/pkg/apis/config/v1alpha1"
+	modelv1alpha1 "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1"
 	networkingv1alpha1 "github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1"
 	policyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1"
 	remedyv1alpha1 "github.com/karmada-io/karmada/pkg/apis/remedy/v1alpha1"
@@ -82,6 +83,10 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Config().V1alpha1().ResourceInterpreterCustomizations().Informer()}, nil
 	case configv1alpha1.SchemeGroupVersion.WithResource("resourceinterpreterwebhookconfigurations"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Config().V1alpha1().ResourceInterpreterWebhookConfigurations().Informer()}, nil
+
+		// Group=model.karmada.io, Version=v1alpha1
+	case modelv1alpha1.SchemeGroupVersion.WithResource("models"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Model().V1alpha1().Models().Informer()}, nil
 
 		// Group=networking.karmada.io, Version=v1alpha1
 	case networkingv1alpha1.SchemeGroupVersion.WithResource("multiclusteringresses"):

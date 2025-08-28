@@ -29,6 +29,7 @@ import (
 	cluster "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/cluster"
 	config "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/config"
 	internalinterfaces "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/internalinterfaces"
+	model "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/model"
 	networking "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/networking"
 	policy "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/policy"
 	remedy "github.com/karmada-io/karmada/pkg/generated/informers/externalversions/remedy"
@@ -268,6 +269,7 @@ type SharedInformerFactory interface {
 	Autoscaling() autoscaling.Interface
 	Cluster() cluster.Interface
 	Config() config.Interface
+	Model() model.Interface
 	Networking() networking.Interface
 	Policy() policy.Interface
 	Remedy() remedy.Interface
@@ -291,6 +293,10 @@ func (f *sharedInformerFactory) Cluster() cluster.Interface {
 
 func (f *sharedInformerFactory) Config() config.Interface {
 	return config.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Model() model.Interface {
+	return model.New(f, f.namespace, f.tweakListOptions)
 }
 
 func (f *sharedInformerFactory) Networking() networking.Interface {
