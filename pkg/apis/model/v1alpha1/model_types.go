@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -81,6 +82,10 @@ type ModelSpec struct {
 	ModelPath string `json:"modelPath"`
 	// +required
 	ModelImage string `json:"modelImage"` // 模型镜像
+	// +optional
+	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
+	// +optional
+	Env []corev1.EnvVar `json:"env,omitempty"`
 
 	// +optional
 	MinReplicas int `json:"minReplicas,omitempty"` // 最小副本数，如果为0，则默认模型可以自动下线
