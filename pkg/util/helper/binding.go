@@ -200,6 +200,20 @@ func ObtainBindingSpecExistingClusters(bindingSpec workv1alpha2.ResourceBindingS
 	return clusterNames
 }
 
+// ObtainClustersWithPurgeModeDirectly will obtain the cluster slice whose eviction tasks are with PurgeModeDirectly.
+func ObtainClustersWithPurgeModeDirectly(bindingSpec workv1alpha2.ResourceBindingSpec) sets.Set[string] {
+	clusterNames := sets.New[string]()
+	for _, task := range bindingSpec.GracefulEvictionTasks {
+		//nolint:staticcheck
+		// disable `deprecation` check for backward compatibility.
+		if task.PurgeMode == policyv1alpha1.PurgeModeDirectly ||
+			task.PurgeMode == policyv1alpha1.Immediately {
+			clusterNames.Insert(task.FromCluster)
+		}
+	}
+	return clusterNames
+}
+
 // FindOrphanWorks retrieves all works that labeled with current binding(ResourceBinding or ClusterResourceBinding) objects,
 // then pick the works that not meet current binding declaration.
 func FindOrphanWorks(ctx context.Context, c client.Client, bindingNamespace, bindingName, bindingID string, expectClusters sets.Set[string]) ([]workv1alpha1.Work, error) {
@@ -239,6 +253,29 @@ func RemoveOrphanWorks(ctx context.Context, c client.Client, works []workv1alpha
 		klog.Infof("Delete orphan work %s/%s successfully.", work.GetNamespace(), work.GetName())
 	}
 	return errors.NewAggregate(errs)
+}
+
+// FindWorksInClusters retrieves works that belong to the specified clusters.
+func FindWorksInClusters(ctx context.Context, c client.Client, bindingNamespace, bindingName, bindingID string, targetClusters sets.Set[string]) ([]workv1alpha1.Work, error) {
+	workList, err := GetWorksByBindingID(ctx, c, bindingID, bindingNamespace != "")
+	if err != nil {
+		klog.Errorf("Failed to get works by binding object (%s/%s): %v", bindingNamespace, bindingName, err)
+		return nil, err
+	}
+
+	var filteredWorks []workv1alpha1.Work
+	for _, work := range workList.Items {
+		workTargetCluster, err := names.GetClusterName(work.GetNamespace())
+		if err != nil {
+			klog.Errorf("Failed to get cluster name for Work %s/%s. Error: %v", work.GetNamespace(), work.GetName(), err)
+			return nil, err
+		}
+		if targetClusters.Has(workTargetCluster) {
+			filteredWorks = append(filteredWorks, work)
+		}
+	}
+
+	return filteredWorks, nil
 }
 
 // FetchResourceTemplate fetches the resource template to be propagated.
@@ -487,4 +524,110 @@ func ConstructObjectReference(rs policyv1alpha1.ResourceSelector) workv1alpha2.O
 		Namespace:  rs.Namespace,
 		Name:       rs.Name,
 	}
+}
+
+// CalculateResourceUsage calculates the total resource usage based on the ResourceBinding.
+func CalculateResourceUsage(rb *workv1alpha2.ResourceBinding) corev1.ResourceList {
+	if rb == nil {
+		return corev1.ResourceList{}
+	}
+
+	usage := corev1.ResourceList{}
+
+	// if Components is set, calculate the resource usage based on Components.
+	if len(rb.Spec.Components) > 0 {
+		clusterCount := int64(len(rb.Spec.Clusters))
+		if clusterCount == 0 {
+			return corev1.ResourceList{}
+		}
+
+		resourceRequestPerSet := aggregateComponentResources(rb.Spec.Components)
+
+		for resourceName, quantityPerCluster := range resourceRequestPerSet {
+			if quantityPerCluster.IsZero() {
+				continue
+			}
+
+			totalQuantity := quantityPerCluster.DeepCopy()
+			totalQuantity.Mul(clusterCount)
+
+			usage[resourceName] = totalQuantity
+		}
+
+		return usage
+	}
+
+	// if Components is not set, calculate the resource usage based on ReplicaRequirements.
+	if rb.Spec.ReplicaRequirements != nil && len(rb.Spec.ReplicaRequirements.ResourceRequest) > 0 {
+		totalReplicas := int32(0)
+		for _, cluster := range rb.Spec.Clusters {
+			totalReplicas += cluster.Replicas
+		}
+		if totalReplicas == 0 {
+			return corev1.ResourceList{}
+		}
+		replicaCount := int64(totalReplicas)
+
+		for resourceName, quantityPerReplica := range rb.Spec.ReplicaRequirements.ResourceRequest {
+			if quantityPerReplica.IsZero() {
+				continue
+			}
+
+			totalQuantity := quantityPerReplica.DeepCopy()
+			totalQuantity.Mul(replicaCount)
+
+			usage[resourceName] = totalQuantity
+		}
+
+		return usage
+	}
+
+	return usage
+}
+
+func aggregateComponentResources(components []workv1alpha2.Component) corev1.ResourceList {
+	aggregatedResources := corev1.ResourceList{}
+	for _, component := range components {
+		if component.ReplicaRequirements == nil || len(component.ReplicaRequirements.ResourceRequest) == 0 {
+			continue
+		}
+
+		componentReplicas := component.Replicas
+		if componentReplicas == 0 {
+			continue
+		}
+
+		for resourceName, quantity := range component.ReplicaRequirements.ResourceRequest {
+			if quantity.IsZero() {
+				continue
+			}
+
+			totalComponentQuantity := quantity.DeepCopy()
+			totalComponentQuantity.Mul(int64(componentReplicas))
+
+			existing, found := aggregatedResources[resourceName]
+			if found {
+				existing.Add(totalComponentQuantity)
+				aggregatedResources[resourceName] = existing
+			} else {
+				aggregatedResources[resourceName] = totalComponentQuantity
+			}
+		}
+	}
+	return aggregatedResources
+}
+
+// FindTargetStatusItemByCluster finds the AggregatedStatusItem by cluster name.
+func FindTargetStatusItemByCluster(aggregatedStatusItems []workv1alpha2.AggregatedStatusItem, cluster string) (workv1alpha2.AggregatedStatusItem, bool) {
+	if len(aggregatedStatusItems) == 0 {
+		return workv1alpha2.AggregatedStatusItem{}, false
+	}
+
+	for index, statusItem := range aggregatedStatusItems {
+		if statusItem.ClusterName == cluster {
+			return aggregatedStatusItems[index], true
+		}
+	}
+
+	return workv1alpha2.AggregatedStatusItem{}, false
 }

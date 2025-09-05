@@ -234,7 +234,8 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.BindingSnapshot":                               schema_pkg_apis_work_v1alpha2_BindingSnapshot(ref),
 		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ClusterResourceBinding":                        schema_pkg_apis_work_v1alpha2_ClusterResourceBinding(ref),
 		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ClusterResourceBindingList":                    schema_pkg_apis_work_v1alpha2_ClusterResourceBindingList(ref),
-		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ComponentRequirements":                         schema_pkg_apis_work_v1alpha2_ComponentRequirements(ref),
+		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.Component":                                     schema_pkg_apis_work_v1alpha2_Component(ref),
+		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ComponentReplicaRequirements":                  schema_pkg_apis_work_v1alpha2_ComponentReplicaRequirements(ref),
 		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.GracefulEvictionTask":                          schema_pkg_apis_work_v1alpha2_GracefulEvictionTask(ref),
 		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.NodeClaim":                                     schema_pkg_apis_work_v1alpha2_NodeClaim(ref),
 		"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ObjectReference":                               schema_pkg_apis_work_v1alpha2_ObjectReference(ref),
@@ -2131,7 +2132,7 @@ func schema_pkg_apis_config_v1alpha1_ComponentResourceRequirement(ref common.Ref
 				Properties: map[string]spec.Schema{
 					"luaScript": {
 						SchemaProps: spec.SchemaProps{
-							Description: "LuaScript holds the Lua script that is used to extract the desired replica count and resource requirements for each component of the resource.\n\nThe script should implement a function as follows:\n\n```\n  luaScript: >\n      function GetComponents(desiredObj)\n          local components = {}\n\n          local jobManagerComponent = {\n              name = \"jobmanager\"\n              replicas = desiredObj.spec.jobManager.replicas\n          }\n          table.insert(components, jobManagerComponent)\n\n          local taskManagerComponent = {\n              name = \"taskmanager\"\n              replicas = desiredObj.spec.taskManager.replicas\n          }\n          table.insert(components, taskManagerComponent)\n\n          return components\n      end\n```\n\nThe content of the LuaScript needs to be a whole function including both declaration and implementation.\n\nThe parameters will be supplied by the system:\n  - desiredObj: the object represents the configuration to be applied\n      to the member cluster.\n\nThe function expects one return value:\n  - components: the resource requirements for each component.\nThe returned value will be set into a ResourceBinding or ClusterResourceBinding.",
+							Description: "LuaScript holds the Lua script that is used to extract the desired replica count and resource requirements for each component of the resource.\n\nThe script should implement a function as follows:\n\n```\n  luaScript: >\n      function GetComponents(desiredObj)\n          local components = {}\n\n          local jobManagerComponent = {\n              name = \"jobmanager\",\n              replicas = desiredObj.spec.jobManager.replicas\n          }\n          table.insert(components, jobManagerComponent)\n\n          local taskManagerComponent = {\n              name = \"taskmanager\",\n              replicas = desiredObj.spec.taskManager.replicas\n          }\n          table.insert(components, taskManagerComponent)\n\n          return components\n      end\n```\n\nThe content of the LuaScript needs to be a whole function including both declaration and implementation.\n\nThe parameters will be supplied by the system:\n  - desiredObj: the object represents the configuration to be applied\n      to the member cluster.\n\nThe function expects one return value:\n  - components: the resource requirements for each component.\nThe returned value will be set into a ResourceBinding or ClusterResourceBinding.",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -9448,16 +9449,17 @@ func schema_pkg_apis_work_v1alpha2_ClusterResourceBindingList(ref common.Referen
 	}
 }
 
-func schema_pkg_apis_work_v1alpha2_ComponentRequirements(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_work_v1alpha2_Component(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "ComponentRequirements represents the requirements for a specific component.",
+				Description: "Component represents the requirements for a specific component.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"name": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Name of this component. It is required when the resource contains multiple components to ensure proper identification, and must also be unique within the same resource.",
+							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -9473,15 +9475,57 @@ func schema_pkg_apis_work_v1alpha2_ComponentRequirements(ref common.ReferenceCal
 					"replicaRequirements": {
 						SchemaProps: spec.SchemaProps{
 							Description: "ReplicaRequirements represents the requirements required by each replica for this component.",
-							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ReplicaRequirements"),
+							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ComponentReplicaRequirements"),
 						},
 					},
 				},
-				Required: []string{"replicas"},
+				Required: []string{"name", "replicas"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ReplicaRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ComponentReplicaRequirements"},
+	}
+}
+
+func schema_pkg_apis_work_v1alpha2_ComponentReplicaRequirements(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentReplicaRequirements represents the requirements required by each replica.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"nodeClaim": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NodeClaim represents the node claim HardNodeAffinity, NodeSelector and Tolerations required by each replica.",
+							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.NodeClaim"),
+						},
+					},
+					"resourceRequest": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ResourceRequest represents the resources required by each replica.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
+					"priorityClassName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PriorityClassName represents the resources priorityClassName",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.NodeClaim", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 
@@ -9898,7 +9942,7 @@ func schema_pkg_apis_work_v1alpha2_ResourceBindingSpec(ref common.ReferenceCallb
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ComponentRequirements"),
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.Component"),
 									},
 								},
 							},
@@ -10002,7 +10046,7 @@ func schema_pkg_apis_work_v1alpha2_ResourceBindingSpec(ref common.ReferenceCallb
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1.FailoverBehavior", "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1.Placement", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.BindingSnapshot", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ComponentRequirements", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.GracefulEvictionTask", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ObjectReference", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ReplicaRequirements", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.SchedulePriority", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.Suspension", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.TargetCluster", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1.FailoverBehavior", "github.com/karmada-io/karmada/pkg/apis/policy/v1alpha1.Placement", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.BindingSnapshot", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.Component", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.GracefulEvictionTask", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ObjectReference", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.ReplicaRequirements", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.SchedulePriority", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.Suspension", "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2.TargetCluster", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 

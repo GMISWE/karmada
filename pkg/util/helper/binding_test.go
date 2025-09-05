@@ -22,11 +22,13 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/dynamic"
@@ -604,6 +606,196 @@ func TestFindOrphanWorks(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("FindOrphanWorks() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFindWorksInClusters(t *testing.T) {
+	type args struct {
+		c                client.Client
+		bindingNamespace string
+		bindingName      string
+		bindingID        string
+		targetClusters   sets.Set[string]
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []workv1alpha1.Work
+		wantErr bool
+	}{
+		{
+			name: "namespace scope: no works in target clusters",
+			args: args{
+				c: fake.NewClientBuilder().WithScheme(gclient.NewSchema()).WithObjects(
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work1",
+							Namespace:       names.ExecutionSpacePrefix + "cluster1",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ResourceBindingPermanentIDLabel: "binding-id",
+							},
+						},
+					},
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work2",
+							Namespace:       names.ExecutionSpacePrefix + "cluster2",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ResourceBindingPermanentIDLabel: "binding-id",
+							},
+						},
+					},
+				).WithIndex(
+					&workv1alpha1.Work{},
+					indexregistry.WorkIndexByLabelResourceBindingID,
+					indexregistry.GenLabelIndexerFunc(workv1alpha2.ResourceBindingPermanentIDLabel),
+				).Build(),
+				bindingNamespace: "default",
+				bindingName:      "test-binding",
+				bindingID:        "binding-id",
+				targetClusters:   sets.New("cluster3"),
+			},
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name: "namespace scope: some works in target clusters",
+			args: args{
+				c: fake.NewClientBuilder().WithScheme(gclient.NewSchema()).WithObjects(
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work1",
+							Namespace:       names.ExecutionSpacePrefix + "cluster1",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ResourceBindingPermanentIDLabel: "binding-id",
+							},
+						},
+					},
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work2",
+							Namespace:       names.ExecutionSpacePrefix + "cluster2",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ResourceBindingPermanentIDLabel: "binding-id",
+							},
+						},
+					},
+				).WithIndex(
+					&workv1alpha1.Work{},
+					indexregistry.WorkIndexByLabelResourceBindingID,
+					indexregistry.GenLabelIndexerFunc(workv1alpha2.ResourceBindingPermanentIDLabel),
+				).Build(),
+				bindingNamespace: "default",
+				bindingName:      "test-binding",
+				bindingID:        "binding-id",
+				targetClusters:   sets.New("cluster1"),
+			},
+			want: []workv1alpha1.Work{
+				{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:            "work1",
+						Namespace:       names.ExecutionSpacePrefix + "cluster1",
+						ResourceVersion: "999",
+						Labels: map[string]string{
+							workv1alpha2.ResourceBindingPermanentIDLabel: "binding-id",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "namespace scope: error getting cluster name",
+			args: args{
+				c: fake.NewClientBuilder().WithScheme(gclient.NewSchema()).WithObjects(
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work1",
+							Namespace:       "invalid-namespace",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ResourceBindingPermanentIDLabel: "binding-id",
+							},
+						},
+					},
+				).WithIndex(
+					&workv1alpha1.Work{},
+					indexregistry.WorkIndexByLabelResourceBindingID,
+					indexregistry.GenLabelIndexerFunc(workv1alpha2.ResourceBindingPermanentIDLabel),
+				).Build(),
+				bindingNamespace: "default",
+				bindingName:      "test-binding",
+				bindingID:        "binding-id",
+				targetClusters:   sets.New("cluster1"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "cluster scope: some works in target clusters",
+			args: args{
+				c: fake.NewClientBuilder().WithScheme(gclient.NewSchema()).WithObjects(
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work3",
+							Namespace:       names.ExecutionSpacePrefix + "clusterA",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ClusterResourceBindingPermanentIDLabel: "cluster-binding-id",
+							},
+						},
+					},
+					&workv1alpha1.Work{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:            "work4",
+							Namespace:       names.ExecutionSpacePrefix + "clusterB",
+							ResourceVersion: "999",
+							Labels: map[string]string{
+								workv1alpha2.ClusterResourceBindingPermanentIDLabel: "cluster-binding-id",
+							},
+						},
+					},
+				).WithIndex(
+					&workv1alpha1.Work{},
+					indexregistry.WorkIndexByLabelClusterResourceBindingID,
+					indexregistry.GenLabelIndexerFunc(workv1alpha2.ClusterResourceBindingPermanentIDLabel),
+				).Build(),
+				bindingNamespace: "",
+				bindingName:      "cluster-binding",
+				bindingID:        "cluster-binding-id",
+				targetClusters:   sets.New("clusterA"),
+			},
+			want: []workv1alpha1.Work{
+				{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:            "work3",
+						Namespace:       names.ExecutionSpacePrefix + "clusterA",
+						ResourceVersion: "999",
+						Labels: map[string]string{
+							workv1alpha2.ClusterResourceBindingPermanentIDLabel: "cluster-binding-id",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := FindWorksInClusters(context.TODO(), tt.args.c, tt.args.bindingNamespace, tt.args.bindingName, tt.args.bindingID, tt.args.targetClusters)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FindWorksInClusters() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindWorksInClusters() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -1253,6 +1445,260 @@ func TestConstructClusterWideKey(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ConstructClusterWideKey() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func compareResourceLists(t *testing.T, expected, actual corev1.ResourceList) {
+	for resourceName, expectedQuantity := range expected {
+		actualQuantity, exists := actual[resourceName]
+		assert.True(t, exists, "Resource %s is missing in actual result", resourceName)
+		assert.Equal(t, expectedQuantity.Value(), actualQuantity.Value(), "Resource %s value mismatch", resourceName)
+		assert.Equal(t, expectedQuantity.Format, actualQuantity.Format, "Resource %s format mismatch", resourceName)
+	}
+	assert.Equal(t, len(expected), len(actual), "Resource list length mismatch")
+}
+
+func TestCalculateResourceUsage(t *testing.T) {
+	tests := []struct {
+		name     string
+		rb       *workv1alpha2.ResourceBinding
+		expected corev1.ResourceList
+	}{
+		{
+			name: "Calculate usage with components",
+			rb: &workv1alpha2.ResourceBinding{
+				Spec: workv1alpha2.ResourceBindingSpec{
+					Clusters: []workv1alpha2.TargetCluster{
+						{Name: "cluster1"},
+						{Name: "cluster2"},
+					},
+					Components: []workv1alpha2.Component{
+						{
+							Replicas: 2,
+							ReplicaRequirements: &workv1alpha2.ComponentReplicaRequirements{
+								ResourceRequest: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("500m"),
+									corev1.ResourceMemory: resource.MustParse("1Gi"),
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("2"),
+				corev1.ResourceMemory: resource.MustParse("4Gi"),
+			},
+		},
+		{
+			name: "Calculate usage with replica requirements",
+			rb: &workv1alpha2.ResourceBinding{
+				Spec: workv1alpha2.ResourceBindingSpec{
+					Clusters: []workv1alpha2.TargetCluster{
+						{Name: "cluster1", Replicas: 3},
+						{Name: "cluster2", Replicas: 2},
+					},
+					ReplicaRequirements: &workv1alpha2.ReplicaRequirements{
+						ResourceRequest: corev1.ResourceList{
+							corev1.ResourceCPU:    resource.MustParse("1"),
+							corev1.ResourceMemory: resource.MustParse("2Gi"),
+						},
+					},
+				},
+			},
+			expected: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("5"),
+				corev1.ResourceMemory: resource.MustParse("10Gi"),
+			},
+		},
+		{
+			name:     "Nil ResourceBinding",
+			rb:       nil,
+			expected: corev1.ResourceList{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := CalculateResourceUsage(tt.rb)
+			compareResourceLists(t, tt.expected, result)
+		})
+	}
+}
+
+func TestAggregateComponentResources(t *testing.T) {
+	tests := []struct {
+		name       string
+		components []workv1alpha2.Component
+		expected   corev1.ResourceList
+	}{
+		{
+			name: "Aggregate resources from components",
+			components: []workv1alpha2.Component{
+				{
+					Replicas: 2,
+					ReplicaRequirements: &workv1alpha2.ComponentReplicaRequirements{
+						ResourceRequest: corev1.ResourceList{
+							corev1.ResourceCPU:    resource.MustParse("500m"),
+							corev1.ResourceMemory: resource.MustParse("1Gi"),
+						},
+					},
+				},
+				{
+					Replicas: 3,
+					ReplicaRequirements: &workv1alpha2.ComponentReplicaRequirements{
+						ResourceRequest: corev1.ResourceList{
+							corev1.ResourceCPU:    resource.MustParse("1"),
+							corev1.ResourceMemory: resource.MustParse("2Gi"),
+						},
+					},
+				},
+			},
+			expected: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("4"),
+				corev1.ResourceMemory: resource.MustParse("8Gi"),
+			},
+		},
+		{
+			name: "No components",
+			components: []workv1alpha2.Component{
+				{
+					Replicas: 0,
+					ReplicaRequirements: &workv1alpha2.ComponentReplicaRequirements{
+						ResourceRequest: corev1.ResourceList{
+							corev1.ResourceCPU:    resource.MustParse("500m"),
+							corev1.ResourceMemory: resource.MustParse("1Gi"),
+						},
+					},
+				},
+			},
+			expected: corev1.ResourceList{},
+		},
+		{
+			name:       "Empty components",
+			components: []workv1alpha2.Component{},
+			expected:   corev1.ResourceList{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := aggregateComponentResources(tt.components)
+			compareResourceLists(t, tt.expected, result)
+		})
+	}
+}
+
+func TestFindTargetStatusItemByCluster(t *testing.T) {
+	tests := []struct {
+		name             string
+		aggregatedStatus []workv1alpha2.AggregatedStatusItem
+		cluster          string
+		expectedItem     workv1alpha2.AggregatedStatusItem
+		expectedFound    bool
+	}{
+		{
+			name:             "empty aggregated status list",
+			aggregatedStatus: []workv1alpha2.AggregatedStatusItem{},
+			cluster:          "member1",
+			expectedItem:     workv1alpha2.AggregatedStatusItem{},
+			expectedFound:    false,
+		},
+		{
+			name: "cluster not found in aggregated status list",
+			aggregatedStatus: []workv1alpha2.AggregatedStatusItem{
+				{ClusterName: "member2"},
+				{ClusterName: "member3"},
+			},
+			cluster:       "member1",
+			expectedItem:  workv1alpha2.AggregatedStatusItem{},
+			expectedFound: false,
+		},
+		{
+			name: "cluster found in aggregated status list",
+			aggregatedStatus: []workv1alpha2.AggregatedStatusItem{
+				{ClusterName: "member1", Status: &runtime.RawExtension{Raw: []byte(`{"key": "value"}`)}},
+				{ClusterName: "member2"},
+			},
+			cluster: "member1",
+			expectedItem: workv1alpha2.AggregatedStatusItem{
+				ClusterName: "member1",
+				Status:      &runtime.RawExtension{Raw: []byte(`{"key": "value"}`)},
+			},
+			expectedFound: true,
+		},
+		{
+			name: "multiple clusters with the same name, return the first match",
+			aggregatedStatus: []workv1alpha2.AggregatedStatusItem{
+				{ClusterName: "member1", Status: &runtime.RawExtension{Raw: []byte(`{"key1": "value1"}`)}},
+				{ClusterName: "member1", Status: &runtime.RawExtension{Raw: []byte(`{"key2": "value2"}`)}},
+			},
+			cluster: "member1",
+			expectedItem: workv1alpha2.AggregatedStatusItem{
+				ClusterName: "member1",
+				Status:      &runtime.RawExtension{Raw: []byte(`{"key1": "value1"}`)},
+			},
+			expectedFound: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			item, found := FindTargetStatusItemByCluster(tt.aggregatedStatus, tt.cluster)
+			assert.Equal(t, tt.expectedFound, found)
+			assert.Equal(t, tt.expectedItem.ClusterName, item.ClusterName)
+			if tt.expectedItem.Status != nil && item.Status != nil {
+				assert.Equal(t, tt.expectedItem.Status.Raw, item.Status.Raw)
+			} else {
+				assert.Nil(t, item.Status)
+				assert.Nil(t, tt.expectedItem.Status)
+			}
+		})
+	}
+}
+
+func TestObtainClustersWithPurgeModeDirectly(t *testing.T) {
+	tests := []struct {
+		name         string
+		bindingSpec  workv1alpha2.ResourceBindingSpec
+		wantClusters sets.Set[string]
+	}{
+		{
+			name: "Multiple clusters with different PurgeModes",
+			bindingSpec: workv1alpha2.ResourceBindingSpec{
+				GracefulEvictionTasks: []workv1alpha2.GracefulEvictionTask{
+					{
+						FromCluster: "cluster1",
+						PurgeMode:   policyv1alpha1.PurgeModeDirectly,
+					},
+					{
+						FromCluster: "cluster2",
+						PurgeMode:   policyv1alpha1.PurgeModeDirectly,
+					},
+					{
+						FromCluster: "cluster3",
+						PurgeMode:   policyv1alpha1.PurgeModeGracefully,
+					},
+				},
+			},
+			wantClusters: sets.New("cluster1", "cluster2"),
+		},
+		{
+			name: "Empty GracefulEvictionTasks",
+			bindingSpec: workv1alpha2.ResourceBindingSpec{
+				GracefulEvictionTasks: []workv1alpha2.GracefulEvictionTask{},
+			},
+			wantClusters: sets.New[string](),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotClusters := ObtainClustersWithPurgeModeDirectly(tt.bindingSpec)
+			if !gotClusters.Equal(tt.wantClusters) {
+				t.Errorf("ObtainClustersWithPurgeModeDirectly() = %v, want %v", gotClusters.UnsortedList(), tt.wantClusters.UnsortedList())
 			}
 		})
 	}

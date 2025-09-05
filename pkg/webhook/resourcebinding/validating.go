@@ -26,6 +26,7 @@ import (
 	admissionv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -35,6 +36,7 @@ import (
 	workv1alpha2 "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2"
 	"github.com/karmada-io/karmada/pkg/features"
 	"github.com/karmada-io/karmada/pkg/util"
+	"github.com/karmada-io/karmada/pkg/util/helper"
 )
 
 // ValidatingAdmission validates ResourceBinding object when creating/updating.
@@ -71,7 +73,12 @@ func (v *ValidatingAdmission) Handle(ctx context.Context, req admission.Request)
 		return admission.Denied(err.Error())
 	}
 
-	// further validation can be added here if needed
+	if features.FeatureGate.Enabled(features.MultiplePodTemplatesScheduling) {
+		if err := v.validateComponents(rb.Spec.Components, field.NewPath("spec").Child("components")); err != nil {
+			klog.Errorf("Admission denied for ResourceBinding %s/%s: %v", rb.Namespace, rb.Name, err)
+			return admission.Denied(err.Error())
+		}
+	}
 
 	return admission.Allowed("")
 }
@@ -272,20 +279,12 @@ func (v *ValidatingAdmission) decodeRBs(req admission.Request) (
 }
 
 func (v *ValidatingAdmission) calculateRBUsages(rb, oldRB *workv1alpha2.ResourceBinding) (corev1.ResourceList, corev1.ResourceList, error) {
-	newRbTotalUsage, err := calculateResourceUsage(rb)
-	if err != nil {
-		klog.Errorf("Error calculating resource usage for new ResourceBinding %s/%s: %v", rb.Namespace, rb.Name, err)
-		return nil, nil, apierrors.NewInternalError(err)
-	}
+	newRbTotalUsage := helper.CalculateResourceUsage(rb)
 	klog.V(4).Infof("Calculated total usage for incoming RB %s/%s: %v", rb.Namespace, rb.Name, newRbTotalUsage)
 
 	oldRbTotalUsage := corev1.ResourceList{}
 	if oldRB != nil {
-		oldRbTotalUsage, err = calculateResourceUsage(oldRB)
-		if err != nil {
-			klog.Errorf("Error calculating resource usage for old ResourceBinding %s/%s: %v", oldRB.Namespace, oldRB.Name, err)
-			return nil, nil, apierrors.NewInternalError(err)
-		}
+		oldRbTotalUsage = helper.CalculateResourceUsage(oldRB)
 		klog.V(4).Infof("Calculated total usage for old RB %s/%s: %v", oldRB.Namespace, oldRB.Name, oldRbTotalUsage)
 	}
 	return newRbTotalUsage, oldRbTotalUsage, nil
@@ -331,41 +330,20 @@ func (v *ValidatingAdmission) processSingleFRQ(frqItem *policyv1alpha1.Federated
 	return potentialNewOverallUsedForThisFRQ, msg, nil
 }
 
-func calculateResourceUsage(rb *workv1alpha2.ResourceBinding) (corev1.ResourceList, error) {
-	if rb == nil || rb.Spec.ReplicaRequirements == nil || len(rb.Spec.ReplicaRequirements.ResourceRequest) == 0 || len(rb.Spec.Clusters) == 0 {
-		return corev1.ResourceList{}, nil
-	}
-
-	totalReplicas := int32(0)
-	for _, cluster := range rb.Spec.Clusters {
-		totalReplicas += cluster.Replicas
-	}
-
-	if totalReplicas == 0 {
-		return corev1.ResourceList{}, nil
-	}
-	if totalReplicas < 0 {
-		return nil, fmt.Errorf("total replicas in clusters cannot be negative for RB %s/%s: %d", rb.Namespace, rb.Name, totalReplicas)
-	}
-
-	usage := corev1.ResourceList{}
-	replicaCount := int64(totalReplicas)
-
-	for resourceName, quantityPerReplica := range rb.Spec.ReplicaRequirements.ResourceRequest {
-		if quantityPerReplica.IsZero() {
-			continue
+// validateComponents checks the validity of the Components field in the ResourceBinding.
+func (v *ValidatingAdmission) validateComponents(components []workv1alpha2.Component, fldPath *field.Path) error {
+	var allErrs field.ErrorList
+	componentNames := make(map[string]struct{})
+	for index, component := range components {
+		if len(component.Name) == 0 {
+			allErrs = append(allErrs, field.Invalid(fldPath.Index(index).Child("name"), component.Name, "component names must be non-empty"))
+		} else if _, exists := componentNames[component.Name]; exists {
+			allErrs = append(allErrs, field.Invalid(fldPath.Index(index).Child("name"), component.Name, "component names must be unique"))
+		} else {
+			componentNames[component.Name] = struct{}{}
 		}
-		if quantityPerReplica.Sign() < 0 {
-			return nil, fmt.Errorf("resource request for %s in RB %s/%s has a negative value: %s", resourceName, rb.Namespace, rb.Name, quantityPerReplica.String())
-		}
-
-		totalQuantity := quantityPerReplica.DeepCopy()
-		totalQuantity.Mul(replicaCount)
-
-		usage[resourceName] = totalQuantity
 	}
-	klog.V(4).Infof("Calculated resource usage for ResourceBinding %s/%s: %v", rb.Namespace, rb.Name, usage)
-	return usage, nil
+	return allErrs.ToAggregate()
 }
 
 func isQuotaRelevantFieldChanged(oldRB, newRB *workv1alpha2.ResourceBinding) bool {
@@ -391,7 +369,23 @@ func isQuotaRelevantFieldChanged(oldRB, newRB *workv1alpha2.ResourceBinding) boo
 	for _, c := range newRB.Spec.Clusters {
 		newScheduledReplicas += c.Replicas
 	}
-	return oldScheduledReplicas != newScheduledReplicas
+	if oldScheduledReplicas != newScheduledReplicas {
+		return true
+	}
+	if len(oldRB.Spec.Components) != len(newRB.Spec.Components) {
+		return true
+	}
+	for i := range oldRB.Spec.Components {
+		oldComponent := oldRB.Spec.Components[i]
+		newComponent := newRB.Spec.Components[i]
+		if oldComponent.Replicas != newComponent.Replicas {
+			return true
+		}
+		if !areResourceListsEqual(oldComponent.ReplicaRequirements.ResourceRequest, newComponent.ReplicaRequirements.ResourceRequest) {
+			return true
+		}
+	}
+	return false
 }
 
 func areResourceListsEqual(a, b corev1.ResourceList) bool {

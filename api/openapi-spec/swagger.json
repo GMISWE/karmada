@@ -18477,7 +18477,7 @@
       ],
       "properties": {
         "luaScript": {
-          "description": "LuaScript holds the Lua script that is used to extract the desired replica count and resource requirements for each component of the resource.\n\nThe script should implement a function as follows:\n\n```\n  luaScript: \u003e\n      function GetComponents(desiredObj)\n          local components = {}\n\n          local jobManagerComponent = {\n              name = \"jobmanager\"\n              replicas = desiredObj.spec.jobManager.replicas\n          }\n          table.insert(components, jobManagerComponent)\n\n          local taskManagerComponent = {\n              name = \"taskmanager\"\n              replicas = desiredObj.spec.taskManager.replicas\n          }\n          table.insert(components, taskManagerComponent)\n\n          return components\n      end\n```\n\nThe content of the LuaScript needs to be a whole function including both declaration and implementation.\n\nThe parameters will be supplied by the system:\n  - desiredObj: the object represents the configuration to be applied\n      to the member cluster.\n\nThe function expects one return value:\n  - components: the resource requirements for each component.\nThe returned value will be set into a ResourceBinding or ClusterResourceBinding.",
+          "description": "LuaScript holds the Lua script that is used to extract the desired replica count and resource requirements for each component of the resource.\n\nThe script should implement a function as follows:\n\n```\n  luaScript: \u003e\n      function GetComponents(desiredObj)\n          local components = {}\n\n          local jobManagerComponent = {\n              name = \"jobmanager\",\n              replicas = desiredObj.spec.jobManager.replicas\n          }\n          table.insert(components, jobManagerComponent)\n\n          local taskManagerComponent = {\n              name = \"taskmanager\",\n              replicas = desiredObj.spec.taskManager.replicas\n          }\n          table.insert(components, taskManagerComponent)\n\n          return components\n      end\n```\n\nThe content of the LuaScript needs to be a whole function including both declaration and implementation.\n\nThe parameters will be supplied by the system:\n  - desiredObj: the object represents the configuration to be applied\n      to the member cluster.\n\nThe function expects one return value:\n  - components: the resource requirements for each component.\nThe returned value will be set into a ResourceBinding or ClusterResourceBinding.",
           "type": "string",
           "default": ""
         }
@@ -21212,26 +21212,49 @@
         }
       ]
     },
-    "com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.ComponentRequirements": {
-      "description": "ComponentRequirements represents the requirements for a specific component.",
+    "com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.Component": {
+      "description": "Component represents the requirements for a specific component.",
       "type": "object",
       "required": [
+        "name",
         "replicas"
       ],
       "properties": {
         "name": {
           "description": "Name of this component. It is required when the resource contains multiple components to ensure proper identification, and must also be unique within the same resource.",
-          "type": "string"
+          "type": "string",
+          "default": ""
         },
         "replicaRequirements": {
           "description": "ReplicaRequirements represents the requirements required by each replica for this component.",
-          "$ref": "#/definitions/com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.ReplicaRequirements"
+          "$ref": "#/definitions/com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.ComponentReplicaRequirements"
         },
         "replicas": {
           "description": "Replicas represents the replica number of the resource's component.",
           "type": "integer",
           "format": "int32",
           "default": 0
+        }
+      }
+    },
+    "com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.ComponentReplicaRequirements": {
+      "description": "ComponentReplicaRequirements represents the requirements required by each replica.",
+      "type": "object",
+      "properties": {
+        "nodeClaim": {
+          "description": "NodeClaim represents the node claim HardNodeAffinity, NodeSelector and Tolerations required by each replica.",
+          "$ref": "#/definitions/com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.NodeClaim"
+        },
+        "priorityClassName": {
+          "description": "PriorityClassName represents the resources priorityClassName",
+          "type": "string"
+        },
+        "resourceRequest": {
+          "description": "ResourceRequest represents the resources required by each replica.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/io.k8s.apimachinery.pkg.api.resource.Quantity"
+          }
         }
       }
     },
@@ -21486,7 +21509,7 @@
           "type": "array",
           "items": {
             "default": {},
-            "$ref": "#/definitions/com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.ComponentRequirements"
+            "$ref": "#/definitions/com.github.karmada-io.karmada.pkg.apis.work.v1alpha2.Component"
           }
         },
         "conflictResolution": {

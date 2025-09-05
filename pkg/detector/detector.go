@@ -343,13 +343,26 @@ func (d *ResourceDetector) OnUpdate(oldObj, newObj interface{}) {
 		return
 	}
 
-	resourceChangeByKarmada := eventfilter.ResourceChangeByKarmada(unstructuredOldObj, unstructuredNewObj)
-
-	resourceItem := ResourceItem{
-		Obj:                     newRuntimeObj,
-		ResourceChangeByKarmada: resourceChangeByKarmada,
+	isLazyActivation, err := d.isClaimedByLazyPolicy(unstructuredNewObj)
+	if err != nil {
+		// should never come here
+		klog.Errorf("Failed to check if the object (kind=%s, %s/%s) is bound by lazy policy. err: %v", unstructuredNewObj.GetKind(), unstructuredNewObj.GetNamespace(), unstructuredNewObj.GetName(), err)
 	}
 
+	if isLazyActivation {
+		resourceItem := ResourceItem{
+			Obj:                     newRuntimeObj,
+			ResourceChangeByKarmada: eventfilter.ResourceChangeByKarmada(unstructuredOldObj, unstructuredNewObj),
+		}
+
+		d.Processor.Enqueue(resourceItem)
+		return
+	}
+
+	// For non-lazy policies, it is no need to distinguish whether the change is from Karmada or not.
+	resourceItem := ResourceItem{
+		Obj: newRuntimeObj,
+	}
 	d.Processor.Enqueue(resourceItem)
 }
 
@@ -471,6 +484,7 @@ func (d *ResourceDetector) ApplyPolicy(object *unstructured.Unstructured, object
 			bindingCopy.Spec.Resource = binding.Spec.Resource
 			bindingCopy.Spec.ReplicaRequirements = binding.Spec.ReplicaRequirements
 			bindingCopy.Spec.Replicas = binding.Spec.Replicas
+			bindingCopy.Spec.Components = binding.Spec.Components
 			bindingCopy.Spec.PropagateDeps = binding.Spec.PropagateDeps
 			bindingCopy.Spec.SchedulerName = binding.Spec.SchedulerName
 			bindingCopy.Spec.Placement = binding.Spec.Placement
@@ -478,12 +492,7 @@ func (d *ResourceDetector) ApplyPolicy(object *unstructured.Unstructured, object
 			bindingCopy.Spec.ConflictResolution = binding.Spec.ConflictResolution
 			bindingCopy.Spec.PreserveResourcesOnDeletion = binding.Spec.PreserveResourcesOnDeletion
 			bindingCopy.Spec.SchedulePriority = binding.Spec.SchedulePriority
-			if binding.Spec.Suspension != nil {
-				if bindingCopy.Spec.Suspension == nil {
-					bindingCopy.Spec.Suspension = &workv1alpha2.Suspension{}
-				}
-				bindingCopy.Spec.Suspension.Suspension = binding.Spec.Suspension.Suspension
-			}
+			bindingCopy.Spec.Suspension = util.MergePolicySuspension(bindingCopy.Spec.Suspension, policy.Spec.Suspension)
 			excludeClusterPolicy(bindingCopy)
 			return nil
 		})
@@ -567,6 +576,7 @@ func (d *ResourceDetector) ApplyClusterPolicy(object *unstructured.Unstructured,
 				bindingCopy.Spec.Resource = binding.Spec.Resource
 				bindingCopy.Spec.ReplicaRequirements = binding.Spec.ReplicaRequirements
 				bindingCopy.Spec.Replicas = binding.Spec.Replicas
+				bindingCopy.Spec.Components = binding.Spec.Components
 				bindingCopy.Spec.PropagateDeps = binding.Spec.PropagateDeps
 				bindingCopy.Spec.SchedulerName = binding.Spec.SchedulerName
 				bindingCopy.Spec.Placement = binding.Spec.Placement
@@ -574,12 +584,7 @@ func (d *ResourceDetector) ApplyClusterPolicy(object *unstructured.Unstructured,
 				bindingCopy.Spec.ConflictResolution = binding.Spec.ConflictResolution
 				bindingCopy.Spec.PreserveResourcesOnDeletion = binding.Spec.PreserveResourcesOnDeletion
 				bindingCopy.Spec.SchedulePriority = binding.Spec.SchedulePriority
-				if binding.Spec.Suspension != nil {
-					if bindingCopy.Spec.Suspension == nil {
-						bindingCopy.Spec.Suspension = &workv1alpha2.Suspension{}
-					}
-					bindingCopy.Spec.Suspension.Suspension = binding.Spec.Suspension.Suspension
-				}
+				bindingCopy.Spec.Suspension = util.MergePolicySuspension(bindingCopy.Spec.Suspension, policy.Spec.Suspension)
 				return nil
 			})
 			return err
@@ -622,17 +627,13 @@ func (d *ResourceDetector) ApplyClusterPolicy(object *unstructured.Unstructured,
 				bindingCopy.Spec.Resource = binding.Spec.Resource
 				bindingCopy.Spec.ReplicaRequirements = binding.Spec.ReplicaRequirements
 				bindingCopy.Spec.Replicas = binding.Spec.Replicas
+				bindingCopy.Spec.Components = binding.Spec.Components
 				bindingCopy.Spec.SchedulerName = binding.Spec.SchedulerName
 				bindingCopy.Spec.Placement = binding.Spec.Placement
 				bindingCopy.Spec.Failover = binding.Spec.Failover
 				bindingCopy.Spec.ConflictResolution = binding.Spec.ConflictResolution
 				bindingCopy.Spec.PreserveResourcesOnDeletion = binding.Spec.PreserveResourcesOnDeletion
-				if binding.Spec.Suspension != nil {
-					if bindingCopy.Spec.Suspension == nil {
-						bindingCopy.Spec.Suspension = &workv1alpha2.Suspension{}
-					}
-					bindingCopy.Spec.Suspension.Suspension = binding.Spec.Suspension.Suspension
-				}
+				bindingCopy.Spec.Suspension = util.MergePolicySuspension(bindingCopy.Spec.Suspension, policy.Spec.Suspension)
 				return nil
 			})
 			return err
@@ -1208,7 +1209,7 @@ func (d *ResourceDetector) HandlePropagationPolicyCreationOrUpdate(policy *polic
 		if err != nil {
 			return err
 		}
-		d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: resourceKey, ResourceChangeByKarmada: true})
+		d.enqueueResourceTemplateForPolicyChange(resourceKey, policy.Spec.ActivationPreference)
 	}
 
 	// check whether there are matched RT in waiting list, is so, add it to processor
@@ -1226,7 +1227,7 @@ func (d *ResourceDetector) HandlePropagationPolicyCreationOrUpdate(policy *polic
 
 	for _, key := range matchedKeys {
 		d.RemoveWaiting(key)
-		d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: key, ResourceChangeByKarmada: true})
+		d.enqueueResourceTemplateForPolicyChange(key, policy.Spec.ActivationPreference)
 	}
 
 	// If preemption is enabled, handle the preemption process.
@@ -1275,14 +1276,14 @@ func (d *ResourceDetector) HandleClusterPropagationPolicyCreationOrUpdate(policy
 		if err != nil {
 			return err
 		}
-		d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: resourceKey, ResourceChangeByKarmada: true})
+		d.enqueueResourceTemplateForPolicyChange(resourceKey, policy.Spec.ActivationPreference)
 	}
 	for _, crb := range clusterResourceBindings.Items {
 		resourceKey, err := helper.ConstructClusterWideKey(crb.Spec.Resource)
 		if err != nil {
 			return err
 		}
-		d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: resourceKey, ResourceChangeByKarmada: true})
+		d.enqueueResourceTemplateForPolicyChange(resourceKey, policy.Spec.ActivationPreference)
 	}
 
 	matchedKeys := d.GetMatching(policy.Spec.ResourceSelectors)
@@ -1299,7 +1300,7 @@ func (d *ResourceDetector) HandleClusterPropagationPolicyCreationOrUpdate(policy
 
 	for _, key := range matchedKeys {
 		d.RemoveWaiting(key)
-		d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: key, ResourceChangeByKarmada: true})
+		d.enqueueResourceTemplateForPolicyChange(key, policy.Spec.ActivationPreference)
 	}
 
 	// If preemption is enabled, handle the preemption process.
@@ -1471,4 +1472,22 @@ func (d *ResourceDetector) applyReplicaInterpretation(object *unstructured.Unstr
 	}
 
 	return nil
+}
+
+// enqueueResourceTemplateForPolicyChange enqueues a resource template key for reconciliation in response to a
+// PropagationPolicy or ClusterPropagationPolicy change. If the policy's ActivationPreference is set to Lazy,
+// the ResourceChangeByKarmada flag is set to true, indicating that the resource template is being enqueued
+// due to a policy change and should not be propagated to member clusters. For non-lazy policies, this flag
+// is omitted as the distinction is unnecessary.
+//
+// Note: Setting ResourceChangeByKarmada changes the effective queue key. Mixing both true/false for the same
+// resource may result in two different queue keys being processed concurrently, which can cause race conditions.
+// Therefore, only set ResourceChangeByKarmada in lazy activation mode.
+// For more details, see: https://github.com/karmada-io/karmada/issues/5996.
+func (d *ResourceDetector) enqueueResourceTemplateForPolicyChange(key keys.ClusterWideKey, pref policyv1alpha1.ActivationPreference) {
+	if util.IsLazyActivationEnabled(pref) {
+		d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: key, ResourceChangeByKarmada: true})
+		return
+	}
+	d.Processor.Add(keys.ClusterWideKeyWithConfig{ClusterWideKey: key})
 }
