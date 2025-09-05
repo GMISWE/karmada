@@ -36,6 +36,16 @@ func (in *AudioConfig) DeepCopyInto(out *AudioConfig) {
 			(*out)[key] = val
 		}
 	}
+	if in.Command != nil {
+		in, out := &in.Command, &out.Command
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.Args != nil {
+		in, out := &in.Args, &out.Args
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
@@ -58,6 +68,16 @@ func (in *LLMConfig) DeepCopyInto(out *LLMConfig) {
 		for key, val := range *in {
 			(*out)[key] = val
 		}
+	}
+	if in.Command != nil {
+		in, out := &in.Command, &out.Command
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.Args != nil {
+		in, out := &in.Args, &out.Args
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }
@@ -180,6 +200,16 @@ func (in *VideoConfig) DeepCopyInto(out *VideoConfig) {
 		for key, val := range *in {
 			(*out)[key] = val
 		}
+	}
+	if in.Command != nil {
+		in, out := &in.Command, &out.Command
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.Args != nil {
+		in, out := &in.Args, &out.Args
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }

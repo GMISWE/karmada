@@ -53,22 +53,34 @@ type Model struct {
 type LLMConfig struct {
 	// +required
 	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
-	// +required
+	// +optional
 	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数，json格式，例如：{"temperature": 0.5, "max_tokens": 100}
+	// +optional
+	Command []string `json:"command,omitempty"`
+	// +optional
+	Args []string `json:"args,omitempty"`
 }
 
 type VideoConfig struct {
 	// +required
 	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
-	// +required
+	// +optional
 	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数
+	// +optional
+	Command []string `json:"command,omitempty"`
+	// +optional
+	Args []string `json:"args,omitempty"`
 }
 
 type AudioConfig struct {
 	// +required
 	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
-	// +required
+	// +optional
 	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数
+	// +optional
+	Command []string `json:"command,omitempty"`
+	// +optional
+	Args []string `json:"args,omitempty"`
 }
 
 type ModelSpec struct {
