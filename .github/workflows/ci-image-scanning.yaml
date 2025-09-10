@@ -37,7 +37,7 @@ jobs:
           # 0 indicates all history for all branches and tags.
           fetch-depth: 0
       - name: install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
       - name: Build an image from Dockerfile
@@ -46,7 +46,7 @@ jobs:
           export REGISTRY="docker.io/karmada"
           make image-${{ matrix.target }}
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.33.0
+        uses: aquasecurity/trivy-action@0.33.1
         env:
           ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db
@@ -58,7 +58,7 @@ jobs:
           output: 'trivy-results.sarif'
           cache: false
       - name: display scan results
-        uses: aquasecurity/trivy-action@0.33.0
+        uses: aquasecurity/trivy-action@0.33.1
         env:
           TRIVY_SKIP_DB_UPDATE: true # Avoid updating the vulnerability db as it was cached in the previous step.
         with:
