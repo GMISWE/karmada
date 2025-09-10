@@ -1,0 +1,87 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: meshes.mesh.karmada.io
+spec:
+  group: mesh.karmada.io
+  names:
+    categories:
+    - karmada-io
+    kind: Mesh
+    listKind: MeshList
+    plural: meshes
+    shortNames:
+    - mesh
+    singular: mesh
+  scope: Cluster
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec represents the desired behavior of Mesh.
+            properties:
+              plugins:
+                items:
+                  properties:
+                    config:
+                      type: string
+                    description:
+                      type: string
+                    enabled:
+                      type: boolean
+                    graceful:
+                      type: integer
+                    md5:
+                      type: string
+                    name:
+                      type: string
+                    path:
+                      type: string
+                    symbol:
+                      type: string
+                    version:
+                      type: string
+                  required:
+                  - config
+                  - enabled
+                  - graceful
+                  - md5
+                  - name
+                  - path
+                  - symbol
+                  - version
+                  type: object
+                type: array
+            required:
+            - plugins
+            type: object
+        required:
+        - metadata
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

@@ -28,6 +28,8 @@ import (
 	fakeclusterv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/cluster/v1alpha1/fake"
 	configv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/config/v1alpha1"
 	fakeconfigv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/config/v1alpha1/fake"
+	meshv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/mesh/v1alpha1"
+	fakemeshv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/mesh/v1alpha1/fake"
 	modelv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/model/v1alpha1"
 	fakemodelv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/model/v1alpha1/fake"
 	networkingv1alpha1 "github.com/karmada-io/karmada/pkg/generated/clientset/versioned/typed/networking/v1alpha1"
@@ -130,6 +132,11 @@ func (c *Clientset) ClusterV1alpha1() clusterv1alpha1.ClusterV1alpha1Interface {
 // ConfigV1alpha1 retrieves the ConfigV1alpha1Client
 func (c *Clientset) ConfigV1alpha1() configv1alpha1.ConfigV1alpha1Interface {
 	return &fakeconfigv1alpha1.FakeConfigV1alpha1{Fake: &c.Fake}
+}
+
+// MeshV1alpha1 retrieves the MeshV1alpha1Client
+func (c *Clientset) MeshV1alpha1() meshv1alpha1.MeshV1alpha1Interface {
+	return &fakemeshv1alpha1.FakeMeshV1alpha1{Fake: &c.Fake}
 }
 
 // ModelV1alpha1 retrieves the ModelV1alpha1Client
