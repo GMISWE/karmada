@@ -21,3 +21,7 @@ package v1alpha1
 // ModelListerExpansion allows custom methods to be added to
 // ModelLister.
 type ModelListerExpansion interface{}
+
+// ModelNamespaceListerExpansion allows custom methods to be added to
+// ModelNamespaceLister.
+type ModelNamespaceListerExpansion interface{}

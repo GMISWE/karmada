@@ -25,7 +25,7 @@ const (
 	ResourceKindModel            = "Model"
 	ResourcePluralModel          = "models"
 	ResourceSingularModel        = "model"
-	ResourceNamespaceScopedModel = false
+	ResourceNamespaceScopedModel = true
 )
 
 type ModelType string
@@ -37,7 +37,6 @@ const (
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:resource:path=models,scope=Namespaced,shortName=m,categories={karmada-io}
 // +kubebuilder:modelversion
@@ -51,7 +50,7 @@ type Model struct {
 }
 
 type LLMConfig struct {
-	// +required
+	// +optional
 	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
 	// +optional
 	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数，json格式，例如：{"temperature": 0.5, "max_tokens": 100}
@@ -62,7 +61,7 @@ type LLMConfig struct {
 }
 
 type VideoConfig struct {
-	// +required
+	// +optional
 	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
 	// +optional
 	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数
@@ -73,7 +72,7 @@ type VideoConfig struct {
 }
 
 type AudioConfig struct {
-	// +required
+	// +optional
 	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
 	// +optional
 	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数
@@ -88,9 +87,9 @@ type ModelSpec struct {
 	ModelType ModelType `json:"modelType"` // 模型类型：LLM、Video、Audio
 	// +required
 	ModelName string `json:"modelName"`
-	// +required
+	// +optional
 	ModelVersion string `json:"modelVersion"`
-	// +required
+	// +optional
 	ModelPath string `json:"modelPath"`
 	// +required
 	ModelImage string `json:"modelImage"` // 模型镜像

@@ -3382,7 +3382,6 @@ func schema_pkg_apis_model_v1alpha1_AudioConfig(ref common.ReferenceCallback) co
 						},
 					},
 				},
-				Required: []string{"parameterSize"},
 			},
 		},
 	}
@@ -3445,7 +3444,6 @@ func schema_pkg_apis_model_v1alpha1_LLMConfig(ref common.ReferenceCallback) comm
 						},
 					},
 				},
-				Required: []string{"parameterSize"},
 			},
 		},
 	}
@@ -3629,7 +3627,7 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 						},
 					},
 				},
-				Required: []string{"modelType", "modelName", "modelVersion", "modelPath", "modelImage"},
+				Required: []string{"modelType", "modelName", "modelImage"},
 			},
 		},
 		Dependencies: []string{
@@ -3694,7 +3692,6 @@ func schema_pkg_apis_model_v1alpha1_VideoConfig(ref common.ReferenceCallback) co
 						},
 					},
 				},
-				Required: []string{"parameterSize"},
 			},
 		},
 	}

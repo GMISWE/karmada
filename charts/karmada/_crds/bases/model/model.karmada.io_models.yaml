@@ -59,8 +59,6 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
-                required:
-                - parameterSize
                 type: object
               env:
                 items:
@@ -196,8 +194,6 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
-                required:
-                - parameterSize
                 type: object
               maxReplicas:
                 type: integer
@@ -289,15 +285,11 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
-                required:
-                - parameterSize
                 type: object
             required:
             - modelImage
             - modelName
-            - modelPath
             - modelType
-            - modelVersion
             type: object
         required:
         - metadata

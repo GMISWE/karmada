@@ -28,8 +28,8 @@ type FakeModelV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeModelV1alpha1) Models() v1alpha1.ModelInterface {
-	return newFakeModels(c)
+func (c *FakeModelV1alpha1) Models(namespace string) v1alpha1.ModelInterface {
+	return newFakeModels(c, namespace)
 }
 
 // RESTClient returns a RESTClient that is used to communicate

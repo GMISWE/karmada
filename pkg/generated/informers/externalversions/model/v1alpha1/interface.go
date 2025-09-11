@@ -41,5 +41,5 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // Models returns a ModelInformer.
 func (v *version) Models() ModelInformer {
-	return &modelInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &modelInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

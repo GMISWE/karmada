@@ -36,8 +36,8 @@ type ModelV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *ModelV1alpha1Client) Models() ModelInterface {
-	return newModels(c)
+func (c *ModelV1alpha1Client) Models(namespace string) ModelInterface {
+	return newModels(c, namespace)
 }
 
 // NewForConfig creates a new ModelV1alpha1Client for the given config.

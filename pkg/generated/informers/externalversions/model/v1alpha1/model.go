@@ -42,44 +42,45 @@ type ModelInformer interface {
 type modelInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewModelInformer constructs a new informer for Model type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewModelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredModelInformer(client, resyncPeriod, indexers, nil)
+func NewModelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredModelInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredModelInformer constructs a new informer for Model type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredModelInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredModelInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ModelV1alpha1().Models().List(context.Background(), options)
+				return client.ModelV1alpha1().Models(namespace).List(context.Background(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ModelV1alpha1().Models().Watch(context.Background(), options)
+				return client.ModelV1alpha1().Models(namespace).Watch(context.Background(), options)
 			},
 			ListWithContextFunc: func(ctx context.Context, options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ModelV1alpha1().Models().List(ctx, options)
+				return client.ModelV1alpha1().Models(namespace).List(ctx, options)
 			},
 			WatchFuncWithContext: func(ctx context.Context, options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ModelV1alpha1().Models().Watch(ctx, options)
+				return client.ModelV1alpha1().Models(namespace).Watch(ctx, options)
 			},
 		},
 		&apismodelv1alpha1.Model{},
@@ -89,7 +90,7 @@ func NewFilteredModelInformer(client versioned.Interface, resyncPeriod time.Dura
 }
 
 func (f *modelInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredModelInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredModelInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *modelInformer) Informer() cache.SharedIndexInformer {

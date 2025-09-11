@@ -31,9 +31,8 @@ type ModelLister interface {
 	// List lists all Models in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*modelv1alpha1.Model, err error)
-	// Get retrieves the Model from the index for a given name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*modelv1alpha1.Model, error)
+	// Models returns an object that can list and get Models.
+	Models(namespace string) ModelNamespaceLister
 	ModelListerExpansion
 }
 
@@ -45,4 +44,27 @@ type modelLister struct {
 // NewModelLister returns a new ModelLister.
 func NewModelLister(indexer cache.Indexer) ModelLister {
 	return &modelLister{listers.New[*modelv1alpha1.Model](indexer, modelv1alpha1.Resource("model"))}
+}
+
+// Models returns an object that can list and get Models.
+func (s *modelLister) Models(namespace string) ModelNamespaceLister {
+	return modelNamespaceLister{listers.NewNamespaced[*modelv1alpha1.Model](s.ResourceIndexer, namespace)}
+}
+
+// ModelNamespaceLister helps list and get Models.
+// All objects returned here must be treated as read-only.
+type ModelNamespaceLister interface {
+	// List lists all Models in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
+	List(selector labels.Selector) (ret []*modelv1alpha1.Model, err error)
+	// Get retrieves the Model from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*modelv1alpha1.Model, error)
+	ModelNamespaceListerExpansion
+}
+
+// modelNamespaceLister implements the ModelNamespaceLister
+// interface.
+type modelNamespaceLister struct {
+	listers.ResourceIndexer[*modelv1alpha1.Model]
 }

@@ -30,11 +30,11 @@ type fakeModels struct {
 	Fake *FakeModelV1alpha1
 }
 
-func newFakeModels(fake *FakeModelV1alpha1) modelv1alpha1.ModelInterface {
+func newFakeModels(fake *FakeModelV1alpha1, namespace string) modelv1alpha1.ModelInterface {
 	return &fakeModels{
 		gentype.NewFakeClientWithList[*v1alpha1.Model, *v1alpha1.ModelList](
 			fake.Fake,
-			"",
+			namespace,
 			v1alpha1.SchemeGroupVersion.WithResource("models"),
 			v1alpha1.SchemeGroupVersion.WithKind("Model"),
 			func() *v1alpha1.Model { return &v1alpha1.Model{} },

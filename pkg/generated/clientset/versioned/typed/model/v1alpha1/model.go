@@ -32,7 +32,7 @@ import (
 // ModelsGetter has a method to return a ModelInterface.
 // A group's client should implement this interface.
 type ModelsGetter interface {
-	Models() ModelInterface
+	Models(namespace string) ModelInterface
 }
 
 // ModelInterface has methods to work with Model resources.
@@ -54,13 +54,13 @@ type models struct {
 }
 
 // newModels returns a Models
-func newModels(c *ModelV1alpha1Client) *models {
+func newModels(c *ModelV1alpha1Client, namespace string) *models {
 	return &models{
 		gentype.NewClientWithList[*modelv1alpha1.Model, *modelv1alpha1.ModelList](
 			"models",
 			c.RESTClient(),
 			scheme.ParameterCodec,
-			"",
+			namespace,
 			func() *modelv1alpha1.Model { return &modelv1alpha1.Model{} },
 			func() *modelv1alpha1.ModelList { return &modelv1alpha1.ModelList{} },
 		),
