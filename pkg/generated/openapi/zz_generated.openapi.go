@@ -7326,13 +7326,6 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsSpec(ref common.ReferenceCallback) 
 				Description: "JuicefsSpec defines the specification for a JuiceFS storage resource",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"name": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
 					"description": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -7386,7 +7379,7 @@ func schema_pkg_apis_storage_v1alpha1_JuicefsSpec(ref common.ReferenceCallback) 
 						},
 					},
 				},
-				Required: []string{"name", "provider", "client", "labor", "auth"},
+				Required: []string{"provider", "client", "labor", "auth"},
 			},
 		},
 		Dependencies: []string{

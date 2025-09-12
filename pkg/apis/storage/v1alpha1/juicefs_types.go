@@ -13,7 +13,7 @@ const (
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:resource:path=storages,scope=Namespaced,shortName=js,categories={karmada-io}
+// +kubebuilder:resource:path=juicefs,scope=Namespaced,shortName=jfs,categories={karmada-io}
 
 // Juicefs represents a JuiceFS storage resource
 type Juicefs struct {
