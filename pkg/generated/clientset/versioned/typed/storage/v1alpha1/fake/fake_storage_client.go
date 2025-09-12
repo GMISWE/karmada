@@ -28,8 +28,8 @@ type FakeStorageV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeStorageV1alpha1) Juicefses() v1alpha1.JuicefsInterface {
-	return newFakeJuicefses(c)
+func (c *FakeStorageV1alpha1) Juicefses(namespace string) v1alpha1.JuicefsInterface {
+	return newFakeJuicefses(c, namespace)
 }
 
 // RESTClient returns a RESTClient that is used to communicate

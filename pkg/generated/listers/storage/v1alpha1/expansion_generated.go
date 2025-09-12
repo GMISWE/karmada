@@ -21,3 +21,7 @@ package v1alpha1
 // JuicefsListerExpansion allows custom methods to be added to
 // JuicefsLister.
 type JuicefsListerExpansion interface{}
+
+// JuicefsNamespaceListerExpansion allows custom methods to be added to
+// JuicefsNamespaceLister.
+type JuicefsNamespaceListerExpansion interface{}

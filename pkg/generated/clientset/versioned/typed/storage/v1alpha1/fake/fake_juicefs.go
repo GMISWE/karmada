@@ -30,11 +30,11 @@ type fakeJuicefses struct {
 	Fake *FakeStorageV1alpha1
 }
 
-func newFakeJuicefses(fake *FakeStorageV1alpha1) storagev1alpha1.JuicefsInterface {
+func newFakeJuicefses(fake *FakeStorageV1alpha1, namespace string) storagev1alpha1.JuicefsInterface {
 	return &fakeJuicefses{
 		gentype.NewFakeClientWithList[*v1alpha1.Juicefs, *v1alpha1.JuicefsList](
 			fake.Fake,
-			"",
+			namespace,
 			v1alpha1.SchemeGroupVersion.WithResource("juicefses"),
 			v1alpha1.SchemeGroupVersion.WithKind("Juicefs"),
 			func() *v1alpha1.Juicefs { return &v1alpha1.Juicefs{} },

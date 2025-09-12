@@ -31,9 +31,8 @@ type JuicefsLister interface {
 	// List lists all Juicefses in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*storagev1alpha1.Juicefs, err error)
-	// Get retrieves the Juicefs from the index for a given name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*storagev1alpha1.Juicefs, error)
+	// Juicefses returns an object that can list and get Juicefses.
+	Juicefses(namespace string) JuicefsNamespaceLister
 	JuicefsListerExpansion
 }
 
@@ -45,4 +44,27 @@ type juicefsLister struct {
 // NewJuicefsLister returns a new JuicefsLister.
 func NewJuicefsLister(indexer cache.Indexer) JuicefsLister {
 	return &juicefsLister{listers.New[*storagev1alpha1.Juicefs](indexer, storagev1alpha1.Resource("juicefs"))}
+}
+
+// Juicefses returns an object that can list and get Juicefses.
+func (s *juicefsLister) Juicefses(namespace string) JuicefsNamespaceLister {
+	return juicefsNamespaceLister{listers.NewNamespaced[*storagev1alpha1.Juicefs](s.ResourceIndexer, namespace)}
+}
+
+// JuicefsNamespaceLister helps list and get Juicefses.
+// All objects returned here must be treated as read-only.
+type JuicefsNamespaceLister interface {
+	// List lists all Juicefses in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
+	List(selector labels.Selector) (ret []*storagev1alpha1.Juicefs, err error)
+	// Get retrieves the Juicefs from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*storagev1alpha1.Juicefs, error)
+	JuicefsNamespaceListerExpansion
+}
+
+// juicefsNamespaceLister implements the JuicefsNamespaceLister
+// interface.
+type juicefsNamespaceLister struct {
+	listers.ResourceIndexer[*storagev1alpha1.Juicefs]
 }

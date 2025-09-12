@@ -36,8 +36,8 @@ type StorageV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *StorageV1alpha1Client) Juicefses() JuicefsInterface {
-	return newJuicefses(c)
+func (c *StorageV1alpha1Client) Juicefses(namespace string) JuicefsInterface {
+	return newJuicefses(c, namespace)
 }
 
 // NewForConfig creates a new StorageV1alpha1Client for the given config.

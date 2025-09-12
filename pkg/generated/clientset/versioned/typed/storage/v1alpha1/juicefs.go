@@ -32,7 +32,7 @@ import (
 // JuicefsesGetter has a method to return a JuicefsInterface.
 // A group's client should implement this interface.
 type JuicefsesGetter interface {
-	Juicefses() JuicefsInterface
+	Juicefses(namespace string) JuicefsInterface
 }
 
 // JuicefsInterface has methods to work with Juicefs resources.
@@ -56,13 +56,13 @@ type juicefses struct {
 }
 
 // newJuicefses returns a Juicefses
-func newJuicefses(c *StorageV1alpha1Client) *juicefses {
+func newJuicefses(c *StorageV1alpha1Client, namespace string) *juicefses {
 	return &juicefses{
 		gentype.NewClientWithList[*storagev1alpha1.Juicefs, *storagev1alpha1.JuicefsList](
 			"juicefses",
 			c.RESTClient(),
 			scheme.ParameterCodec,
-			"",
+			namespace,
 			func() *storagev1alpha1.Juicefs { return &storagev1alpha1.Juicefs{} },
 			func() *storagev1alpha1.JuicefsList { return &storagev1alpha1.JuicefsList{} },
 		),

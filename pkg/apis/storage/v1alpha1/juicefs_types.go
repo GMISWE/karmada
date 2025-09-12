@@ -8,12 +8,12 @@ const (
 	ResourceKindJuicefs            = "Juicefs"
 	ResourcePluralJuicefs          = "juicefs"
 	ResourceSingularJuicefs        = "juicefs"
-	ResourceNamespaceScopedJuicefs = false
+	ResourceNamespaceScopedJuicefs = true
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +kubebuilder:resource:path=storages,scope=Namespaced,shortName=js,categories={karmada-io}
 
 // Juicefs represents a JuiceFS storage resource
 type Juicefs struct {

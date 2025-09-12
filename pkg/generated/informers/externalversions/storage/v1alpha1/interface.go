@@ -41,5 +41,5 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // Juicefses returns a JuicefsInformer.
 func (v *version) Juicefses() JuicefsInformer {
-	return &juicefsInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &juicefsInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
