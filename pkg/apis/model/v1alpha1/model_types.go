@@ -40,6 +40,7 @@ const (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:resource:path=models,scope=Namespaced,shortName=m,categories={karmada-io}
 // +kubebuilder:modelversion
+// +kubebuilder:subresource:status
 
 type Model struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -109,6 +110,40 @@ type ModelSpec struct {
 	VideoConfig *VideoConfig `json:"videoConfig,omitempty"`
 	// +optional
 	AudioConfig *AudioConfig `json:"audioConfig,omitempty"`
+	// +optional
+	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
+	// +optional
+	Status ModelStatus `json:"status,omitempty"`
+}
+
+type ModelStatus struct {
+	// +optional
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+}
+
+type ResourceSelector struct {
+	// APIVersion represents the API version of the target resources.
+	// +required
+	APIVersion string `json:"apiVersion"`
+
+	// Kind represents the Kind of the target resources.
+	// +required
+	Kind string `json:"kind"`
+
+	// Namespace of the target resource.
+	// Default is empty, which means inherit from the parent object scope.
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
+	// Name of the target resource.
+	// Default is empty, which means selecting all resources.
+	// +optional
+	Name string `json:"name,omitempty"`
+
+	// A label query over a set of resources.
+	// If name is not empty, labelSelector will be ignored.
+	// +optional
+	LabelSelector *metav1.LabelSelector `json:"labelSelector,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

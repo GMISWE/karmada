@@ -94,6 +94,8 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Model":                                        schema_pkg_apis_model_v1alpha1_Model(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelList":                                    schema_pkg_apis_model_v1alpha1_ModelList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec":                                    schema_pkg_apis_model_v1alpha1_ModelSpec(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus":                                  schema_pkg_apis_model_v1alpha1_ModelStatus(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector":                             schema_pkg_apis_model_v1alpha1_ResourceSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig":                                  schema_pkg_apis_model_v1alpha1_VideoConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ClusterSelector":                         schema_pkg_apis_networking_v1alpha1_ClusterSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ExposurePort":                            schema_pkg_apis_networking_v1alpha1_ExposurePort(ref),
@@ -3626,12 +3628,101 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig"),
 						},
 					},
+					"resourceSelectors": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector"),
+									},
+								},
+							},
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus"),
+						},
+					},
 				},
 				Required: []string{"modelType", "modelName", "modelImage"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_ModelStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_ResourceSelector(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion represents the API version of the target resources.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind represents the Kind of the target resources.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace of the target resource. Default is empty, which means inherit from the parent object scope.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the target resource. Default is empty, which means selecting all resources.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"labelSelector": {
+						SchemaProps: spec.SchemaProps{
+							Description: "A label query over a set of resources. If name is not empty, labelSelector will be ignored.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"),
+						},
+					},
+				},
+				Required: []string{"apiVersion", "kind"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 
