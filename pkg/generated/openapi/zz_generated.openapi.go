@@ -3484,12 +3484,19 @@ func schema_pkg_apis_model_v1alpha1_Model(ref common.ReferenceCallback) common.O
 							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec"),
 						},
 					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status represents the observed state of Model.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus"),
+						},
+					},
 				},
 				Required: []string{"metadata", "spec"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -3641,18 +3648,12 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							},
 						},
 					},
-					"status": {
-						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus"),
-						},
-					},
 				},
 				Required: []string{"modelType", "modelName", "modelImage"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
 	}
 }
 

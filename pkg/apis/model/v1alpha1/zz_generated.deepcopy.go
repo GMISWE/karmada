@@ -99,6 +99,7 @@ func (in *Model) DeepCopyInto(out *Model) {
 	out.TypeMeta = in.TypeMeta
 	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	in.Spec.DeepCopyInto(&out.Spec)
+	in.Status.DeepCopyInto(&out.Status)
 	return
 }
 
@@ -186,7 +187,6 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	in.Status.DeepCopyInto(&out.Status)
 	return
 }
 

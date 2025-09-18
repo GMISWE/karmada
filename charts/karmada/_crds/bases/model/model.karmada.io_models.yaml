@@ -341,12 +341,6 @@ spec:
                       More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
                     type: object
                 type: object
-              status:
-                properties:
-                  lastUpdateTime:
-                    format: date-time
-                    type: string
-                type: object
               videoConfig:
                 properties:
                   args:
@@ -369,6 +363,13 @@ spec:
             - modelImage
             - modelName
             - modelType
+            type: object
+          status:
+            description: Status represents the observed state of Model.
+            properties:
+              lastUpdateTime:
+                format: date-time
+                type: string
             type: object
         required:
         - metadata

@@ -48,6 +48,10 @@ type Model struct {
 
 	// Spec represents the desired behavior of Model.
 	Spec ModelSpec `json:"spec"`
+
+	// Status represents the observed state of Model.
+	// +optional
+	Status ModelStatus `json:"status,omitempty"`
 }
 
 type LLMConfig struct {
@@ -112,8 +116,6 @@ type ModelSpec struct {
 	AudioConfig *AudioConfig `json:"audioConfig,omitempty"`
 	// +optional
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
-	// +optional
-	Status ModelStatus `json:"status,omitempty"`
 }
 
 type ModelStatus struct {

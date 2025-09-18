@@ -39,6 +39,8 @@ type ModelsGetter interface {
 type ModelInterface interface {
 	Create(ctx context.Context, model *modelv1alpha1.Model, opts v1.CreateOptions) (*modelv1alpha1.Model, error)
 	Update(ctx context.Context, model *modelv1alpha1.Model, opts v1.UpdateOptions) (*modelv1alpha1.Model, error)
+	// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+	UpdateStatus(ctx context.Context, model *modelv1alpha1.Model, opts v1.UpdateOptions) (*modelv1alpha1.Model, error)
 	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
 	Get(ctx context.Context, name string, opts v1.GetOptions) (*modelv1alpha1.Model, error)
