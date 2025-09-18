@@ -119,8 +119,45 @@ type ModelSpec struct {
 }
 
 type ModelStatus struct {
+	// LastUpdateTime is the last time the status was updated.
 	// +optional
 	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+
+	// Clusters contains the status of the model in each member cluster.
+	// The key is the cluster name.
+	// +optional
+	Clusters map[string]ResourceSelector `json:"clusters,omitempty"`
+
+	// Conditions represent the latest available observations of the model's current state.
+	// +optional
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
+}
+
+// ModelClusterStatus represents the status of the model in a specific cluster.
+type ModelClusterStatus struct {
+	// LastUpdateTime is the last time the status was updated in this cluster.
+	// +optional
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+
+	// Replicas is the number of desired replicas in this cluster.
+	// +optional
+	Replicas int32 `json:"replicas,omitempty"`
+
+	// ReadyReplicas is the number of ready replicas in this cluster.
+	// +optional
+	ReadyReplicas int32 `json:"readyReplicas,omitempty"`
+
+	// UpdatedReplicas is the number of updated replicas in this cluster.
+	// +optional
+	UpdatedReplicas int32 `json:"updatedReplicas,omitempty"`
+
+	// AvailableReplicas is the number of available replicas in this cluster.
+	// +optional
+	AvailableReplicas int32 `json:"availableReplicas,omitempty"`
+
+	// Conditions represent the latest available observations of the model's state in this cluster.
+	// +optional
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 type ResourceSelector struct {
@@ -146,6 +183,9 @@ type ResourceSelector struct {
 	// If name is not empty, labelSelector will be ignored.
 	// +optional
 	LabelSelector *metav1.LabelSelector `json:"labelSelector,omitempty"`
+
+	// +optional
+	ClusterStatus ModelClusterStatus `json:"clusterStatus,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

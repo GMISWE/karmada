@@ -92,6 +92,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig":                                  schema_pkg_apis_model_v1alpha1_AudioConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig":                                    schema_pkg_apis_model_v1alpha1_LLMConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Model":                                        schema_pkg_apis_model_v1alpha1_Model(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelClusterStatus":                           schema_pkg_apis_model_v1alpha1_ModelClusterStatus(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelList":                                    schema_pkg_apis_model_v1alpha1_ModelList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec":                                    schema_pkg_apis_model_v1alpha1_ModelSpec(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus":                                  schema_pkg_apis_model_v1alpha1_ModelStatus(ref),
@@ -3500,6 +3501,69 @@ func schema_pkg_apis_model_v1alpha1_Model(ref common.ReferenceCallback) common.O
 	}
 }
 
+func schema_pkg_apis_model_v1alpha1_ModelClusterStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ModelClusterStatus represents the status of the model in a specific cluster.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastUpdateTime is the last time the status was updated in this cluster.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"replicas": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Replicas is the number of desired replicas in this cluster.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"readyReplicas": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ReadyReplicas is the number of ready replicas in this cluster.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"updatedReplicas": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UpdatedReplicas is the number of updated replicas in this cluster.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"availableReplicas": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AvailableReplicas is the number of available replicas in this cluster.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represent the latest available observations of the model's state in this cluster.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Condition", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
 func schema_pkg_apis_model_v1alpha1_ModelList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -3665,14 +3729,44 @@ func schema_pkg_apis_model_v1alpha1_ModelStatus(ref common.ReferenceCallback) co
 				Properties: map[string]spec.Schema{
 					"lastUpdateTime": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+							Description: "LastUpdateTime is the last time the status was updated.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"clusters": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Clusters contains the status of the model in each member cluster. The key is the cluster name.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector"),
+									},
+								},
+							},
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represent the latest available observations of the model's current state.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -3718,12 +3812,18 @@ func schema_pkg_apis_model_v1alpha1_ResourceSelector(ref common.ReferenceCallbac
 							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"),
 						},
 					},
+					"clusterStatus": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelClusterStatus"),
+						},
+					},
 				},
 				Required: []string{"apiVersion", "kind"},
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelClusterStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 
