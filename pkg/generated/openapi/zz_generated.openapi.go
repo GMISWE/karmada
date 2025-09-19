@@ -3741,8 +3741,15 @@ func schema_pkg_apis_model_v1alpha1_ModelStatus(ref common.ReferenceCallback) co
 								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector"),
+										Type: []string{"array"},
+										Items: &spec.SchemaOrArray{
+											Schema: &spec.Schema{
+												SchemaProps: spec.SchemaProps{
+													Default: map[string]interface{}{},
+													Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector"),
+												},
+											},
+										},
 									},
 								},
 							},

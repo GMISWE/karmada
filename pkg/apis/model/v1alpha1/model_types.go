@@ -126,7 +126,7 @@ type ModelStatus struct {
 	// Clusters contains the status of the model in each member cluster.
 	// The key is the cluster name.
 	// +optional
-	Clusters map[string]ResourceSelector `json:"clusters,omitempty"`
+	Clusters map[string][]ResourceSelector `json:"clusters,omitempty"`
 
 	// Conditions represent the latest available observations of the model's current state.
 	// +optional

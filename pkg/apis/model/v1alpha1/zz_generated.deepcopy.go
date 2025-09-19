@@ -230,9 +230,19 @@ func (in *ModelStatus) DeepCopyInto(out *ModelStatus) {
 	in.LastUpdateTime.DeepCopyInto(&out.LastUpdateTime)
 	if in.Clusters != nil {
 		in, out := &in.Clusters, &out.Clusters
-		*out = make(map[string]ResourceSelector, len(*in))
+		*out = make(map[string][]ResourceSelector, len(*in))
 		for key, val := range *in {
-			(*out)[key] = *val.DeepCopy()
+			var outVal []ResourceSelector
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				in, out := &val, &outVal
+				*out = make([]ResourceSelector, len(*in))
+				for i := range *in {
+					(*in)[i].DeepCopyInto(&(*out)[i])
+				}
+			}
+			(*out)[key] = outVal
 		}
 	}
 	if in.Conditions != nil {
