@@ -3318,8 +3318,15 @@ func schema_pkg_apis_mesh_v1alpha1_Plugin(ref common.ReferenceCallback) common.O
 							Format:  "",
 						},
 					},
+					"runtimeType": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
 				},
-				Required: []string{"name", "version", "path", "symbol", "enabled", "graceful", "md5", "config"},
+				Required: []string{"name", "version", "path", "symbol", "enabled", "graceful", "md5", "config", "runtimeType"},
 			},
 		},
 	}

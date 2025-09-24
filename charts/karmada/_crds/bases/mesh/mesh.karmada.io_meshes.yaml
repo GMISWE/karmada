@@ -59,6 +59,8 @@ spec:
                       type: string
                     path:
                       type: string
+                    runtimeType:
+                      type: string
                     symbol:
                       type: string
                     version:
@@ -70,6 +72,7 @@ spec:
                   - md5
                   - name
                   - path
+                  - runtimeType
                   - symbol
                   - version
                   type: object

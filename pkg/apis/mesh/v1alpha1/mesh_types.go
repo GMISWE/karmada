@@ -66,6 +66,8 @@ type Plugin struct {
 	Md5 string `json:"md5"`
 	// +required
 	Config string `json:"config"`
+	// +required
+	RuntimeType string `json:"runtimeType"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
