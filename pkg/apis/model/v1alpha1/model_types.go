@@ -40,6 +40,7 @@ const (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:resource:path=models,scope=Namespaced,shortName=m,categories={karmada-io}
 // +kubebuilder:modelversion
+// +kubebuilder:subresource:status
 
 type Model struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -47,6 +48,10 @@ type Model struct {
 
 	// Spec represents the desired behavior of Model.
 	Spec ModelSpec `json:"spec"`
+
+	// Status represents the observed state of Model.
+	// +optional
+	Status ModelStatus `json:"status,omitempty"`
 }
 
 type LLMConfig struct {
@@ -109,6 +114,78 @@ type ModelSpec struct {
 	VideoConfig *VideoConfig `json:"videoConfig,omitempty"`
 	// +optional
 	AudioConfig *AudioConfig `json:"audioConfig,omitempty"`
+	// +optional
+	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
+}
+
+type ModelStatus struct {
+	// LastUpdateTime is the last time the status was updated.
+	// +optional
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+
+	// Clusters contains the status of the model in each member cluster.
+	// The key is the cluster name.
+	// +optional
+	Clusters map[string][]ResourceSelector `json:"clusters,omitempty"`
+
+	// Conditions represent the latest available observations of the model's current state.
+	// +optional
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
+}
+
+// ModelClusterStatus represents the status of the model in a specific cluster.
+type ModelClusterStatus struct {
+	// LastUpdateTime is the last time the status was updated in this cluster.
+	// +optional
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+
+	// Replicas is the number of desired replicas in this cluster.
+	// +optional
+	Replicas int32 `json:"replicas,omitempty"`
+
+	// ReadyReplicas is the number of ready replicas in this cluster.
+	// +optional
+	ReadyReplicas int32 `json:"readyReplicas,omitempty"`
+
+	// UpdatedReplicas is the number of updated replicas in this cluster.
+	// +optional
+	UpdatedReplicas int32 `json:"updatedReplicas,omitempty"`
+
+	// AvailableReplicas is the number of available replicas in this cluster.
+	// +optional
+	AvailableReplicas int32 `json:"availableReplicas,omitempty"`
+
+	// Conditions represent the latest available observations of the model's state in this cluster.
+	// +optional
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
+}
+
+type ResourceSelector struct {
+	// APIVersion represents the API version of the target resources.
+	// +required
+	APIVersion string `json:"apiVersion"`
+
+	// Kind represents the Kind of the target resources.
+	// +required
+	Kind string `json:"kind"`
+
+	// Namespace of the target resource.
+	// Default is empty, which means inherit from the parent object scope.
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
+	// Name of the target resource.
+	// Default is empty, which means selecting all resources.
+	// +optional
+	Name string `json:"name,omitempty"`
+
+	// A label query over a set of resources.
+	// If name is not empty, labelSelector will be ignored.
+	// +optional
+	LabelSelector *metav1.LabelSelector `json:"labelSelector,omitempty"`
+
+	// +optional
+	ClusterStatus ModelClusterStatus `json:"clusterStatus,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
