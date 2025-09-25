@@ -43,40 +43,39 @@ spec:
             description: Spec represents the desired behavior of Mesh.
             properties:
               plugins:
-                items:
-                  properties:
-                    config:
-                      type: string
-                    description:
-                      type: string
-                    enabled:
-                      type: boolean
-                    graceful:
-                      type: integer
-                    md5:
-                      type: string
-                    name:
-                      type: string
-                    path:
-                      type: string
-                    runtimeType:
-                      type: string
-                    symbol:
-                      type: string
-                    version:
-                      type: string
-                  required:
-                  - config
-                  - enabled
-                  - graceful
-                  - md5
-                  - name
-                  - path
-                  - runtimeType
-                  - symbol
-                  - version
-                  type: object
-                type: array
+                additionalProperties:
+                  items:
+                    properties:
+                      config:
+                        type: string
+                      description:
+                        type: string
+                      enabled:
+                        type: boolean
+                      graceful:
+                        type: integer
+                      md5:
+                        type: string
+                      path:
+                        type: string
+                      runtimeType:
+                        type: string
+                      symbol:
+                        type: string
+                      version:
+                        type: string
+                    required:
+                    - config
+                    - enabled
+                    - graceful
+                    - md5
+                    - path
+                    - runtimeType
+                    - symbol
+                    - version
+                    type: object
+                  type: array
+                type: object
             required:
             - plugins
             type: object

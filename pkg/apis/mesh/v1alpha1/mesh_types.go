@@ -44,12 +44,10 @@ type Mesh struct {
 
 type MeshSpec struct {
 	// +required
-	Plugins []Plugin `json:"plugins"`
+	Plugins map[string][]Plugin `json:"plugins"`
 }
 
 type Plugin struct {
-	// +required
-	Name string `json:"name"`
 	// +required
 	Version string `json:"version"`
 	// +required
@@ -65,9 +63,9 @@ type Plugin struct {
 	// +required
 	Md5 string `json:"md5"`
 	// +required
-	Config string `json:"config"`
-	// +required
 	RuntimeType string `json:"runtimeType"`
+	// +required
+	Config string `json:"config"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -90,8 +90,18 @@ func (in *MeshSpec) DeepCopyInto(out *MeshSpec) {
 	*out = *in
 	if in.Plugins != nil {
 		in, out := &in.Plugins, &out.Plugins
-		*out = make([]Plugin, len(*in))
-		copy(*out, *in)
+		*out = make(map[string][]Plugin, len(*in))
+		for key, val := range *in {
+			var outVal []Plugin
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				in, out := &val, &outVal
+				*out = make([]Plugin, len(*in))
+				copy(*out, *in)
+			}
+			(*out)[key] = outVal
+		}
 	}
 	return
 }

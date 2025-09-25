@@ -3232,12 +3232,20 @@ func schema_pkg_apis_mesh_v1alpha1_MeshSpec(ref common.ReferenceCallback) common
 				Properties: map[string]spec.Schema{
 					"plugins": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/mesh/v1alpha1.Plugin"),
+										Type: []string{"array"},
+										Items: &spec.SchemaOrArray{
+											Schema: &spec.Schema{
+												SchemaProps: spec.SchemaProps{
+													Default: map[string]interface{}{},
+													Ref:     ref("github.com/karmada-io/karmada/pkg/apis/mesh/v1alpha1.Plugin"),
+												},
+											},
+										},
 									},
 								},
 							},
@@ -3258,13 +3266,6 @@ func schema_pkg_apis_mesh_v1alpha1_Plugin(ref common.ReferenceCallback) common.O
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
-					"name": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
 					"version": {
 						SchemaProps: spec.SchemaProps{
 							Default: "",
@@ -3314,13 +3315,6 @@ func schema_pkg_apis_mesh_v1alpha1_Plugin(ref common.ReferenceCallback) common.O
 							Format:  "",
 						},
 					},
-					"config": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
 					"runtimeType": {
 						SchemaProps: spec.SchemaProps{
 							Default: "",
@@ -3328,8 +3322,15 @@ func schema_pkg_apis_mesh_v1alpha1_Plugin(ref common.ReferenceCallback) common.O
 							Format:  "",
 						},
 					},
+					"config": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
 				},
-				Required: []string{"name", "version", "path", "symbol", "enabled", "graceful", "md5", "config", "runtimeType"},
+				Required: []string{"version", "path", "symbol", "enabled", "graceful", "md5", "runtimeType", "config"},
 			},
 		},
 	}
