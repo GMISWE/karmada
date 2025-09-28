@@ -189,6 +189,11 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.Affinity != nil {
+		in, out := &in.Affinity, &out.Affinity
+		*out = new(corev1.Affinity)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.LLMConfig != nil {
 		in, out := &in.LLMConfig, &out.LLMConfig
 		*out = new(LLMConfig)

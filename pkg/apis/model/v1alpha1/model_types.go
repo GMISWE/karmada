@@ -102,6 +102,8 @@ type ModelSpec struct {
 	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
 	// +optional
 	Env []corev1.EnvVar `json:"env,omitempty"`
+	// +optional
+	Affinity *corev1.Affinity `json:"affinity,omitempty"`
 
 	// +optional
 	MinReplicas int `json:"minReplicas,omitempty"` // 最小副本数，如果为0，则默认模型可以自动下线
