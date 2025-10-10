@@ -42,6 +42,8 @@ spec:
           spec:
             description: HardwareNodeSpec represents the specification of the HardwareNode.
             properties:
+              cluster:
+                type: string
               host:
                 description: HostInfo represents the detailed hardware information
                   of a host.

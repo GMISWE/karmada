@@ -8615,6 +8615,12 @@ func schema_pkg_apis_topo_v1alpha1_HardwareNodeSpec(ref common.ReferenceCallback
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HostInfo"),
 						},
 					},
+					"cluster": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
 				},
 				Required: []string{"host"},
 			},

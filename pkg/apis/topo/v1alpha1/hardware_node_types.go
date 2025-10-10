@@ -48,6 +48,8 @@ type HardwareNode struct {
 type HardwareNodeSpec struct {
 	// +required
 	Host *HostInfo `json:"host"`
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
 }
 
 // HostInfo represents the detailed hardware information of a host.
