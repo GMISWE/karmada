@@ -34,6 +34,9 @@ const (
 // +kubebuilder:storageversion
 // +kubebuilder:resource:scope=Cluster,shortName=hd
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Cluster",type="string",JSONPath=".spec.cluster"
+// +kubebuilder:printcolumn:name="GpuType",type="string",JSONPath=".spec.host.gpuType"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // HardwareNode represents the hardware information of a specific node in a cluster.
 type HardwareNode struct {
