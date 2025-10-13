@@ -58,9 +58,9 @@ type HardwareSpec struct {
 
 // Hardwares represents the hardware information of a cluster.
 type Hardwares struct {
-	// +required
+	// +optional
 	Entropy *EntropyInfo `json:"entropy"`
-	// +required
+	// +optional
 	GpuType []GpuTypeInfo `json:"gpuType"`
 }
 
@@ -76,23 +76,23 @@ type EntropyInfo struct {
 
 // GpuTypeInfo represents the GPU type information.
 type GpuTypeInfo struct {
-	// +required
+	// +optional
 	Name string `json:"name"`
-	// +required
+	// +optional
 	GpuTotal int64 `json:"gpuTotal"`
-	// +required
+	// +optional
 	GpuIdle int64 `json:"gpuIdle"`
-	// +required
+	// +optional
 	GpuMem int64 `json:"gpuMem"`
-	// +required
+	// +optional
 	GpuMemIdle int64 `json:"gpuMemIdle"`
-	// +required
+	// +optional
 	CpuTotal int64 `json:"cpuTotal"`
-	// +required
+	// +optional
 	CpuIdle int64 `json:"cpuIdle"`
-	// +required
+	// +optional
 	MemTotal int64 `json:"memTotal"`
-	// +required
+	// +optional
 	MemIdle int64 `json:"memIdle"`
 }
 

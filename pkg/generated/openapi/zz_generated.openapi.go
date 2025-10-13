@@ -8403,7 +8403,6 @@ func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) com
 						},
 					},
 				},
-				Required: []string{"name", "gpuTotal", "gpuIdle", "gpuMem", "gpuMemIdle", "cpuTotal", "cpuIdle", "memTotal", "memIdle"},
 			},
 		},
 	}
@@ -8762,7 +8761,6 @@ func schema_pkg_apis_topo_v1alpha1_Hardwares(ref common.ReferenceCallback) commo
 						},
 					},
 				},
-				Required: []string{"entropy", "gpuType"},
 			},
 		},
 		Dependencies: []string{

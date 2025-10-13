@@ -94,21 +94,8 @@ spec:
                           type: integer
                         name:
                           type: string
-                      required:
-                      - cpuIdle
-                      - cpuTotal
-                      - gpuIdle
-                      - gpuMem
-                      - gpuMemIdle
-                      - gpuTotal
-                      - memIdle
-                      - memTotal
-                      - name
                       type: object
                     type: array
-                required:
-                - entropy
-                - gpuType
                 type: object
               provider:
                 type: string
