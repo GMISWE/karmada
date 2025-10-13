@@ -23,6 +23,7 @@ package v1alpha1
 
 import (
 	corev1 "k8s.io/api/core/v1"
+	resource "k8s.io/apimachinery/pkg/api/resource"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -688,16 +689,24 @@ func (in *HostInfo) DeepCopyInto(out *HostInfo) {
 	}
 	if in.Allocatable != nil {
 		in, out := &in.Allocatable, &out.Allocatable
-		*out = make(corev1.ResourceList, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val.DeepCopy()
+		*out = new(corev1.ResourceList)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make(map[corev1.ResourceName]resource.Quantity, len(*in))
+			for key, val := range *in {
+				(*out)[key] = val.DeepCopy()
+			}
 		}
 	}
 	if in.Requests != nil {
 		in, out := &in.Requests, &out.Requests
-		*out = make(corev1.ResourceList, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val.DeepCopy()
+		*out = new(corev1.ResourceList)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make(map[corev1.ResourceName]resource.Quantity, len(*in))
+			for key, val := range *in {
+				(*out)[key] = val.DeepCopy()
+			}
 		}
 	}
 	return

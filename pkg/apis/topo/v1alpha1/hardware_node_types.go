@@ -75,9 +75,9 @@ type HostInfo struct {
 	// +optional
 	Gpus []GpuDetail `json:"gpus"`
 	// +optional
-	Allocatable corev1.ResourceList `json:"allocatable,omitempty"`
+	Allocatable *corev1.ResourceList `json:"allocatable,omitempty"`
 	// +optional
-	Requests corev1.ResourceList `json:"requests,omitempty"`
+	Requests *corev1.ResourceList `json:"requests,omitempty"`
 }
 
 // GpuDetail represents the information of a GPU device.
