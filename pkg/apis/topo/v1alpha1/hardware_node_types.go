@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -73,6 +74,10 @@ type HostInfo struct {
 	Mem *MemInfo `json:"mem"`
 	// +optional
 	Gpus []GpuDetail `json:"gpus"`
+	// +optional
+	Allocatable corev1.ResourceList `json:"allocatable,omitempty"`
+	// +optional
+	Requests corev1.ResourceList `json:"requests,omitempty"`
 }
 
 // GpuDetail represents the information of a GPU device.

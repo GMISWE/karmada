@@ -8836,12 +8836,38 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 							},
 						},
 					},
+					"allocatable": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
+					"requests": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
 				},
 				Required: []string{"name", "cpu", "mem"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"},
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 
