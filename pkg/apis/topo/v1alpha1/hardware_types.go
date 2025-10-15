@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -94,6 +95,10 @@ type GpuTypeInfo struct {
 	MemTotal int64 `json:"memTotal"`
 	// +optional
 	MemIdle int64 `json:"memIdle"`
+	// +optional
+	Allocatable *corev1.ResourceList `json:"allocatable,omitempty"`
+	// +optional
+	Requests *corev1.ResourceList `json:"requests,omitempty"`
 }
 
 // HardwareStatus represents the status of Hardware.
