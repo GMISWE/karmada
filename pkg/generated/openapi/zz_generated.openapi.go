@@ -7825,8 +7825,9 @@ func schema_pkg_apis_topo_v1alpha1_CloudAliyun(ref common.ReferenceCallback) com
 				Properties: map[string]spec.Schema{
 					"gpuPrices": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
@@ -7853,8 +7854,9 @@ func schema_pkg_apis_topo_v1alpha1_CloudAws(ref common.ReferenceCallback) common
 				Properties: map[string]spec.Schema{
 					"gpuPrices": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
@@ -7881,8 +7883,9 @@ func schema_pkg_apis_topo_v1alpha1_CloudAzure(ref common.ReferenceCallback) comm
 				Properties: map[string]spec.Schema{
 					"gpuPrices": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
@@ -7909,8 +7912,9 @@ func schema_pkg_apis_topo_v1alpha1_CloudGcp(ref common.ReferenceCallback) common
 				Properties: map[string]spec.Schema{
 					"gpuPrices": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
@@ -7937,8 +7941,9 @@ func schema_pkg_apis_topo_v1alpha1_CloudHuawei(ref common.ReferenceCallback) com
 				Properties: map[string]spec.Schema{
 					"gpuPrices": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
@@ -8139,8 +8144,9 @@ func schema_pkg_apis_topo_v1alpha1_CloudTencent(ref common.ReferenceCallback) co
 				Properties: map[string]spec.Schema{
 					"gpuPrices": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
@@ -8297,13 +8303,6 @@ func schema_pkg_apis_topo_v1alpha1_GpuPrice(ref common.ReferenceCallback) common
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
-					"instanceType": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
 					"onDemand": {
 						SchemaProps: spec.SchemaProps{
 							Default: "",
@@ -8355,7 +8354,7 @@ func schema_pkg_apis_topo_v1alpha1_GpuPrice(ref common.ReferenceCallback) common
 						},
 					},
 				},
-				Required: []string{"instanceType", "onDemand", "spots", "reserved", "currency", "unit", "updatedAt"},
+				Required: []string{"onDemand", "spots", "reserved", "currency", "unit", "updatedAt"},
 			},
 		},
 	}

@@ -69,9 +69,9 @@ func (in *CloudAliyun) DeepCopyInto(out *CloudAliyun) {
 	*out = *in
 	if in.GpuPrices != nil {
 		in, out := &in.GpuPrices, &out.GpuPrices
-		*out = make([]GpuPrice, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+		*out = make(map[string]GpuPrice, len(*in))
+		for key, val := range *in {
+			(*out)[key] = *val.DeepCopy()
 		}
 	}
 	return
@@ -92,9 +92,9 @@ func (in *CloudAws) DeepCopyInto(out *CloudAws) {
 	*out = *in
 	if in.GpuPrices != nil {
 		in, out := &in.GpuPrices, &out.GpuPrices
-		*out = make([]GpuPrice, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+		*out = make(map[string]GpuPrice, len(*in))
+		for key, val := range *in {
+			(*out)[key] = *val.DeepCopy()
 		}
 	}
 	return
@@ -115,9 +115,9 @@ func (in *CloudAzure) DeepCopyInto(out *CloudAzure) {
 	*out = *in
 	if in.GpuPrices != nil {
 		in, out := &in.GpuPrices, &out.GpuPrices
-		*out = make([]GpuPrice, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+		*out = make(map[string]GpuPrice, len(*in))
+		for key, val := range *in {
+			(*out)[key] = *val.DeepCopy()
 		}
 	}
 	return
@@ -138,9 +138,9 @@ func (in *CloudGcp) DeepCopyInto(out *CloudGcp) {
 	*out = *in
 	if in.GpuPrices != nil {
 		in, out := &in.GpuPrices, &out.GpuPrices
-		*out = make([]GpuPrice, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+		*out = make(map[string]GpuPrice, len(*in))
+		for key, val := range *in {
+			(*out)[key] = *val.DeepCopy()
 		}
 	}
 	return
@@ -161,9 +161,9 @@ func (in *CloudHuawei) DeepCopyInto(out *CloudHuawei) {
 	*out = *in
 	if in.GpuPrices != nil {
 		in, out := &in.GpuPrices, &out.GpuPrices
-		*out = make([]GpuPrice, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+		*out = make(map[string]GpuPrice, len(*in))
+		for key, val := range *in {
+			(*out)[key] = *val.DeepCopy()
 		}
 	}
 	return
@@ -312,9 +312,9 @@ func (in *CloudTencent) DeepCopyInto(out *CloudTencent) {
 	*out = *in
 	if in.GpuPrices != nil {
 		in, out := &in.GpuPrices, &out.GpuPrices
-		*out = make([]GpuPrice, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+		*out = make(map[string]GpuPrice, len(*in))
+		for key, val := range *in {
+			(*out)[key] = *val.DeepCopy()
 		}
 	}
 	return

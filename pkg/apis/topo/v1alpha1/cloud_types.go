@@ -62,40 +62,39 @@ type CloudSpec struct {
 
 type CloudAws struct {
 	// +required
-	GpuPrices []GpuPrice `json:"gpuPrices"`
+	GpuPrices map[string]GpuPrice `json:"gpuPrices"`
 }
 
 type CloudGcp struct {
 	// +required
-	GpuPrices []GpuPrice `json:"gpuPrices"`
+	GpuPrices map[string]GpuPrice `json:"gpuPrices"`
 }
 
 type CloudAzure struct {
 	// +required
-	GpuPrices []GpuPrice `json:"gpuPrices"`
+	GpuPrices map[string]GpuPrice `json:"gpuPrices"`
 }
 
 type CloudHuawei struct {
 	// +required
-	GpuPrices []GpuPrice `json:"gpuPrices"`
+	GpuPrices map[string]GpuPrice `json:"gpuPrices"`
 }
 
 type CloudAliyun struct {
-	GpuPrices []GpuPrice `json:"gpuPrices"`
+	GpuPrices map[string]GpuPrice `json:"gpuPrices"`
 }
 
 type CloudTencent struct {
-	GpuPrices []GpuPrice `json:"gpuPrices"`
+	GpuPrices map[string]GpuPrice `json:"gpuPrices"`
 }
 
 type GpuPrice struct {
-	InstanceType string            `json:"instanceType"`
-	OnDemand     string            `json:"onDemand"`
-	Spots        map[string]string `json:"spots"`
-	Reserved     string            `json:"reserved"`
-	Currency     string            `json:"currency"`
-	Unit         string            `json:"unit"`
-	UpdatedAt    int64             `json:"updatedAt"`
+	OnDemand  string            `json:"onDemand"`
+	Spots     map[string]string `json:"spots"`
+	Reserved  string            `json:"reserved"`
+	Currency  string            `json:"currency"`
+	Unit      string            `json:"unit"`
+	UpdatedAt int64             `json:"updatedAt"`
 }
 
 type CloudLocation struct {

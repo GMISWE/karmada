@@ -41,11 +41,9 @@ spec:
               cloudAliyun:
                 properties:
                   gpuPrices:
-                    items:
+                    additionalProperties:
                       properties:
                         currency:
-                          type: string
-                        instanceType:
                           type: string
                         onDemand:
                           type: string
@@ -62,25 +60,22 @@ spec:
                           type: integer
                       required:
                       - currency
-                      - instanceType
                       - onDemand
                       - reserved
                       - spots
                       - unit
                       - updatedAt
                       type: object
-                    type: array
+                    type: object
                 required:
                 - gpuPrices
                 type: object
               cloudAws:
                 properties:
                   gpuPrices:
-                    items:
+                    additionalProperties:
                       properties:
                         currency:
-                          type: string
-                        instanceType:
                           type: string
                         onDemand:
                           type: string
@@ -97,25 +92,22 @@ spec:
                           type: integer
                       required:
                       - currency
-                      - instanceType
                       - onDemand
                       - reserved
                       - spots
                       - unit
                       - updatedAt
                       type: object
-                    type: array
+                    type: object
                 required:
                 - gpuPrices
                 type: object
               cloudAzure:
                 properties:
                   gpuPrices:
-                    items:
+                    additionalProperties:
                       properties:
                         currency:
-                          type: string
-                        instanceType:
                           type: string
                         onDemand:
                           type: string
@@ -132,25 +124,22 @@ spec:
                           type: integer
                       required:
                       - currency
-                      - instanceType
                       - onDemand
                       - reserved
                       - spots
                       - unit
                       - updatedAt
                       type: object
-                    type: array
+                    type: object
                 required:
                 - gpuPrices
                 type: object
               cloudGcp:
                 properties:
                   gpuPrices:
-                    items:
+                    additionalProperties:
                       properties:
                         currency:
-                          type: string
-                        instanceType:
                           type: string
                         onDemand:
                           type: string
@@ -167,25 +156,22 @@ spec:
                           type: integer
                       required:
                       - currency
-                      - instanceType
                       - onDemand
                       - reserved
                       - spots
                       - unit
                       - updatedAt
                       type: object
-                    type: array
+                    type: object
                 required:
                 - gpuPrices
                 type: object
               cloudHuawei:
                 properties:
                   gpuPrices:
-                    items:
+                    additionalProperties:
                       properties:
                         currency:
-                          type: string
-                        instanceType:
                           type: string
                         onDemand:
                           type: string
@@ -202,14 +188,13 @@ spec:
                           type: integer
                       required:
                       - currency
-                      - instanceType
                       - onDemand
                       - reserved
                       - spots
                       - unit
                       - updatedAt
                       type: object
-                    type: array
+                    type: object
                 required:
                 - gpuPrices
                 type: object
@@ -218,11 +203,9 @@ spec:
               cloudTencent:
                 properties:
                   gpuPrices:
-                    items:
+                    additionalProperties:
                       properties:
                         currency:
-                          type: string
-                        instanceType:
                           type: string
                         onDemand:
                           type: string
@@ -239,14 +222,13 @@ spec:
                           type: integer
                       required:
                       - currency
-                      - instanceType
                       - onDemand
                       - reserved
                       - spots
                       - unit
                       - updatedAt
                       type: object
-                    type: array
+                    type: object
                 required:
                 - gpuPrices
                 type: object
