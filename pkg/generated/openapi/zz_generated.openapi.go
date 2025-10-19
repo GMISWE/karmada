@@ -3680,6 +3680,11 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							},
 						},
 					},
+					"affinity": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/api/core/v1.Affinity"),
+						},
+					},
 					"minReplicas": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"integer"},
@@ -3725,7 +3730,7 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
 	}
 }
 
@@ -8426,10 +8431,37 @@ func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) com
 							Format:  "int64",
 						},
 					},
+					"allocatable": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
+					"requests": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
 				},
-				Required: []string{"name", "gpuTotal", "gpuIdle", "gpuMem", "gpuMemIdle", "cpuTotal", "cpuIdle", "memTotal", "memIdle"},
 			},
 		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 
@@ -8639,6 +8671,12 @@ func schema_pkg_apis_topo_v1alpha1_HardwareNodeSpec(ref common.ReferenceCallback
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.HostInfo"),
 						},
 					},
+					"cluster": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
 				},
 				Required: []string{"host"},
 			},
@@ -8780,7 +8818,6 @@ func schema_pkg_apis_topo_v1alpha1_Hardwares(ref common.ReferenceCallback) commo
 						},
 					},
 				},
-				Required: []string{"entropy", "gpuType"},
 			},
 		},
 		Dependencies: []string{
@@ -8856,12 +8893,38 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 							},
 						},
 					},
+					"allocatable": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
+					"requests": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
 				},
 				Required: []string{"name", "cpu", "mem"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"},
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 

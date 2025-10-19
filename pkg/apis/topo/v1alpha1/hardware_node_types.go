@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -34,6 +35,9 @@ const (
 // +kubebuilder:storageversion
 // +kubebuilder:resource:scope=Cluster,shortName=hd
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Cluster",type="string",JSONPath=".spec.cluster"
+// +kubebuilder:printcolumn:name="GpuType",type="string",JSONPath=".spec.host.gpuType"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // HardwareNode represents the hardware information of a specific node in a cluster.
 type HardwareNode struct {
@@ -48,6 +52,8 @@ type HardwareNode struct {
 type HardwareNodeSpec struct {
 	// +required
 	Host *HostInfo `json:"host"`
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
 }
 
 // HostInfo represents the detailed hardware information of a host.
@@ -68,6 +74,10 @@ type HostInfo struct {
 	Mem *MemInfo `json:"mem"`
 	// +optional
 	Gpus []GpuDetail `json:"gpus"`
+	// +optional
+	Allocatable *corev1.ResourceList `json:"allocatable,omitempty"`
+	// +optional
+	Requests *corev1.ResourceList `json:"requests,omitempty"`
 }
 
 // GpuDetail represents the information of a GPU device.

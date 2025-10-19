@@ -68,6 +68,16 @@ spec:
                     items:
                       description: GpuTypeInfo represents the GPU type information.
                       properties:
+                        allocatable:
+                          additionalProperties:
+                            anyOf:
+                            - type: integer
+                            - type: string
+                            pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                            x-kubernetes-int-or-string: true
+                          description: ResourceList is a set of (resource name, quantity)
+                            pairs.
+                          type: object
                         cpuIdle:
                           format: int64
                           type: integer
@@ -94,21 +104,18 @@ spec:
                           type: integer
                         name:
                           type: string
-                      required:
-                      - cpuIdle
-                      - cpuTotal
-                      - gpuIdle
-                      - gpuMem
-                      - gpuMemIdle
-                      - gpuTotal
-                      - memIdle
-                      - memTotal
-                      - name
+                        requests:
+                          additionalProperties:
+                            anyOf:
+                            - type: integer
+                            - type: string
+                            pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                            x-kubernetes-int-or-string: true
+                          description: ResourceList is a set of (resource name, quantity)
+                            pairs.
+                          type: object
                       type: object
                     type: array
-                required:
-                - entropy
-                - gpuType
                 type: object
               provider:
                 type: string

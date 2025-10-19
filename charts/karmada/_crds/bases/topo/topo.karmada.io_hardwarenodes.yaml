@@ -16,7 +16,17 @@ spec:
     singular: hardwarenode
   scope: Cluster
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.cluster
+      name: Cluster
+      type: string
+    - jsonPath: .spec.host.gpuType
+      name: GpuType
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: HardwareNode represents the hardware information of a specific
@@ -42,10 +52,22 @@ spec:
           spec:
             description: HardwareNodeSpec represents the specification of the HardwareNode.
             properties:
+              cluster:
+                type: string
               host:
                 description: HostInfo represents the detailed hardware information
                   of a host.
                 properties:
+                  allocatable:
+                    additionalProperties:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                      x-kubernetes-int-or-string: true
+                    description: ResourceList is a set of (resource name, quantity)
+                      pairs.
+                    type: object
                   cpu:
                     description: CpuInfo represents the CPU information of a host.
                     properties:
@@ -112,6 +134,16 @@ spec:
                     type: object
                   name:
                     type: string
+                  requests:
+                    additionalProperties:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                      x-kubernetes-int-or-string: true
+                    description: ResourceList is a set of (resource name, quantity)
+                      pairs.
+                    type: object
                 required:
                 - cpu
                 - mem
