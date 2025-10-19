@@ -43,19 +43,31 @@ spec:
                   gpuPrices:
                     items:
                       properties:
+                        currency:
+                          type: string
                         instanceType:
                           type: string
-                        price:
+                        onDemand:
                           type: string
-                        priceUnit:
+                        reserved:
                           type: string
-                        stock:
-                          type: boolean
+                        spots:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        unit:
+                          type: string
+                        updatedAt:
+                          format: int64
+                          type: integer
                       required:
+                      - currency
                       - instanceType
-                      - price
-                      - priceUnit
-                      - stock
+                      - onDemand
+                      - reserved
+                      - spots
+                      - unit
+                      - updatedAt
                       type: object
                     type: array
                 required:
@@ -66,19 +78,31 @@ spec:
                   gpuPrices:
                     items:
                       properties:
+                        currency:
+                          type: string
                         instanceType:
                           type: string
-                        price:
+                        onDemand:
                           type: string
-                        priceUnit:
+                        reserved:
                           type: string
-                        stock:
-                          type: boolean
+                        spots:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        unit:
+                          type: string
+                        updatedAt:
+                          format: int64
+                          type: integer
                       required:
+                      - currency
                       - instanceType
-                      - price
-                      - priceUnit
-                      - stock
+                      - onDemand
+                      - reserved
+                      - spots
+                      - unit
+                      - updatedAt
                       type: object
                     type: array
                 required:
@@ -89,19 +113,31 @@ spec:
                   gpuPrices:
                     items:
                       properties:
+                        currency:
+                          type: string
                         instanceType:
                           type: string
-                        price:
+                        onDemand:
                           type: string
-                        priceUnit:
+                        reserved:
                           type: string
-                        stock:
-                          type: boolean
+                        spots:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        unit:
+                          type: string
+                        updatedAt:
+                          format: int64
+                          type: integer
                       required:
+                      - currency
                       - instanceType
-                      - price
-                      - priceUnit
-                      - stock
+                      - onDemand
+                      - reserved
+                      - spots
+                      - unit
+                      - updatedAt
                       type: object
                     type: array
                 required:
@@ -112,19 +148,31 @@ spec:
                   gpuPrices:
                     items:
                       properties:
+                        currency:
+                          type: string
                         instanceType:
                           type: string
-                        price:
+                        onDemand:
                           type: string
-                        priceUnit:
+                        reserved:
                           type: string
-                        stock:
-                          type: boolean
+                        spots:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        unit:
+                          type: string
+                        updatedAt:
+                          format: int64
+                          type: integer
                       required:
+                      - currency
                       - instanceType
-                      - price
-                      - priceUnit
-                      - stock
+                      - onDemand
+                      - reserved
+                      - spots
+                      - unit
+                      - updatedAt
                       type: object
                     type: array
                 required:
@@ -135,19 +183,31 @@ spec:
                   gpuPrices:
                     items:
                       properties:
+                        currency:
+                          type: string
                         instanceType:
                           type: string
-                        price:
+                        onDemand:
                           type: string
-                        priceUnit:
+                        reserved:
                           type: string
-                        stock:
-                          type: boolean
+                        spots:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        unit:
+                          type: string
+                        updatedAt:
+                          format: int64
+                          type: integer
                       required:
+                      - currency
                       - instanceType
-                      - price
-                      - priceUnit
-                      - stock
+                      - onDemand
+                      - reserved
+                      - spots
+                      - unit
+                      - updatedAt
                       type: object
                     type: array
                 required:
@@ -160,19 +220,31 @@ spec:
                   gpuPrices:
                     items:
                       properties:
+                        currency:
+                          type: string
                         instanceType:
                           type: string
-                        price:
+                        onDemand:
                           type: string
-                        priceUnit:
+                        reserved:
                           type: string
-                        stock:
-                          type: boolean
+                        spots:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        unit:
+                          type: string
+                        updatedAt:
+                          format: int64
+                          type: integer
                       required:
+                      - currency
                       - instanceType
-                      - price
-                      - priceUnit
-                      - stock
+                      - onDemand
+                      - reserved
+                      - spots
+                      - unit
+                      - updatedAt
                       type: object
                     type: array
                 required:

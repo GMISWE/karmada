@@ -89,10 +89,13 @@ type CloudTencent struct {
 }
 
 type GpuPrice struct {
-	InstanceType string `json:"instanceType"`
-	Price        string `json:"price"`
-	PriceUnit    string `json:"priceUnit"`
-	Stock        bool   `json:"stock"`
+	InstanceType string            `json:"instanceType"`
+	OnDemand     string            `json:"onDemand"`
+	Spots        map[string]string `json:"spots"`
+	Reserved     string            `json:"reserved"`
+	Currency     string            `json:"currency"`
+	Unit         string            `json:"unit"`
+	UpdatedAt    int64             `json:"updatedAt"`
 }
 
 type CloudLocation struct {

@@ -8299,29 +8299,58 @@ func schema_pkg_apis_topo_v1alpha1_GpuPrice(ref common.ReferenceCallback) common
 							Format:  "",
 						},
 					},
-					"price": {
+					"onDemand": {
 						SchemaProps: spec.SchemaProps{
 							Default: "",
 							Type:    []string{"string"},
 							Format:  "",
 						},
 					},
-					"priceUnit": {
+					"spots": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"reserved": {
 						SchemaProps: spec.SchemaProps{
 							Default: "",
 							Type:    []string{"string"},
 							Format:  "",
 						},
 					},
-					"stock": {
+					"currency": {
 						SchemaProps: spec.SchemaProps{
-							Default: false,
-							Type:    []string{"boolean"},
+							Default: "",
+							Type:    []string{"string"},
 							Format:  "",
+						},
+					},
+					"unit": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
 						},
 					},
 				},
-				Required: []string{"instanceType", "price", "priceUnit", "stock"},
+				Required: []string{"instanceType", "onDemand", "spots", "reserved", "currency", "unit", "updatedAt"},
 			},
 		},
 	}

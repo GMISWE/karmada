@@ -18,7 +18,7 @@ resources:
 - bases/autoscaling/autoscaling.karmada.io_cronfederatedhpas.yaml
 - bases/remedy/remedy.karmada.io_remedies.yaml
 - bases/apps/apps.karmada.io_workloadrebalancers.yaml
-
+- bases/mesh/mesh.karmada.io_meshs.yaml
 patches:
 - path: patches/webhook_in_resourcebindings.yaml
 - path: patches/webhook_in_clusterresourcebindings.yaml
