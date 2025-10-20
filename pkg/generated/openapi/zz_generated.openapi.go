@@ -8187,7 +8187,6 @@ func schema_pkg_apis_topo_v1alpha1_CpuInfo(ref common.ReferenceCallback) common.
 						},
 					},
 				},
-				Required: []string{"total", "idle"},
 			},
 		},
 	}
@@ -8291,7 +8290,6 @@ func schema_pkg_apis_topo_v1alpha1_GpuInfo(ref common.ReferenceCallback) common.
 						},
 					},
 				},
-				Required: []string{"total", "idle"},
 			},
 		},
 	}
@@ -8919,7 +8917,7 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 						},
 					},
 				},
-				Required: []string{"name", "cpu", "mem"},
+				Required: []string{"name"},
 			},
 		},
 		Dependencies: []string{
@@ -8949,7 +8947,6 @@ func schema_pkg_apis_topo_v1alpha1_MemInfo(ref common.ReferenceCallback) common.
 						},
 					},
 				},
-				Required: []string{"total", "idle"},
 			},
 		},
 	}

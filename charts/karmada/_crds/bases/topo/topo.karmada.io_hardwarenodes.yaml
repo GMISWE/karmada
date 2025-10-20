@@ -77,9 +77,6 @@ spec:
                       total:
                         format: int64
                         type: integer
-                    required:
-                    - idle
-                    - total
                     type: object
                   cudaVersion:
                     type: string
@@ -91,9 +88,6 @@ spec:
                       total:
                         format: int64
                         type: integer
-                    required:
-                    - idle
-                    - total
                     type: object
                   gpuFailure:
                     items:
@@ -128,9 +122,6 @@ spec:
                       total:
                         format: int64
                         type: integer
-                    required:
-                    - idle
-                    - total
                     type: object
                   name:
                     type: string
@@ -145,8 +136,6 @@ spec:
                       pairs.
                     type: object
                 required:
-                - cpu
-                - mem
                 - name
                 type: object
             required:
