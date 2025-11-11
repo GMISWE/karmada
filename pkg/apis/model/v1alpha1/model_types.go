@@ -74,6 +74,13 @@ type VideoConfig struct {
 	Command []string `json:"command,omitempty"`
 	// +optional
 	Args []string `json:"args,omitempty"`
+	// +optional
+	Volumes []Volume `json:"volumes,omitempty"`
+}
+
+type Volume struct {
+	ContainerPath string `json:"containerPath,omitempty"`
+	JuiceFSPath   string `json:"juiceFSPath,omitempty"`
 }
 
 type AudioConfig struct {
@@ -85,6 +92,8 @@ type AudioConfig struct {
 	Command []string `json:"command,omitempty"`
 	// +optional
 	Args []string `json:"args,omitempty"`
+	// +optional
+	Volumes []Volume `json:"volumes,omitempty"`
 }
 
 type ModelSpec struct {

@@ -971,6 +971,15 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  volumes:
+                    items:
+                      properties:
+                        containerPath:
+                          type: string
+                        juiceFSPath:
+                          type: string
+                      type: object
+                    type: array
                 type: object
               env:
                 items:
@@ -1360,6 +1369,15 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  volumes:
+                    items:
+                      properties:
+                        containerPath:
+                          type: string
+                        juiceFSPath:
+                          type: string
+                      type: object
+                    type: array
                 type: object
             required:
             - modelImage

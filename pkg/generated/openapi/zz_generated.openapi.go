@@ -98,6 +98,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus":                                  schema_pkg_apis_model_v1alpha1_ModelStatus(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector":                             schema_pkg_apis_model_v1alpha1_ResourceSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig":                                  schema_pkg_apis_model_v1alpha1_VideoConfig(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume":                                       schema_pkg_apis_model_v1alpha1_Volume(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ClusterSelector":                         schema_pkg_apis_networking_v1alpha1_ClusterSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ExposurePort":                            schema_pkg_apis_networking_v1alpha1_ExposurePort(ref),
 		"github.com/karmada-io/karmada/pkg/apis/networking/v1alpha1.ExposureRange":                           schema_pkg_apis_networking_v1alpha1_ExposureRange(ref),
@@ -3392,9 +3393,24 @@ func schema_pkg_apis_model_v1alpha1_AudioConfig(ref common.ReferenceCallback) co
 							},
 						},
 					},
+					"volumes": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"},
 	}
 }
 
@@ -3901,6 +3917,45 @@ func schema_pkg_apis_model_v1alpha1_VideoConfig(ref common.ReferenceCallback) co
 									},
 								},
 							},
+						},
+					},
+					"volumes": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_Volume(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"containerPath": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"juiceFSPath": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
 						},
 					},
 				},
