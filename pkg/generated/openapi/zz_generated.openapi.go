@@ -3946,6 +3946,13 @@ func schema_pkg_apis_model_v1alpha1_Volume(ref common.ReferenceCallback) common.
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
 					"containerPath": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -3959,6 +3966,7 @@ func schema_pkg_apis_model_v1alpha1_Volume(ref common.ReferenceCallback) common.
 						},
 					},
 				},
+				Required: []string{"name"},
 			},
 		},
 	}

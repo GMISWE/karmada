@@ -978,6 +978,10 @@ spec:
                           type: string
                         juiceFSPath:
                           type: string
+                        name:
+                          type: string
+                      required:
+                      - name
                       type: object
                     type: array
                 type: object
@@ -1376,6 +1380,10 @@ spec:
                           type: string
                         juiceFSPath:
                           type: string
+                        name:
+                          type: string
+                      required:
+                      - name
                       type: object
                     type: array
                 type: object

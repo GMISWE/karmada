@@ -79,6 +79,7 @@ type VideoConfig struct {
 }
 
 type Volume struct {
+	Name          string `json:"name"`
 	ContainerPath string `json:"containerPath,omitempty"`
 	JuiceFSPath   string `json:"juiceFSPath,omitempty"`
 }
