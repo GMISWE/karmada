@@ -3406,11 +3406,23 @@ func schema_pkg_apis_model_v1alpha1_AudioConfig(ref common.ReferenceCallback) co
 							},
 						},
 					},
+					"reserveOrdinals": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/util/intstr.IntOrString"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume", "k8s.io/apimachinery/pkg/util/intstr.IntOrString"},
 	}
 }
 
@@ -3932,11 +3944,23 @@ func schema_pkg_apis_model_v1alpha1_VideoConfig(ref common.ReferenceCallback) co
 							},
 						},
 					},
+					"reserveOrdinals": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("k8s.io/apimachinery/pkg/util/intstr.IntOrString"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume", "k8s.io/apimachinery/pkg/util/intstr.IntOrString"},
 	}
 }
 

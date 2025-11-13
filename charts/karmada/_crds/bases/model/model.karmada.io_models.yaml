@@ -967,6 +967,13 @@ spec:
                   parameterSize:
                     format: int64
                     type: integer
+                  reserveOrdinals:
+                    items:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      x-kubernetes-int-or-string: true
+                    type: array
                   runArgs:
                     additionalProperties:
                       type: string
@@ -1369,6 +1376,13 @@ spec:
                   parameterSize:
                     format: int64
                     type: integer
+                  reserveOrdinals:
+                    items:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      x-kubernetes-int-or-string: true
+                    type: array
                   runArgs:
                     additionalProperties:
                       type: string

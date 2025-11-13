@@ -19,6 +19,7 @@ package v1alpha1
 import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 const (
@@ -76,6 +77,8 @@ type VideoConfig struct {
 	Args []string `json:"args,omitempty"`
 	// +optional
 	Volumes []Volume `json:"volumes,omitempty"`
+	// +optional
+	ReserveOrdinals []intstr.IntOrString `json:"reserveOrdinals,omitempty"`
 }
 
 type Volume struct {
@@ -95,6 +98,8 @@ type AudioConfig struct {
 	Args []string `json:"args,omitempty"`
 	// +optional
 	Volumes []Volume `json:"volumes,omitempty"`
+	// +optional
+	ReserveOrdinals []intstr.IntOrString `json:"reserveOrdinals,omitempty"`
 }
 
 type ModelSpec struct {
