@@ -205,6 +205,11 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 		*out = new(corev1.Affinity)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Replicas != nil {
+		in, out := &in.Replicas, &out.Replicas
+		*out = new(int32)
+		**out = **in
+	}
 	if in.LLMConfig != nil {
 		in, out := &in.LLMConfig, &out.LLMConfig
 		*out = new(LLMConfig)

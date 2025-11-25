@@ -120,6 +120,12 @@ type ModelSpec struct {
 	// +optional
 	Affinity *corev1.Affinity `json:"affinity,omitempty"`
 
+	// Replicas is the number of desired replicas.
+	// This is a pointer to distinguish between explicit zero and unspecified.
+	// Defaults to 1.
+	// +optional
+	Replicas *int32 `json:"replicas,omitempty"`
+
 	// +optional
 	MinReplicas int `json:"minReplicas,omitempty"` // 最小副本数，如果为0，则默认模型可以自动下线
 	// +optional

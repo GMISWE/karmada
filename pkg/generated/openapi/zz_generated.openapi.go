@@ -3713,6 +3713,13 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Ref: ref("k8s.io/api/core/v1.Affinity"),
 						},
 					},
+					"replicas": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Replicas is the number of desired replicas. This is a pointer to distinguish between explicit zero and unspecified. Defaults to 1.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
 					"minReplicas": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"integer"},
