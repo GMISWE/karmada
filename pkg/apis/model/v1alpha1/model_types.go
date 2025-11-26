@@ -105,12 +105,12 @@ type AudioConfig struct {
 type ModelSpec struct {
 	// +required
 	ModelType ModelType `json:"modelType"` // 模型类型：LLM、Video、Audio
-	// +required
+	/*// +required
 	ModelName string `json:"modelName"`
 	// +optional
 	ModelVersion string `json:"modelVersion"`
 	// +optional
-	ModelPath string `json:"modelPath"`
+	ModelPath string `json:"modelPath"`*/
 	// +required
 	ModelImage string `json:"modelImage"` // 模型镜像
 	// +optional
@@ -142,8 +142,8 @@ type ModelSpec struct {
 	VideoConfig *VideoConfig `json:"videoConfig,omitempty"`
 	// +optional
 	AudioConfig *AudioConfig `json:"audioConfig,omitempty"`
-	// +optional
-	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
+	/*// +optional
+	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`*/
 }
 
 type ModelStatus struct {

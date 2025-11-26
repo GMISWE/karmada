@@ -235,13 +235,6 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 		*out = new(AudioConfig)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.ResourceSelectors != nil {
-		in, out := &in.ResourceSelectors, &out.ResourceSelectors
-		*out = make([]ResourceSelector, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
-	}
 	return
 }
 

@@ -3661,32 +3661,12 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Format:  "",
 						},
 					},
-					"modelName": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
-					"modelVersion": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
-					"modelPath": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
 					"modelImage": {
 						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
+							Description: "// +required\n\tModelName string `json:\"modelName\"`\n\t// +optional\n\tModelVersion string `json:\"modelVersion\"`\n\t// +optional\n\tModelPath string `json:\"modelPath\"`",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 					"resources": {
@@ -3775,25 +3755,12 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig"),
 						},
 					},
-					"resourceSelectors": {
-						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector"),
-									},
-								},
-							},
-						},
-					},
 				},
-				Required: []string{"modelType", "modelName", "modelImage"},
+				Required: []string{"modelType", "modelImage"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
 	}
 }
 
