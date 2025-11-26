@@ -120,6 +120,11 @@ type ModelSpec struct {
 	// +optional
 	Affinity *corev1.Affinity `json:"affinity,omitempty"`
 
+	// +optional
+	Regions []string `json:"regions,omitempty"`
+	// +optional
+	GPUTypes []string `json:"gpuTypes,omitempty"`
+
 	// Replicas is the number of desired replicas.
 	// This is a pointer to distinguish between explicit zero and unspecified.
 	// Defaults to 1.

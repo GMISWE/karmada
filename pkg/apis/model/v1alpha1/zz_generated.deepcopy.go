@@ -205,6 +205,16 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 		*out = new(corev1.Affinity)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Regions != nil {
+		in, out := &in.Regions, &out.Regions
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.GPUTypes != nil {
+		in, out := &in.GPUTypes, &out.GPUTypes
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	if in.Replicas != nil {
 		in, out := &in.Replicas, &out.Replicas
 		*out = new(int32)

@@ -1109,6 +1109,10 @@ spec:
                   - name
                   type: object
                 type: array
+              gpuTypes:
+                items:
+                  type: string
+                type: array
               llmConfig:
                 properties:
                   args:
@@ -1141,6 +1145,10 @@ spec:
                 type: string
               modelVersion:
                 type: string
+              regions:
+                items:
+                  type: string
+                type: array
               replicas:
                 description: |-
                   Replicas is the number of desired replicas.
