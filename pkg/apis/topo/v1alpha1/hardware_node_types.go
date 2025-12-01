@@ -67,17 +67,25 @@ type HostInfo struct {
 	// +optional
 	GpuFailure []string `json:"gpuFailure,omitempty"`
 	// +optional
-	Gpu *GpuInfo `json:"gpu,omitempty"`
+	//Gpu *GpuInfo `json:"gpu,omitempty"`
 	// +optional
-	Cpu *CpuInfo `json:"cpu"`
+	//Cpu *CpuInfo `json:"cpu"`
 	// +optional
-	Mem *MemInfo `json:"mem"`
+	//Mem *MemInfo `json:"mem"`
 	// +optional
 	Gpus []GpuDetail `json:"gpus"`
 	// +optional
 	Allocatable *corev1.ResourceList `json:"allocatable,omitempty"`
 	// +optional
 	Requests *corev1.ResourceList `json:"requests,omitempty"`
+	// +optional
+	Labels map[string]string `json:"labels"`
+	// +optional
+	Annotations map[string]string `json:"annotations"`
+	// +optional
+	Unschedulable bool `json:"unschedulable"`
+	// +optional
+	Ready bool `json:"ready"`
 }
 
 // GpuDetail represents the information of a GPU device.

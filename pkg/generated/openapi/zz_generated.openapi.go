@@ -8951,24 +8951,10 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 							},
 						},
 					},
-					"gpu": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo"),
-						},
-					},
-					"cpu": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo"),
-						},
-					},
-					"mem": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo"),
-						},
-					},
 					"gpus": {
 						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
+							Description: "Gpu *GpuInfo `json:\"gpu,omitempty\"` Cpu *CpuInfo `json:\"cpu\"` Mem *MemInfo `json:\"mem\"`",
+							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
@@ -9005,12 +8991,56 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 							},
 						},
 					},
+					"labels": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"annotations": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"unschedulable": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
+					"ready": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
 				},
 				Required: []string{"name"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.CpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuInfo", "github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.MemInfo", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
+			"github.com/karmada-io/karmada/pkg/apis/topo/v1alpha1.GpuDetail", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 

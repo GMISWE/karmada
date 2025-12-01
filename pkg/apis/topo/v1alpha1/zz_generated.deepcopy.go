@@ -708,21 +708,6 @@ func (in *HostInfo) DeepCopyInto(out *HostInfo) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
-	if in.Gpu != nil {
-		in, out := &in.Gpu, &out.Gpu
-		*out = new(GpuInfo)
-		**out = **in
-	}
-	if in.Cpu != nil {
-		in, out := &in.Cpu, &out.Cpu
-		*out = new(CpuInfo)
-		**out = **in
-	}
-	if in.Mem != nil {
-		in, out := &in.Mem, &out.Mem
-		*out = new(MemInfo)
-		**out = **in
-	}
 	if in.Gpus != nil {
 		in, out := &in.Gpus, &out.Gpus
 		*out = make([]GpuDetail, len(*in))
@@ -750,6 +735,20 @@ func (in *HostInfo) DeepCopyInto(out *HostInfo) {
 			for key, val := range *in {
 				(*out)[key] = val.DeepCopy()
 			}
+		}
+	}
+	if in.Labels != nil {
+		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
+	if in.Annotations != nil {
+		in, out := &in.Annotations, &out.Annotations
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
 		}
 	}
 	return

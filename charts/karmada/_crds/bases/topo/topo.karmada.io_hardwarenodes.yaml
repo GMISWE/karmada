@@ -68,27 +68,12 @@ spec:
                     description: ResourceList is a set of (resource name, quantity)
                       pairs.
                     type: object
-                  cpu:
-                    description: CpuInfo represents the CPU information of a host.
-                    properties:
-                      idle:
-                        format: int64
-                        type: integer
-                      total:
-                        format: int64
-                        type: integer
+                  annotations:
+                    additionalProperties:
+                      type: string
                     type: object
                   cudaVersion:
                     type: string
-                  gpu:
-                    properties:
-                      idle:
-                        format: int64
-                        type: integer
-                      total:
-                        format: int64
-                        type: integer
-                    type: object
                   gpuFailure:
                     items:
                       type: string
@@ -96,6 +81,10 @@ spec:
                   gpuType:
                     type: string
                   gpus:
+                    description: |-
+                      Gpu *GpuInfo `json:"gpu,omitempty"`
+                      Cpu *CpuInfo `json:"cpu"`
+                      Mem *MemInfo `json:"mem"`
                     items:
                       description: GpuDetail represents the information of a GPU device.
                       properties:
@@ -113,18 +102,14 @@ spec:
                       - index
                       type: object
                     type: array
-                  mem:
-                    description: MemInfo represents the memory information of a host.
-                    properties:
-                      idle:
-                        format: int64
-                        type: integer
-                      total:
-                        format: int64
-                        type: integer
+                  labels:
+                    additionalProperties:
+                      type: string
                     type: object
                   name:
                     type: string
+                  ready:
+                    type: boolean
                   requests:
                     additionalProperties:
                       anyOf:
@@ -135,6 +120,8 @@ spec:
                     description: ResourceList is a set of (resource name, quantity)
                       pairs.
                     type: object
+                  unschedulable:
+                    type: boolean
                 required:
                 - name
                 type: object
