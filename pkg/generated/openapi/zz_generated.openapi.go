@@ -93,6 +93,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig":                                    schema_pkg_apis_model_v1alpha1_LLMConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Model":                                        schema_pkg_apis_model_v1alpha1_Model(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelClusterStatus":                           schema_pkg_apis_model_v1alpha1_ModelClusterStatus(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig":                                  schema_pkg_apis_model_v1alpha1_ModelConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelList":                                    schema_pkg_apis_model_v1alpha1_ModelList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec":                                    schema_pkg_apis_model_v1alpha1_ModelSpec(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus":                                  schema_pkg_apis_model_v1alpha1_ModelStatus(ref),
@@ -3600,6 +3601,83 @@ func schema_pkg_apis_model_v1alpha1_ModelClusterStatus(ref common.ReferenceCallb
 	}
 }
 
+func schema_pkg_apis_model_v1alpha1_ModelConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"parameterSize": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"runArgs": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"command": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"args": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"volumes": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume"},
+	}
+}
+
 func schema_pkg_apis_model_v1alpha1_ModelList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -3740,19 +3818,10 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Format: "int32",
 						},
 					},
-					"llmConfig": {
+					"modelConfig": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig"),
-						},
-					},
-					"videoConfig": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig"),
-						},
-					},
-					"audioConfig": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig"),
+							Description: "// +optional\n\tLLMConfig *LLMConfig `json:\"llmConfig,omitempty\"`\n\t// +optional\n\tVideoConfig *VideoConfig `json:\"videoConfig,omitempty\"`\n\t// +optional\n\tAudioConfig *AudioConfig `json:\"audioConfig,omitempty\"`",
+							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig"),
 						},
 					},
 				},
@@ -3760,7 +3829,7 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.AudioConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.LLMConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
 	}
 }
 
@@ -3986,6 +4055,12 @@ func schema_pkg_apis_model_v1alpha1_Volume(ref common.ReferenceCallback) common.
 						},
 					},
 					"juiceFSPath": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"pvcName": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",

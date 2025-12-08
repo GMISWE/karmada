@@ -85,6 +85,20 @@ type Volume struct {
 	Name          string `json:"name"`
 	ContainerPath string `json:"containerPath,omitempty"`
 	JuiceFSPath   string `json:"juiceFSPath,omitempty"`
+	PVCName       string `json:"pvcName,omitempty"`
+}
+
+type ModelConfig struct {
+	// +optional
+	ParameterSize int64 `json:"parameterSize"` // 模型参数大小，单位：GB
+	// +optional
+	RunArgs map[string]string `json:"runArgs,omitempty"` // 模型运行参数
+	// +optional
+	Command []string `json:"command,omitempty"`
+	// +optional
+	Args []string `json:"args,omitempty"`
+	// +optional
+	Volumes []Volume `json:"volumes,omitempty"`
 }
 
 type AudioConfig struct {
@@ -136,12 +150,14 @@ type ModelSpec struct {
 	// +optional
 	MaxReplicas int `json:"maxReplicas,omitempty"` // 最大副本数，如果为0，则默认math.MaxInt
 
-	// +optional
+	/*// +optional
 	LLMConfig *LLMConfig `json:"llmConfig,omitempty"`
 	// +optional
 	VideoConfig *VideoConfig `json:"videoConfig,omitempty"`
 	// +optional
-	AudioConfig *AudioConfig `json:"audioConfig,omitempty"`
+	AudioConfig *AudioConfig `json:"audioConfig,omitempty"`*/
+	// +optional
+	ModelConfig *ModelConfig `json:"modelConfig,omitempty"`
 	/*// +optional
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`*/
 }

@@ -954,44 +954,6 @@ spec:
                         x-kubernetes-list-type: atomic
                     type: object
                 type: object
-              audioConfig:
-                properties:
-                  args:
-                    items:
-                      type: string
-                    type: array
-                  command:
-                    items:
-                      type: string
-                    type: array
-                  parameterSize:
-                    format: int64
-                    type: integer
-                  reserveOrdinals:
-                    items:
-                      anyOf:
-                      - type: integer
-                      - type: string
-                      x-kubernetes-int-or-string: true
-                    type: array
-                  runArgs:
-                    additionalProperties:
-                      type: string
-                    type: object
-                  volumes:
-                    items:
-                      properties:
-                        containerPath:
-                          type: string
-                        juiceFSPath:
-                          type: string
-                        name:
-                          type: string
-                      required:
-                      - name
-                      type: object
-                    type: array
-                type: object
               env:
                 items:
                   description: EnvVar represents an environment variable present in
@@ -1113,7 +1075,18 @@ spec:
                 items:
                   type: string
                 type: array
-              llmConfig:
+              maxReplicas:
+                type: integer
+              minReplicas:
+                type: integer
+              modelConfig:
+                description: |-
+                  // +optional
+                  LLMConfig *LLMConfig `json:"llmConfig,omitempty"`
+                  // +optional
+                  VideoConfig *VideoConfig `json:"videoConfig,omitempty"`
+                  // +optional
+                  AudioConfig *AudioConfig `json:"audioConfig,omitempty"`
                 properties:
                   args:
                     items:
@@ -1130,11 +1103,22 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  volumes:
+                    items:
+                      properties:
+                        containerPath:
+                          type: string
+                        juiceFSPath:
+                          type: string
+                        name:
+                          type: string
+                        pvcName:
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    type: array
                 type: object
-              maxReplicas:
-                type: integer
-              minReplicas:
-                type: integer
               modelImage:
                 description: |-
                   // +required
@@ -1215,44 +1199,6 @@ spec:
                       otherwise to an implementation-defined value. Requests cannot exceed Limits.
                       More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
                     type: object
-                type: object
-              videoConfig:
-                properties:
-                  args:
-                    items:
-                      type: string
-                    type: array
-                  command:
-                    items:
-                      type: string
-                    type: array
-                  parameterSize:
-                    format: int64
-                    type: integer
-                  reserveOrdinals:
-                    items:
-                      anyOf:
-                      - type: integer
-                      - type: string
-                      x-kubernetes-int-or-string: true
-                    type: array
-                  runArgs:
-                    additionalProperties:
-                      type: string
-                    type: object
-                  volumes:
-                    items:
-                      properties:
-                        containerPath:
-                          type: string
-                        juiceFSPath:
-                          type: string
-                        name:
-                          type: string
-                      required:
-                      - name
-                      type: object
-                    type: array
                 type: object
             required:
             - modelImage
