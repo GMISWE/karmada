@@ -4066,6 +4066,12 @@ func schema_pkg_apis_model_v1alpha1_Volume(ref common.ReferenceCallback) common.
 							Format: "",
 						},
 					},
+					"size": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int64",
+						},
+					},
 				},
 				Required: []string{"name"},
 			},

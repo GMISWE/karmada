@@ -86,6 +86,7 @@ type Volume struct {
 	ContainerPath string `json:"containerPath,omitempty"`
 	JuiceFSPath   string `json:"juiceFSPath,omitempty"`
 	PVCName       string `json:"pvcName,omitempty"`
+	Size          int64  `json:"size,omitempty"`
 }
 
 type ModelConfig struct {
