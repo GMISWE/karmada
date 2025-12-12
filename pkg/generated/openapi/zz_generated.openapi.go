@@ -97,6 +97,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelList":                                    schema_pkg_apis_model_v1alpha1_ModelList(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelSpec":                                    schema_pkg_apis_model_v1alpha1_ModelSpec(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelStatus":                                  schema_pkg_apis_model_v1alpha1_ModelStatus(ref),
+		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Port":                                         schema_pkg_apis_model_v1alpha1_Port(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector":                             schema_pkg_apis_model_v1alpha1_ResourceSelector(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.VideoConfig":                                  schema_pkg_apis_model_v1alpha1_VideoConfig(ref),
 		"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Volume":                                       schema_pkg_apis_model_v1alpha1_Volume(ref),
@@ -3824,12 +3825,26 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Ref:         ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig"),
 						},
 					},
+					"ports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "// +optional\n\tResourceSelectors []ResourceSelector `json:\"resourceSelectors,omitempty\"`",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Port"),
+									},
+								},
+							},
+						},
+					},
 				},
 				Required: []string{"modelType", "modelImage"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Port", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
 	}
 }
 
@@ -3886,6 +3901,37 @@ func schema_pkg_apis_model_v1alpha1_ModelStatus(ref common.ReferenceCallback) co
 		},
 		Dependencies: []string{
 			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ResourceSelector", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_pkg_apis_model_v1alpha1_Port(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"protocol": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"containerPort": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+				},
+				Required: []string{"name", "protocol", "containerPort"},
+			},
+		},
 	}
 }
 

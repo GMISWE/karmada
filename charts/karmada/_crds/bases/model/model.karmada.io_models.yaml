@@ -1133,6 +1133,25 @@ spec:
                 type: string
               modelType:
                 type: string
+              ports:
+                description: |-
+                  // +optional
+                  ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`
+                items:
+                  properties:
+                    containerPort:
+                      format: int32
+                      type: integer
+                    name:
+                      type: string
+                    protocol:
+                      type: string
+                  required:
+                  - containerPort
+                  - name
+                  - protocol
+                  type: object
+                type: array
               regions:
                 items:
                   type: string

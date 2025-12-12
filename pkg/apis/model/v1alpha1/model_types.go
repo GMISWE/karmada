@@ -161,6 +161,17 @@ type ModelSpec struct {
 	ModelConfig *ModelConfig `json:"modelConfig,omitempty"`
 	/*// +optional
 	ResourceSelectors []ResourceSelector `json:"resourceSelectors,omitempty"`*/
+	// +optional
+	Ports []Port `json:"ports,omitempty"`
+}
+
+type Port struct {
+	// +required
+	Name string `json:"name,omitempty"`
+	// +required
+	Protocol string `json:"protocol,omitempty"`
+	// +required
+	ContainerPort int32 `json:"containerPort,omitempty"`
 }
 
 type ModelStatus struct {
