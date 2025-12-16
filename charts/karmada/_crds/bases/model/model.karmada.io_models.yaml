@@ -1106,7 +1106,13 @@ spec:
                   volumes:
                     items:
                       properties:
+                        accessModes:
+                          items:
+                            type: string
+                          type: array
                         containerPath:
+                          type: string
+                        hostPathType:
                           type: string
                         juiceFSPath:
                           type: string

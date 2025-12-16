@@ -82,11 +82,13 @@ type VideoConfig struct {
 }
 
 type Volume struct {
-	Name          string `json:"name"`
-	ContainerPath string `json:"containerPath,omitempty"`
-	JuiceFSPath   string `json:"juiceFSPath,omitempty"`
-	PVCName       string `json:"pvcName,omitempty"`
-	Size          int64  `json:"size,omitempty"`
+	Name          string                              `json:"name"`
+	ContainerPath string                              `json:"containerPath,omitempty"`
+	JuiceFSPath   string                              `json:"juiceFSPath,omitempty"`
+	PVCName       string                              `json:"pvcName,omitempty"`
+	Size          int64                               `json:"size,omitempty"`
+	AccessModes   []corev1.PersistentVolumeAccessMode `json:"accessModes,omitempty"`
+	HostPathType  *corev1.HostPathType                `json:"hostPathType,omitempty"`
 }
 
 type ModelConfig struct {
