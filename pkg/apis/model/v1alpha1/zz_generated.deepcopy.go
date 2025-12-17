@@ -262,6 +262,11 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 		*out = new(int32)
 		**out = **in
 	}
+	if in.ClusterSelector != nil {
+		in, out := &in.ClusterSelector, &out.ClusterSelector
+		*out = new(v1.LabelSelector)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.ModelConfig != nil {
 		in, out := &in.ModelConfig, &out.ModelConfig
 		*out = new(ModelConfig)

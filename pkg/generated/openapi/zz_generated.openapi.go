@@ -3819,6 +3819,11 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 							Format: "int32",
 						},
 					},
+					"clusterSelector": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"),
+						},
+					},
 					"modelConfig": {
 						SchemaProps: spec.SchemaProps{
 							Description: "// +optional\n\tLLMConfig *LLMConfig `json:\"llmConfig,omitempty\"`\n\t// +optional\n\tVideoConfig *VideoConfig `json:\"videoConfig,omitempty\"`\n\t// +optional\n\tAudioConfig *AudioConfig `json:\"audioConfig,omitempty\"`",
@@ -3844,7 +3849,7 @@ func schema_pkg_apis_model_v1alpha1_ModelSpec(ref common.ReferenceCallback) comm
 			},
 		},
 		Dependencies: []string{
-			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Port", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements"},
+			"github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.ModelConfig", "github.com/karmada-io/karmada/pkg/apis/model/v1alpha1.Port", "k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 

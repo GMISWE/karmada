@@ -153,6 +153,9 @@ type ModelSpec struct {
 	// +optional
 	MaxReplicas int `json:"maxReplicas,omitempty"` // 最大副本数，如果为0，则默认math.MaxInt
 
+	// +optional
+	ClusterSelector *metav1.LabelSelector `json:"clusterSelector,omitempty"`
+
 	/*// +optional
 	LLMConfig *LLMConfig `json:"llmConfig,omitempty"`
 	// +optional
