@@ -80,22 +80,6 @@ type GpuTypeInfo struct {
 	// +optional
 	Name string `json:"name"`
 	// +optional
-	GpuTotal int64 `json:"gpuTotal"`
-	// +optional
-	GpuIdle int64 `json:"gpuIdle"`
-	// +optional
-	GpuMem int64 `json:"gpuMem"`
-	// +optional
-	GpuMemIdle int64 `json:"gpuMemIdle"`
-	// +optional
-	CpuTotal int64 `json:"cpuTotal"`
-	// +optional
-	CpuIdle int64 `json:"cpuIdle"`
-	// +optional
-	MemTotal int64 `json:"memTotal"`
-	// +optional
-	MemIdle int64 `json:"memIdle"`
-	// +optional
 	Allocatable *corev1.ResourceList `json:"allocatable,omitempty"`
 	// +optional
 	Requests *corev1.ResourceList `json:"requests,omitempty"`

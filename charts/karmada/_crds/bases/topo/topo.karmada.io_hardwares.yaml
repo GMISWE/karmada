@@ -78,30 +78,6 @@ spec:
                           description: ResourceList is a set of (resource name, quantity)
                             pairs.
                           type: object
-                        cpuIdle:
-                          format: int64
-                          type: integer
-                        cpuTotal:
-                          format: int64
-                          type: integer
-                        gpuIdle:
-                          format: int64
-                          type: integer
-                        gpuMem:
-                          format: int64
-                          type: integer
-                        gpuMemIdle:
-                          format: int64
-                          type: integer
-                        gpuTotal:
-                          format: int64
-                          type: integer
-                        memIdle:
-                          format: int64
-                          type: integer
-                        memTotal:
-                          format: int64
-                          type: integer
                         name:
                           type: string
                         requests:

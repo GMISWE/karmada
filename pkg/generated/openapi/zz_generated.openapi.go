@@ -8616,62 +8616,6 @@ func schema_pkg_apis_topo_v1alpha1_GpuTypeInfo(ref common.ReferenceCallback) com
 							Format:  "",
 						},
 					},
-					"gpuTotal": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"gpuIdle": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"gpuMem": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"gpuMemIdle": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"cpuTotal": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"cpuIdle": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"memTotal": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
-					"memIdle": {
-						SchemaProps: spec.SchemaProps{
-							Default: 0,
-							Type:    []string{"integer"},
-							Format:  "int64",
-						},
-					},
 					"allocatable": {
 						SchemaProps: spec.SchemaProps{
 							Type: []string{"object"},
@@ -9108,8 +9052,7 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 					},
 					"gpus": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Gpu *GpuInfo `json:\"gpu,omitempty\"` Cpu *CpuInfo `json:\"cpu\"` Mem *MemInfo `json:\"mem\"`",
-							Type:        []string{"array"},
+							Type: []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
@@ -9191,7 +9134,7 @@ func schema_pkg_apis_topo_v1alpha1_HostInfo(ref common.ReferenceCallback) common
 						},
 					},
 				},
-				Required: []string{"name"},
+				Required: []string{"name", "gpus"},
 			},
 		},
 		Dependencies: []string{

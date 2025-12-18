@@ -65,15 +65,8 @@ type HostInfo struct {
 	// +optional
 	CudaVersion string `json:"cudaVersion,omitempty"`
 	// +optional
-	GpuFailure []string `json:"gpuFailure,omitempty"`
-	// +optional
-	//Gpu *GpuInfo `json:"gpu,omitempty"`
-	// +optional
-	//Cpu *CpuInfo `json:"cpu"`
-	// +optional
-	//Mem *MemInfo `json:"mem"`
-	// +optional
-	Gpus []GpuDetail `json:"gpus"`
+	GpuFailure []string    `json:"gpuFailure,omitempty"`
+	Gpus       []GpuDetail `json:"gpus"`
 	// +optional
 	Allocatable *corev1.ResourceList `json:"allocatable,omitempty"`
 	// +optional

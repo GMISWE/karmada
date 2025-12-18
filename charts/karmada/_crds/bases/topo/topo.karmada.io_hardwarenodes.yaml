@@ -81,10 +81,6 @@ spec:
                   gpuType:
                     type: string
                   gpus:
-                    description: |-
-                      Gpu *GpuInfo `json:"gpu,omitempty"`
-                      Cpu *CpuInfo `json:"cpu"`
-                      Mem *MemInfo `json:"mem"`
                     items:
                       description: GpuDetail represents the information of a GPU device.
                       properties:
@@ -123,6 +119,7 @@ spec:
                   unschedulable:
                     type: boolean
                 required:
+                - gpus
                 - name
                 type: object
             required:
