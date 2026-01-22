@@ -102,6 +102,10 @@ type ModelConfig struct {
 	Args []string `json:"args,omitempty"`
 	// +optional
 	Volumes []Volume `json:"volumes,omitempty"`
+	// +optional
+	Type string `json:"type,omitempty"` // 模型类型：QB,LB
+	// +optional
+	UseContainerResource bool `json:"useContainerResource,omitempty"` // 是否使用容器资源
 }
 
 type AudioConfig struct {

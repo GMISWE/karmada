@@ -1152,6 +1152,10 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  type:
+                    type: string
+                  useContainerResource:
+                    type: boolean
                   volumes:
                     items:
                       properties:
