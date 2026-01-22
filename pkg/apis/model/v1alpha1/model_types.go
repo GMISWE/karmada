@@ -103,9 +103,9 @@ type ModelConfig struct {
 	// +optional
 	Volumes []Volume `json:"volumes,omitempty"`
 	// +optional
-	Type string `json:"type,omitempty"` // 模型类型：QB,LB
+	//Type string `json:"type,omitempty"` // 模型类型：QB,LB
 	// +optional
-	UseContainerResource bool `json:"useContainerResource,omitempty"` // 是否使用容器资源
+	//UseContainerResource bool `json:"useContainerResource,omitempty"` // 是否使用容器资源
 }
 
 type AudioConfig struct {
@@ -140,6 +140,8 @@ type ModelSpec struct {
 	Env []corev1.EnvVar `json:"env,omitempty"`
 	// +optional
 	Affinity *corev1.Affinity `json:"affinity,omitempty"`
+	// +optional
+	Tolerations []corev1.Toleration `json:"tolerations,omitempty"`
 
 	// +optional
 	Regions []string `json:"regions,omitempty"`

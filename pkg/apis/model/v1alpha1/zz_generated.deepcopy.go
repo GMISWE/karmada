@@ -247,6 +247,13 @@ func (in *ModelSpec) DeepCopyInto(out *ModelSpec) {
 		*out = new(corev1.Affinity)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Tolerations != nil {
+		in, out := &in.Tolerations, &out.Tolerations
+		*out = make([]corev1.Toleration, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	if in.Regions != nil {
 		in, out := &in.Regions, &out.Regions
 		*out = make([]string, len(*in))
