@@ -3671,6 +3671,12 @@ func schema_pkg_apis_model_v1alpha1_ModelConfig(ref common.ReferenceCallback) co
 							},
 						},
 					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
 				},
 			},
 		},

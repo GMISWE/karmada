@@ -1152,6 +1152,8 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  type:
+                    type: string
                   volumes:
                     items:
                       properties:
